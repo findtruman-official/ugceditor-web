@@ -17,7 +17,6 @@ export interface WalletEvents {
 export interface WalletProvider {
   providerType: WalletType;
   provider?: any;
-  connected: boolean;
 
   isAvailable(): boolean;
 

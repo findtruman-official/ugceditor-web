@@ -13,6 +13,9 @@
 .walletCard:active {
   box-shadow: none;
 }
+.walletCard:not(:last-child) {
+  margin-bottom: 12px;
+}
 
 .walletIcon {
   position: absolute;
@@ -24,13 +27,13 @@
   line-height: 32px;
   width: 100%;
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
 }
 
-.icon {
+.rightIcon {
   color: rgba(0, 0, 0, 0.55);
-  font-size: 16px;
+  font-size: 18px;
   position: absolute;
   right: 10px;
   top: 50%;
@@ -50,6 +53,17 @@
 
 .currentWalletAddress {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.55);
-  margin-bottom: 12px;
+  color: rgba(0, 0, 0, 0.75);
+  margin-bottom: 6px;
+}
+
+.disconnectIcon {
+  color: rgba(0, 0, 0, 0.75);
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+.disconnectIcon:hover {
+  color: #f5222d;
 }

@@ -9,7 +9,6 @@ import { message } from 'antd';
 export class PhantomWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Phantom;
   provider: any;
-  connected = false;
 
   constructor({
     onConnect,

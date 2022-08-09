@@ -1,7 +1,7 @@
 import PhantomLogo from '@/assets/phantom-logo.png';
 import { WalletProvider, WalletType } from '@/wallets';
 import { PhantomWalletProvider } from '@/wallets/Phantom';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default () => {
   const Wallets: {
@@ -60,35 +60,57 @@ export default () => {
     }
   }, [accounts, wallet]);
 
-  const connect = async (walletType: WalletType) => {
-    const _wallet = Wallets.find((w) => w.walletType === walletType);
-    if (_wallet) {
-      try {
-        setConnecting(true);
-        await _wallet.provider.connect();
-        setWallet(_wallet);
-      } catch (e) {
-      } finally {
-        setConnecting(false);
+  const connect = useCallback(
+    async (walletType: WalletType) => {
+      const _wallet = Wallets.find((w) => w.walletType === walletType);
+      if (_wallet) {
+        if (_wallet.provider.isAvailable()) {
+          try {
+            setConnecting(true);
+            await _wallet.provider.connect();
+            setWallet(_wallet);
+          } catch (e) {
+          } finally {
+            setConnecting(false);
+          }
+        } else {
+          _wallet.provider.openWebsite();
+        }
+      }
+    },
+    [Wallets],
+  );
+
+  const disconnect = useCallback(async () => {
+    if (wallet) {
+      const type = wallet.walletType;
+      await wallet.provider.disconnect();
+      setWallet(undefined);
+      for (const _wallet of Wallets) {
+        if (_wallet.walletType !== type && !!accounts[_wallet.walletType]) {
+          setWallet(_wallet);
+        }
       }
     }
-  };
+  }, [wallet]);
 
   useEffect(() => {
-    const _wallet = Wallets.find((w) => w.provider.getAutoConnect());
-    _wallet?.provider
-      .silentConnect()
-      .then((address) => {
-        setWallet(_wallet);
-      })
-      .catch((e) => {});
+    for (const _wallet of Wallets) {
+      if (_wallet.provider.getAutoConnect()) {
+        _wallet?.provider.silentConnect().then(() => {
+          !wallet && setWallet(_wallet);
+        });
+      }
+    }
   }, []);
 
   return {
     Wallets,
     wallet,
+    accounts,
     account,
     connect,
     connecting,
+    disconnect,
   };
 };
