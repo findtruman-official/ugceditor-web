@@ -31,4 +31,7 @@ export default defineConfig({
     baseSeparator: '-',
   },
   npmClient: 'yarn',
+  theme: {
+    'primary-color': '#3e38d9',
+  },
 });

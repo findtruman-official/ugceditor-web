@@ -1,15 +1,26 @@
-import { WalletContext, WalletContextType } from '@/layouts';
+import StoryCardList from '@/components/StoryCard/StoryCardList';
+import { useIntl } from '@@/plugin-locale';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button } from 'antd';
-import React, { useContext } from 'react';
+import React from 'react';
 import styles from './index.less';
 
 const Stories: React.FC = () => {
-  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
+  const { formatMessage } = useIntl();
+
   return (
-    <PageContainer title={false} ghost>
-      <div className={styles.container}>stories</div>
-      <Button onClick={openWalletModal}>connect wallet</Button>
+    <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
+      <div className={styles.section}>
+        <div className={styles.title}>
+          {formatMessage({ id: 'stories.title.hot-stories' })}
+        </div>
+        <StoryCardList />
+      </div>
+      <div className={styles.section}>
+        <div className={styles.title}>
+          {formatMessage({ id: 'stories.title.latest-stories' })}
+        </div>
+        <StoryCardList />
+      </div>
     </PageContainer>
   );
 };

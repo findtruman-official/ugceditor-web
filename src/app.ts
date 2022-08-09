@@ -12,7 +12,7 @@ export const layout = () => {
     layout: 'top',
     fixedHeader: true,
     // headerHeight: 48,
-    primaryColor: '#5b4fff',
+
     headerRender: false,
     menuHeaderRender: false,
   };

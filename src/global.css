@@ -22,3 +22,10 @@
   font-family: 'PingFang SC', Lato, 'Microsoft YaHei', NotoSansSC, sans-serif;
   /*font-weight: normal;*/
 }
+
+.ant-upload.ant-upload-select-picture-card {
+  width: 100% !important;
+  height: 236px !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+}
