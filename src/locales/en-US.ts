@@ -1,4 +1,5 @@
 export default {
   'menu.stories': 'Stories',
-  'wallet-modal.extension-unavailable': '{} ',
+  'menu.writer': "I'm Writer",
+  'header.connect-wallet': 'Connect Wallet',
 };

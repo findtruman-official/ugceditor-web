@@ -18,7 +18,12 @@ export default defineConfig({
     {
       name: 'stories',
       path: '/stories',
-      component: './Stories',
+      component: './stories',
+    },
+    {
+      name: 'writer',
+      path: '/writer',
+      component: './writer',
     },
   ],
   locale: {

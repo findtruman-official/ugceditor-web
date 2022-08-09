@@ -22,7 +22,6 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
     connecting,
     disconnect,
   } = useModel('walletModel');
-  console.log(wallet);
   return (
     <Modal
       closable={false}

@@ -1,5 +1,6 @@
+import Header from '@/components/Header/Header';
 import WalletModal from '@/components/WalletModal/WalletModal';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import { Outlet } from 'umi';
 
 export interface WalletContextType {
@@ -13,18 +14,11 @@ export const WalletContext = createContext<WalletContextType>({
 export default function Layout() {
   const [walletModalVisible, setWalletModalVisible] = useState(false);
 
-  useEffect(() => {
-    // const wallet = new PhantomWalletProvider({});
-    // if (wallet.isAvailable() && wallet.getAutoConnect()) {
-    //   wallet.silentConnect();
-    // }
-    // setWallet(wallet);
-  }, []);
-
   return (
     <WalletContext.Provider
       value={{ openWalletModal: () => setWalletModalVisible(true) }}
     >
+      <Header />
       <WalletModal
         visible={walletModalVisible}
         onClose={() => setWalletModalVisible(false)}

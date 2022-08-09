@@ -1,0 +1,42 @@
+.fixedHeader {
+  width: 100%;
+  z-index: 9;
+  padding: 0 48px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+}
+.header {
+  height: 56px;
+}
+
+.menus {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.menuItem {
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #ada1ff;
+  transition: all 0.3s ease;
+}
+.menuItem:hover {
+  color: #3e38d9;
+}
+.menuItem:not(:last-child) {
+  margin-right: 24px;
+}
+.menuItemActive {
+  color: #3e38d9;
+}
+
+.rightContent {
+}

@@ -1,0 +1,24 @@
+@font-face {
+  font-family: Lato;
+  src: url('/Lato-Regular.ttf');
+}
+@font-face {
+  font-family: Lato;
+  src: url('/Lato-Bold.ttf');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: NotoSansSC;
+  src: url('/NotoSansSC-Regular.otf');
+}
+@font-face {
+  font-family: NotoSansSC;
+  src: url('/NotoSansSC-Bold.otf');
+  font-weight: bold;
+}
+
+* {
+  font-family: 'PingFang SC', Lato, 'Microsoft YaHei', NotoSansSC, sans-serif;
+  /*font-weight: normal;*/
+}

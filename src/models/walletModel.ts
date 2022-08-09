@@ -59,6 +59,13 @@ export default () => {
       return '';
     }
   }, [accounts, wallet]);
+  const shortAccount = useMemo(() => {
+    if (!account) return '';
+    return `${account.substring(0, 5)}...${account.substring(
+      account.length - 5,
+      account.length,
+    )}`;
+  }, [account]);
 
   const connect = useCallback(
     async (walletType: WalletType) => {
@@ -109,6 +116,7 @@ export default () => {
     wallet,
     accounts,
     account,
+    shortAccount,
     connect,
     connecting,
     disconnect,

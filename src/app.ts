@@ -13,6 +13,7 @@ export const layout = () => {
     fixedHeader: true,
     // headerHeight: 48,
     primaryColor: '#5b4fff',
+    headerRender: false,
     menuHeaderRender: false,
   };
 };
