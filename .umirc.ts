@@ -7,28 +7,23 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: '@umijs/max',
+    title: 'fcc-story',
+    locale: true,
   },
   routes: [
     {
       path: '/',
-      redirect: '/home',
+      redirect: '/stories',
     },
     {
-      name: '首页',
-      path: '/home',
-      component: './Home',
-    },
-    {
-      name: '权限演示',
-      path: '/access',
-      component: './Access',
-    },
-    {
-      name: ' CRUD 示例',
-      path: '/table',
-      component: './Table',
+      name: 'stories',
+      path: '/stories',
+      component: './Stories',
     },
   ],
+  locale: {
+    default: 'en-US',
+    baseSeparator: '-',
+  },
   npmClient: 'yarn',
 });
