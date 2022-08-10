@@ -1,6 +1,13 @@
 import PhantomLogo from '@/assets/phantom-logo.png';
+import { getChains } from '@/services/api';
+import {
+  getTokenFromStorage,
+  getTokenMessage,
+  refreshToken,
+} from '@/utils/token';
 import { WalletProvider, WalletType } from '@/wallets';
 import { PhantomWalletProvider } from '@/wallets/Phantom';
+import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default () => {
@@ -42,6 +49,9 @@ export default () => {
 
   const [connecting, setConnecting] = useState(false);
 
+  const { data: chains } = useRequest(async () => {
+    return (await getChains()).chains;
+  });
   const [wallet, setWallet] = useState<{
     name: string;
     icon: string;
@@ -111,6 +121,25 @@ export default () => {
     }
   }, []);
 
+  const { data: token } = useRequest(
+    async () => {
+      if (chains && chains.length > 0 && !!account && wallet) {
+        const chain = chains[0].type;
+        const token = await getTokenFromStorage(account, chain);
+        if (!token) {
+          const message = getTokenMessage();
+          const signature = await wallet.provider.signMessage(message);
+          return refreshToken(account, chain, message, signature);
+        } else {
+          return token;
+        }
+      }
+    },
+    {
+      refreshDeps: [chains, account, wallet],
+    },
+  );
+
   return {
     Wallets,
     wallet,
@@ -120,5 +149,6 @@ export default () => {
     connect,
     connecting,
     disconnect,
+    token,
   };
 };

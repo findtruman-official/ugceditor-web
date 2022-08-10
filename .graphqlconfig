@@ -1,0 +1,14 @@
+{
+  "name": "fcc-story",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Default GraphQL Endpoint": {
+        "url": "http://10.243.248.69:3000/graphql",
+        "headers": {
+        },
+        "introspect": false
+      }
+    }
+  }
+}

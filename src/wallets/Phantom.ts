@@ -5,6 +5,7 @@ import {
   WalletType,
 } from '@/wallets/index';
 import { message } from 'antd';
+import { encodeBase64 } from 'tweetnacl-util';
 
 export class PhantomWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Phantom;
@@ -86,6 +87,10 @@ export class PhantomWalletProvider implements WalletProvider {
     if (!this.provider) throw new Error('Provider Unavailable');
 
     const encodedMessage = new TextEncoder().encode(message);
-    return await this.provider.signMessage(encodedMessage, 'utf8');
+    const { signature } = await this.provider.signMessage(
+      encodedMessage,
+      'utf8',
+    );
+    return encodeBase64(signature);
   }
 }

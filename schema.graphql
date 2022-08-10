@@ -1,0 +1,37 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Chain {
+    "chain readable name"
+    name: String!
+    "chain identifier"
+    type: String!
+}
+
+type Jwt {
+    expiresIn: Int!
+    token: String!
+}
+
+type Mutation {
+    login(account: String!, chain: String!, message: String!, signature: String!): Jwt!
+}
+
+type Query {
+    chains: [Chain!]!
+    currentUser: User
+    stories: [Story!]!
+}
+
+type Story {
+    id: Float!
+}
+
+type User {
+    account: String!
+    chain: String!
+}
