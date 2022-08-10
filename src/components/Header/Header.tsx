@@ -1,13 +1,15 @@
 import RightContent from '@/components/RightContent/RightContent';
 import { useIntl } from '@@/plugin-locale';
 import { useEffect } from 'react';
-import { history, useLocation } from 'umi';
+import { history, useLocation, useModel } from 'umi';
 import styles from './Header.less';
 
 export default function Header() {
   const { formatMessage } = useIntl();
   const location = useLocation();
   const { pathname } = location;
+
+  const { storyName } = useModel('storyModel');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -40,6 +42,11 @@ export default function Header() {
           >
             {formatMessage({ id: 'menu.writer' })}
           </div>
+          {!!storyName && (
+            <div className={[styles.menuItem, styles.menuItemActive].join(' ')}>
+              {storyName}
+            </div>
+          )}
         </div>
         <RightContent />
       </div>

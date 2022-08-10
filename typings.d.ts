@@ -24,5 +24,16 @@ declare global {
       account: string;
       chain: string;
     };
+
+    type ResultWrapper<T> = {
+      data: T;
+      code: number;
+      message: string;
+    };
+
+    type IpfsData = {
+      cid: string;
+      size: number;
+    };
   }
 }

@@ -1,14 +1,22 @@
-import { Image } from 'antd';
+import { history } from 'umi';
 import styles from './StoryCard.less';
 
 interface StoryCardProps {
+  id: number;
   img: string;
 }
 
-export default function StoryCard({ img }: StoryCardProps) {
+export default function StoryCard({ id, img }: StoryCardProps) {
   return (
-    <div>
-      <Image src={img} className={styles.storyCard} preview={false} />
-    </div>
+    <img
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        history.push(`/stories/story/${id}`);
+      }}
+      src={img}
+      className={styles.storyCard}
+      // preview={false}
+    />
   );
 }

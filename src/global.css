@@ -2,6 +2,7 @@
   font-family: Lato;
   src: url('/Lato-Regular.ttf');
 }
+
 @font-face {
   font-family: Lato;
   src: url('/Lato-Bold.ttf');
@@ -12,6 +13,7 @@
   font-family: NotoSansSC;
   src: url('/NotoSansSC-Regular.otf');
 }
+
 @font-face {
   font-family: NotoSansSC;
   src: url('/NotoSansSC-Bold.otf');
@@ -23,9 +25,29 @@
   /*font-weight: normal;*/
 }
 
-.ant-upload.ant-upload-select-picture-card {
+.create-story-modal .ant-upload.ant-upload-select-picture-card {
   width: 100% !important;
   height: 236px !important;
   margin-right: 0 !important;
   margin-bottom: 0 !important;
+}
+
+.publish-nft-modal .ant-upload.ant-upload-select-picture-card {
+  width: 172px !important;
+  height: 172px !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar,
+.ant-tabs-bottom > .ant-tabs-nav .ant-tabs-ink-bar,
+.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-ink-bar,
+.ant-tabs-bottom > div > .ant-tabs-nav .ant-tabs-ink-bar {
+  height: 4px !important;
+  border-radius: 12px !important;
+}
+
+.ant-tabs-large > .ant-tabs-nav .ant-tabs-tab {
+  font-size: 18px !important;
+  padding: 10px 0 !important;
 }

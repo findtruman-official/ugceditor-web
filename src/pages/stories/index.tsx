@@ -8,7 +8,11 @@ const Stories: React.FC = () => {
   const { formatMessage } = useIntl();
 
   return (
-    <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
+    <PageContainer
+      style={{ margin: '0 88px', minWidth: 1000 }}
+      title={false}
+      ghost
+    >
       <div className={styles.section}>
         <div className={styles.title}>
           {formatMessage({ id: 'stories.title.hot-stories' })}

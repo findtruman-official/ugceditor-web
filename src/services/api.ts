@@ -1,4 +1,5 @@
 import { client } from '@/services/index';
+import { request } from '@umijs/max';
 import { gql } from 'graphql-request';
 
 export const login = async (
@@ -65,3 +66,14 @@ export const getStories = async () => {
     }
   `);
 };
+
+export async function uploadJson<T>(data: T) {
+  return await request<API.IpfsData>(`/api/ipfs/json`, {
+    method: 'POST',
+    data,
+  });
+}
+
+export async function getJson<T>(cid: string) {
+  return await request<T>(`/api/ipfs/json/${cid}`, { method: 'GET' });
+}

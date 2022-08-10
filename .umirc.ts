@@ -21,6 +21,10 @@ export default defineConfig({
       component: './stories',
     },
     {
+      path: '/stories/story/:id',
+      component: './stories/story',
+    },
+    {
       name: 'writer',
       path: '/writer',
       component: './writer',
@@ -33,5 +37,13 @@ export default defineConfig({
   npmClient: 'yarn',
   theme: {
     'primary-color': '#3e38d9',
+  },
+  mfsu: false,
+  proxy: {
+    '/api': {
+      target: 'http://10.243.248.69:3000/',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
   },
 });

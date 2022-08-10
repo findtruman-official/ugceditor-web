@@ -16,9 +16,9 @@ export default function StoryCardList({
   const { formatMessage } = useIntl();
 
   return (
-    <Row gutter={[24, 24]}>
+    <Row gutter={[24, 24]} style={{ minWidth: 1000 }}>
       {createStory && (
-        <Col xxl={4} xl={6} lg={6} md={6} sm={8} xs={12}>
+        <Col xxl={4} xl={4} lg={6} md={6} sm={6} xs={6}>
           <div className={styles.createCard} onClick={() => onCreateStory?.()}>
             <PlusOutlined />
             <div>{formatMessage({ id: 'writer.new-story' })}</div>
@@ -26,8 +26,11 @@ export default function StoryCardList({
         </Col>
       )}
       {new Array(6).fill(0).map((e, index) => (
-        <Col xxl={4} xl={6} lg={6} md={6} sm={8} xs={12}>
-          <StoryCard img={`https://picsum.photos/200/300?random=${index}`} />
+        <Col key={index} xxl={4} xl={4} lg={6} md={6} sm={6} xs={6}>
+          <StoryCard
+            id={index}
+            img={`https://picsum.photos/200/300?random=${index}`}
+          />
         </Col>
       ))}
     </Row>

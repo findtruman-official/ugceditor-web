@@ -21,12 +21,14 @@ export default function CreateStoryModal({
 
   return (
     <Modal
+      className={'create-story-modal'}
       visible={visible}
       onCancel={onClose}
       title={null}
       closable={false}
       centered={true}
       footer={null}
+      width={550}
     >
       <div className={styles.header}>
         <Button shape={'circle'} icon={<LeftOutlined />} onClick={onClose} />
@@ -107,10 +109,11 @@ export default function CreateStoryModal({
         </span>
       </div>
       <Button
-        shape={'round'}
+        // shape={'round'}
         type={'primary'}
         block={true}
         onClick={form.submit}
+        size={'large'}
       >
         {formatMessage({ id: 'create-story-modal.create' })}
       </Button>
