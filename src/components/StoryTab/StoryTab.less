@@ -1,0 +1,33 @@
+@import '../../global';
+
+.container {
+  padding: 12px 0;
+}
+
+.chapterCard {
+  transition: all 0.2s ease;
+  width: 100%;
+  border-radius: 4px;
+  font-size: 16px;
+  border: 1px solid @theme-color-2;
+  background: @theme-color-1;
+  font-weight: bold;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.chapterCard:hover {
+  border: 1px solid @theme-color-6;
+  background: @theme-color-6;
+  color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.01);
+  box-shadow: 0 1px 2px -2px #00000029, 0 3px 6px #0000001f,
+    0 5px 12px 4px #00000017;
+}
+.chapterCard:active {
+  transform: scale(1);
+  box-shadow: none;
+}
+
+.chapterCard:not(:last-child) {
+  margin-bottom: 12px;
+}
