@@ -9,7 +9,7 @@ export default function Header() {
   const location = useLocation();
   const { pathname } = location;
 
-  const { storyName } = useModel('storyModel');
+  const { storyName, chapterName } = useModel('storyModel');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -43,8 +43,18 @@ export default function Header() {
             {formatMessage({ id: 'menu.writer' })}
           </div>
           {!!storyName && (
-            <div className={[styles.menuItem, styles.menuItemActive].join(' ')}>
+            <div
+              className={[
+                styles.menuItem,
+                !!chapterName ? '' : styles.menuItemActive,
+              ].join(' ')}
+            >
               {storyName}
+            </div>
+          )}
+          {!!chapterName && (
+            <div className={[styles.menuItem, styles.menuItemActive].join(' ')}>
+              {chapterName}
             </div>
           )}
         </div>

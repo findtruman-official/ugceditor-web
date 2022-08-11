@@ -21,8 +21,16 @@ export default defineConfig({
       component: './stories',
     },
     {
-      path: '/stories/story/:id',
+      path: '/story/:storyId',
       component: './stories/story',
+    },
+    {
+      path: '/story/:storyId/chapter/:chapterId',
+      component: './stories/story/chapter',
+    },
+    {
+      path: '/story/:storyId/chapter/:chapterId/edit',
+      component: './stories/story/chapter/edit',
     },
     {
       name: 'writer',

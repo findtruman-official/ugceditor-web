@@ -12,7 +12,7 @@ export default function StoryCard({ id, img }: StoryCardProps) {
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
-        history.push(`/stories/story/${id}`);
+        history.push(`/story/${id}`);
       }}
       src={img}
       className={styles.storyCard}

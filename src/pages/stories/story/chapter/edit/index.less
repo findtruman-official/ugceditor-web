@@ -1,0 +1,51 @@
+@import '../../../../../global';
+
+.header {
+  position: fixed;
+  top: 88px;
+  min-width: 1000px;
+  width: calc(100% - 256px);
+}
+
+.container {
+  padding: 0 48px;
+  width: 1000px;
+  margin: 24px auto;
+}
+
+.titleInput {
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: @theme-color-6;
+}
+
+.cmdButtonRow1 {
+  width: calc(100% - 256px);
+  min-width: 1000px;
+  position: fixed;
+  bottom: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cmdButtonRow2 {
+  width: calc(100% - 256px);
+  min-width: 1000px;
+  position: fixed;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cmdButton {
+}
+.cmdButton:not(:last-child) {
+  margin-right: 12px;
+}
+
+.promptTip {
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: bold;
+}

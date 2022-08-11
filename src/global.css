@@ -51,3 +51,13 @@
   font-size: 18px !important;
   padding: 10px 0 !important;
 }
+
+[contenteditable] {
+  outline: 0 solid transparent;
+}
+
+[contenteditable='true']:empty:before {
+  content: attr(placeholder);
+  display: block;
+  color: #aaa;
+}

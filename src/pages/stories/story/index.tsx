@@ -12,8 +12,8 @@ import styles from './index.less';
 
 const Story: React.FC = () => {
   const { formatMessage } = useIntl();
-  const match = useMatch('/stories/story/:id');
-  const { setStoryName } = useModel('storyModel');
+  const match = useMatch('/story/:storyId');
+  const { storyName, setStoryName } = useModel('storyModel');
   const [nftModalVisible, setNftModalVisible] = useState(false);
 
   useEffect(() => {
@@ -23,14 +23,14 @@ const Story: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (match?.params.id) {
+    if (match?.params.storyId) {
       setStoryName('Story A');
     }
   }, [match]);
 
   return (
     <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
-      <Helmet title={match?.params.id} />
+      <Helmet title={storyName} />
       <div className={styles.container}>
         <Row
           style={{ marginBottom: 24 }}

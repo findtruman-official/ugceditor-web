@@ -14,14 +14,26 @@
   font-weight: bold;
   padding: 8px 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .actionButton {
+    margin-left: 12px;
+  }
 }
 .chapterCard:hover {
-  border: 1px solid @theme-color-6;
-  background: @theme-color-6;
-  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid @theme-color-3;
+  background: @theme-color-2;
+  //color: rgba(255, 255, 255, 0.9);
   transform: scale(1.01);
   box-shadow: 0 1px 2px -2px #00000029, 0 3px 6px #0000001f,
     0 5px 12px 4px #00000017;
+
+  .actionButton {
+    margin-left: 12px;
+    //color: white;
+  }
 }
 .chapterCard:active {
   transform: scale(1);
