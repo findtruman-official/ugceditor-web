@@ -4,6 +4,8 @@ export default {
   'header.connect-wallet': '连接钱包',
   'stories.title.hot-stories': '热门故事',
   'stories.title.latest-stories': '最新故事',
+  'stories.no-story-tip': '暂无故事',
+  'stories.published-on': '故事发布在 {chain} 上',
   'writer.title.my-stories': '我的故事',
   'writer.new-story': '新故事',
   'create-story-modal.create': '创建',
@@ -31,6 +33,7 @@ export default {
   'story.delete-confirm-desc': '在保存之前您可以撤销删除。',
   'story.delete-confirm.confirm': '删除',
   'story.delete-confirm.cancel': '取消',
+  'story.story-published': '您的故事已发布！',
   'chapter.title.placeholder': '起一个标题',
   'chapter.content.placeholder': '你的故事...',
   'chapter.save-draft': '保存草稿',
@@ -48,4 +51,5 @@ export default {
   'publish-nft-modal.nft-total-supply.require': '请输入发行量！',
   'publish-nft-modal.nft-reserved-amount': '作者保留量 (For Rewards)',
   'publish-nft-modal.nft-reserved-amount.require': '请输入作者保留量！',
+  'request-failed': '请求失败！',
 };

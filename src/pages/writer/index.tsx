@@ -1,12 +1,15 @@
 import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import StoryCardList from '@/components/StoryCard/StoryCardList';
 import { useIntl } from '@@/plugin-locale';
+import { useModel } from '@@/plugin-model';
 import { PageContainer } from '@ant-design/pro-components';
 import React, { useState } from 'react';
 import styles from './index.less';
 
 const Writer: React.FC = () => {
   const { formatMessage } = useIntl();
+  const { myStories, gettingMyStories } = useModel('storyModel');
+
   const [createModalVisible, setCreateModalVisible] = useState(false);
 
   return (
@@ -16,6 +19,8 @@ const Writer: React.FC = () => {
           {formatMessage({ id: 'writer.title.my-stories' })}
         </div>
         <StoryCardList
+          stories={myStories}
+          loading={gettingMyStories}
           createStory={true}
           onCreateStory={() => setCreateModalVisible(true)}
         />

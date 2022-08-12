@@ -1,15 +1,8 @@
+import ImageUploader from '@/components/ImageUploader/ImageUploader';
 import { useIntl } from '@@/plugin-locale';
-import { LeftOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Col,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Row,
-  Upload,
-} from 'antd';
+import { LeftOutlined } from '@ant-design/icons';
+import { Button, Col, Form, Input, InputNumber, Modal, Row } from 'antd';
+import { useModel } from 'umi';
 import styles from './PublishNftModal.less';
 
 interface PublishNftModalProps {
@@ -23,6 +16,7 @@ export default function PublishNftModal({
 }: PublishNftModalProps) {
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
+  const { token } = useModel('walletModel');
 
   return (
     <Modal
@@ -53,19 +47,11 @@ export default function PublishNftModal({
                 },
               ]}
             >
-              <Upload
-                maxCount={1}
-                showUploadList={false}
-                listType="picture-card"
-                style={{ width: '100%', height: 260 }}
-              >
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>
-                    {formatMessage({ id: 'create-story-modal.upload-cover' })}
-                  </div>
-                </div>
-              </Upload>
+              <ImageUploader
+                aspect={1}
+                label={formatMessage({ id: 'create-story-modal.upload-cover' })}
+                token={token}
+              />
             </Form.Item>
           </Col>
           <Col flex={1}>

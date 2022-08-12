@@ -31,6 +31,10 @@
   margin-right: 0 !important;
   margin-bottom: 0 !important;
 }
+.create-story-modal .ant-upload-list-picture-card-container {
+  width: 100% !important;
+  height: 236px !important;
+}
 
 .publish-nft-modal .ant-upload.ant-upload-select-picture-card {
   width: 172px !important;
@@ -60,4 +64,10 @@
   content: attr(placeholder);
   display: block;
   color: #aaa;
+}
+
+.ant-skeleton-element .ant-skeleton-image {
+  width: 160px !important;
+  height: 240px !important;
+  border-radius: 4px;
 }

@@ -150,5 +150,6 @@ export default () => {
     connecting,
     disconnect,
     token,
+    chains,
   };
 };

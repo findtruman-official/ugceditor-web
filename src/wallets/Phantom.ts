@@ -1,9 +1,12 @@
+import IDL from '@/assets/solana_programs.json';
 import {
   WalletAutoConnectType,
   WalletEvents,
   WalletProvider,
   WalletType,
 } from '@/wallets/index';
+import { AnchorProvider, Program, utils, web3 } from '@project-serum/anchor';
+import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { message } from 'antd';
 import { encodeBase64 } from 'tweetnacl-util';
 
@@ -92,5 +95,54 @@ export class PhantomWalletProvider implements WalletProvider {
       'utf8',
     );
     return encodeBase64(signature);
+  }
+
+  async publishStory(cid: string, factoryAddress: string) {
+    const wallet = window.solana;
+    const network = clusterApiUrl('devnet');
+    const connection = new Connection(network, 'recent');
+    const provider = new AnchorProvider(connection, wallet, {
+      preflightCommitment: 'recent',
+    });
+    const programId = new PublicKey(factoryAddress);
+    const factoryKey = (
+      await PublicKey.findProgramAddress(
+        [Buffer.from(utils.bytes.utf8.encode('factory'))],
+        programId,
+      )
+    )[0];
+
+    const program = new Program(IDL as any, programId, provider);
+
+    const factoryAccountData = await program.account.storyFactory.fetch(
+      factoryKey,
+    );
+
+    const storyId = factoryAccountData.nextId;
+    const storyKey = (
+      await web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from(utils.bytes.utf8.encode('story-')),
+          storyId.toArrayLike(Uint8Array, 'le', 8),
+        ],
+        program.programId,
+      )
+    )[0];
+
+    const { publicKey } = await this.provider.connect();
+
+    await program.methods
+      .publishStory(cid) // CID 表示故事内容在IPFS中的ContentId
+      .accounts({
+        author: publicKey,
+        factory: factoryKey,
+        story: storyKey,
+        systemProgram: web3.SystemProgram.programId, // 采用ChainInfo中的factoryAddress
+      })
+      // .signers([])
+      .rpc({});
+
+    const storyData = await program.account.story.fetch(storyKey);
+    console.log('storyData', storyData);
   }
 }

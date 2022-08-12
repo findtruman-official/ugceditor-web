@@ -4,6 +4,8 @@ export default {
   'header.connect-wallet': 'Connect Wallet',
   'stories.title.hot-stories': 'Hot Stories',
   'stories.title.latest-stories': 'Latest Stories',
+  'stories.no-story-tip': 'There is no story yet.',
+  'stories.published-on': 'The story was published on {chain}',
   'writer.title.my-stories': 'My Stories',
   'writer.new-story': 'New Story',
   'create-story-modal.create': 'Create',
@@ -31,6 +33,7 @@ export default {
   'story.delete-confirm-desc': 'You are able to Undo Delete before saving.',
   'story.delete-confirm.confirm': 'Delete',
   'story.delete-confirm.cancel': 'Cancel',
+  'story.story-published': 'Your story was published!',
   'chapter.title.placeholder': 'Give it a title',
   'chapter.content.placeholder': 'Your story here...',
   'chapter.save-draft': 'Save Draft',
@@ -49,4 +52,5 @@ export default {
   'publish-nft-modal.nft-reserved-amount':
     'Writer Reserved Amount (For Rewards)',
   'publish-nft-modal.nft-reserved-amount.require': 'Please enter!',
+  'request-failed': 'Request Failed!',
 };

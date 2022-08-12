@@ -53,5 +53,10 @@ export default defineConfig({
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
+    '/ipfs': {
+      target: 'http://10.243.248.69:3000/',
+      changeOrigin: true,
+      pathRewrite: { '^/ipfs': '/ipfs' },
+    },
   },
 });

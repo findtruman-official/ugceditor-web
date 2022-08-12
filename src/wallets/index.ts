@@ -35,4 +35,6 @@ export interface WalletProvider {
   disconnect(): Promise<void>;
 
   signMessage(message: any): Promise<any>;
+
+  publishStory(cid: string, factoryAddress: string): Promise<void>;
 }

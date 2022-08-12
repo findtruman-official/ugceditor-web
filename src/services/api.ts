@@ -39,6 +39,7 @@ export const getChains = async () => {
       chains {
         name
         type
+        factoryAddress
       }
     }
   `);
@@ -57,20 +58,46 @@ export const currentUser = async () => {
   `);
 };
 
-export const getStories = async () => {
-  return await client.request<{ stories: API.Story[] }>(gql`
-    query stories {
-      stories {
-        id
+export const getStories = async (
+  sort: 'Hotest' | 'Latest',
+  author?: string[],
+  chain?: string[],
+) => {
+  return await client.request<{ stories: API.Story[] }>(
+    gql`
+      query stories($author: [String!], $chain: [String!], $sort: StorySort) {
+        stories(author: $author, chain: $chain, sort: $sort) {
+          author
+          chain
+          chainStoryId
+          nft {
+            name
+          }
+          chainInfo {
+            name
+            type
+          }
+          contentHash
+          createTime
+          onChainAddr
+          info {
+            id
+            cover
+          }
+        }
       }
-    }
-  `);
+    `,
+    { author, chain, sort },
+  );
 };
 
-export async function uploadJson<T>(data: T) {
+export async function uploadJson<T>(data: T, token: string) {
   return await request<API.IpfsData>(`/api/ipfs/json`, {
     method: 'POST',
     data,
+    headers: {
+      'x-token': token,
+    },
   });
 }
 

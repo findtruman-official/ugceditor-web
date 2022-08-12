@@ -1,10 +1,10 @@
+import ImageUploader from '@/components/ImageUploader/ImageUploader';
+import { uploadJson } from '@/services/api';
+import { useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
-import {
-  InfoCircleOutlined,
-  LeftOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
-import { Button, Col, Form, Input, Modal, Row, Upload } from 'antd';
+import { InfoCircleOutlined, LeftOutlined } from '@ant-design/icons';
+import { useRequest } from 'ahooks';
+import { Button, Col, Form, Input, message, Modal, Row } from 'antd';
 import styles from './CreateStoryModal.less';
 
 interface CreateStoryModalProps {
@@ -19,11 +19,51 @@ export default function CreateStoryModal({
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
 
+  const { token, wallet, chains } = useModel('walletModel');
+  const { refreshMyStories, refreshLatestStories, refreshHottestStories } =
+    useModel('storyModel');
+
+  const { loading: publishing, run: publishStory } = useRequest(
+    async (values: any) => {
+      if (!wallet || !chains?.[0]) return;
+      try {
+        const currentTime = new Date().valueOf();
+        const { cid } = await uploadJson<API.StoryDetail>(
+          {
+            title: values.title,
+            cover: values.cover,
+            description: values.description,
+            chapters: [],
+            createAt: currentTime,
+            updateAt: currentTime,
+            version: '1',
+          },
+          token,
+        );
+
+        await wallet.provider.publishStory(cid, chains[0].factoryAddress);
+
+        message.success(formatMessage({ id: 'story.story-published' }));
+        refreshMyStories();
+        refreshHottestStories();
+        refreshLatestStories();
+        form.resetFields();
+        onClose();
+      } catch (e) {
+        console.log(e);
+        message.error(formatMessage({ id: 'request-failed' }));
+      }
+    },
+    { manual: true },
+  );
+
   return (
     <Modal
       className={'create-story-modal'}
       visible={visible}
-      onCancel={onClose}
+      onCancel={() => {
+        !publishing && onClose();
+      }}
       title={null}
       closable={false}
       centered={true}
@@ -31,14 +71,20 @@ export default function CreateStoryModal({
       width={550}
     >
       <div className={styles.header}>
-        <Button shape={'circle'} icon={<LeftOutlined />} onClick={onClose} />
+        <Button
+          shape={'circle'}
+          icon={<LeftOutlined />}
+          onClick={() => {
+            !publishing && onClose();
+          }}
+        />
         <div>{formatMessage({ id: 'writer.new-story' })}</div>
       </div>
-      <Form form={form} layout={'vertical'}>
+      <Form form={form} layout={'vertical'} onFinish={publishStory}>
         <Row gutter={24}>
           <Col span={9}>
             <Form.Item
-              name={'img'}
+              name={'cover'}
               rules={[
                 {
                   required: true,
@@ -48,24 +94,18 @@ export default function CreateStoryModal({
                 },
               ]}
             >
-              <Upload
-                maxCount={1}
-                showUploadList={false}
-                listType="picture-card"
-                style={{ width: '100%', height: 260 }}
-              >
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>
-                    {formatMessage({ id: 'create-story-modal.upload-cover' })}
-                  </div>
-                </div>
-              </Upload>
+              <ImageUploader
+                aspect={2 / 3}
+                label={formatMessage({
+                  id: 'create-story-modal.upload-cover',
+                })}
+                token={token}
+              />
             </Form.Item>
           </Col>
           <Col span={15}>
             <Form.Item
-              name={'name'}
+              name={'title'}
               label={formatMessage({
                 id: 'create-story-modal.story-name',
               })}
@@ -81,7 +121,7 @@ export default function CreateStoryModal({
               <Input />
             </Form.Item>
             <Form.Item
-              name={'desc'}
+              name={'description'}
               label={formatMessage({
                 id: 'create-story-modal.story-description',
               })}
@@ -104,16 +144,16 @@ export default function CreateStoryModal({
         <span>
           {formatMessage(
             { id: 'create-story-modal.deploy-tip' },
-            { chain: 'xxx' },
+            { chain: chains?.[0].name || '' },
           )}
         </span>
       </div>
       <Button
-        // shape={'round'}
         type={'primary'}
         block={true}
         onClick={form.submit}
         size={'large'}
+        loading={publishing}
       >
         {formatMessage({ id: 'create-story-modal.create' })}
       </Button>
