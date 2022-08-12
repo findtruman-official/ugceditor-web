@@ -22,7 +22,7 @@ declare global {
       author: string;
       chain: string;
       chainInfo: Chain;
-      chainStoryId: Story;
+      chainStoryId: string;
       contentHash: string;
       info?: StoryInfo;
       nft?: NftSale;
@@ -37,30 +37,36 @@ declare global {
       chapters: StoryChapter[];
       contentHash: string;
       cover: string;
-      createAt: number;
+      createAt: string;
       description: string;
       id: number;
       title: string;
-      updateAt: number;
+      updateAt: string;
     };
 
-    type StoryChapter = {};
+    type StoryChapter = {
+      id: number;
+      name: string;
+      content: string;
+      createAt: string;
+      updateAt: string;
+    };
 
     type StoryDetail = {
       title: string;
       cover: string;
       description: string;
       chapters: ChapterDetail[];
-      createAt: number;
-      updateAt: number;
+      createAt: string | number;
+      updateAt: string | number;
       version: string;
     };
 
     type ChapterDetail = {
       name: string;
       content: string;
-      createAt: number;
-      updateAt: number;
+      createAt: string;
+      updateAt: string;
     };
 
     type NftSale = {

@@ -71,3 +71,9 @@
   height: 240px !important;
   border-radius: 4px;
 }
+
+.story-detail .ant-skeleton-element .ant-skeleton-image {
+  width: 320px !important;
+  height: 480px !important;
+  border-radius: 4px;
+}

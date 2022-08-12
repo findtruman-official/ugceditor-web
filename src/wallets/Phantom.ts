@@ -5,7 +5,13 @@ import {
   WalletProvider,
   WalletType,
 } from '@/wallets/index';
-import { AnchorProvider, Program, utils, web3 } from '@project-serum/anchor';
+import {
+  AnchorProvider,
+  BN,
+  Program,
+  utils,
+  web3,
+} from '@project-serum/anchor';
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { message } from 'antd';
 import { encodeBase64 } from 'tweetnacl-util';
@@ -22,9 +28,16 @@ export class PhantomWalletProvider implements WalletProvider {
   }: WalletEvents) {
     this.provider = this.getProvider<any>();
     if (this.provider) {
-      this.provider.on('connect', (publicKey: string) => {
+      this.provider.on('connect', async (publicKey: string) => {
         this.setAutoConnect(WalletAutoConnectType.True);
         onConnect?.(publicKey.toString());
+
+        const wallet = window.solana;
+        const network = clusterApiUrl('devnet');
+        const connection = new Connection(network, 'recent');
+        this.anchorProvider = new AnchorProvider(connection, wallet, {
+          preflightCommitment: 'recent',
+        });
       });
       this.provider.on('disconnect', () => {
         onDisconnect?.();
@@ -97,13 +110,9 @@ export class PhantomWalletProvider implements WalletProvider {
     return encodeBase64(signature);
   }
 
-  async publishStory(cid: string, factoryAddress: string) {
-    const wallet = window.solana;
-    const network = clusterApiUrl('devnet');
-    const connection = new Connection(network, 'recent');
-    const provider = new AnchorProvider(connection, wallet, {
-      preflightCommitment: 'recent',
-    });
+  anchorProvider: any;
+
+  async getProgram(factoryAddress: string) {
     const programId = new PublicKey(factoryAddress);
     const factoryKey = (
       await PublicKey.findProgramAddress(
@@ -111,15 +120,12 @@ export class PhantomWalletProvider implements WalletProvider {
         programId,
       )
     )[0];
+    const program = new Program(IDL as any, programId, this.anchorProvider);
+    return { factoryKey, program };
+  }
 
-    const program = new Program(IDL as any, programId, provider);
-
-    const factoryAccountData = await program.account.storyFactory.fetch(
-      factoryKey,
-    );
-
-    const storyId = factoryAccountData.nextId;
-    const storyKey = (
+  async getStoryKey(program: any, storyId: BN) {
+    return (
       await web3.PublicKey.findProgramAddress(
         [
           Buffer.from(utils.bytes.utf8.encode('story-')),
@@ -128,6 +134,16 @@ export class PhantomWalletProvider implements WalletProvider {
         program.programId,
       )
     )[0];
+  }
+
+  async publishStory(cid: string, factoryAddress: string) {
+    const { factoryKey, program } = await this.getProgram(factoryAddress);
+
+    const factoryAccountData = await program.account.storyFactory.fetch(
+      factoryKey,
+    );
+    const storyId = factoryAccountData.nextId;
+    const storyKey = await this.getStoryKey(program, storyId);
 
     const { publicKey } = await this.provider.connect();
 
@@ -141,8 +157,26 @@ export class PhantomWalletProvider implements WalletProvider {
       })
       // .signers([])
       .rpc({});
+  }
 
-    const storyData = await program.account.story.fetch(storyKey);
-    console.log('storyData', storyData);
+  async updateStory(id: number, cid: string, factoryAddress: string) {
+    const { program } = await this.getProgram(factoryAddress);
+
+    const storyId = new BN(id);
+    const storyKey = await this.getStoryKey(program, storyId);
+
+    const { publicKey } = await this.provider.connect();
+
+    await program.methods
+      .updateStory(storyId, cid) // CID 表示故事内容在IPFS中的ContentId
+      .accounts({
+        author: publicKey,
+        story: storyKey,
+      })
+      // .signers([])
+      .rpc({});
+
+    // const storyData = await program.account.story.fetch(storyKey);
+    // console.log('storyData', storyData);
   }
 }

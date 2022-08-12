@@ -1,6 +1,6 @@
 import RightContent from '@/components/RightContent/RightContent';
 import { useIntl } from '@@/plugin-locale';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { history, useLocation, useModel } from 'umi';
 import styles from './Header.less';
 
@@ -9,11 +9,29 @@ export default function Header() {
   const location = useLocation();
   const { pathname } = location;
 
-  const { storyName, chapterName } = useModel('storyModel');
+  const { storyId, currentStory, currentChapter } = useModel(
+    'storyModel',
+    (model) => ({
+      storyId: model.storyId,
+      currentStory: model.currentStory,
+      currentChapter: model.currentChapter,
+    }),
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  const storyPage = useMemo(() => {
+    return /^\/story\/[a-zA-Z\d]+/g.test(pathname);
+  }, [pathname]);
+
+  const chapterPage = useMemo(() => {
+    return /^\/story\/[a-zA-Z\d]+\/chapter\/[a-zA-Z\d]+/g.test(pathname);
+  }, [pathname]);
+
+  console.log('storyPage', storyPage);
+  console.log('chapterPage', chapterPage);
 
   return (
     <>
@@ -42,19 +60,22 @@ export default function Header() {
           >
             {formatMessage({ id: 'menu.writer' })}
           </div>
-          {!!storyName && (
+          {storyPage && !!currentStory && (
             <div
               className={[
                 styles.menuItem,
-                !!chapterName ? '' : styles.menuItemActive,
+                chapterPage ? '' : styles.menuItemActive,
               ].join(' ')}
+              onClick={() => {
+                chapterPage && history.push(`/story/${storyId}`);
+              }}
             >
-              {storyName}
+              {currentStory.info.title}
             </div>
           )}
-          {!!chapterName && (
+          {chapterPage && !!currentChapter && (
             <div className={[styles.menuItem, styles.menuItemActive].join(' ')}>
-              {chapterName}
+              {currentChapter.name}
             </div>
           )}
         </div>

@@ -1,16 +1,34 @@
-import { getStories } from '@/services/api';
+import { getChapter, getStories, getStory } from '@/services/api';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
 import { useModel } from 'umi';
 
+// @ts-ignore
 export default () => {
   const { account, chains } = useModel('walletModel', (state) => ({
     account: state.account,
     chains: state.chains,
   }));
 
-  const [storyName, setStoryName] = useState('');
-  const [chapterName, setChapterName] = useState('');
+  const [storyId, setStoryId] = useState('');
+  const [chapterId, setChapterId] = useState(0);
+
+  const { data: currentStory, loading: gettingCurrentStory } = useRequest(
+    async () => {
+      if (!!storyId && !!chains?.[0]) {
+        return (await getStory(chains[0].type, storyId)).story;
+      }
+    },
+    { refreshDeps: [storyId, chains] },
+  );
+  const { data: currentChapter, loading: gettingCurrentChapter } = useRequest(
+    async () => {
+      if (!!chapterId) {
+        return (await getChapter(chapterId)).chapter;
+      }
+    },
+    { refreshDeps: [chapterId] },
+  );
 
   const {
     data: hottestStories,
@@ -34,7 +52,7 @@ export default () => {
     refresh: refreshMyStories,
   } = useRequest(
     async () => {
-      if (!!account || !chains) {
+      if (!!account && !!chains?.[0]) {
         return (await getStories('Latest', [account], [chains[0].type]))
           .stories;
       }
@@ -43,10 +61,14 @@ export default () => {
   );
 
   return {
-    storyName,
-    setStoryName,
-    chapterName,
-    setChapterName,
+    storyId,
+    setStoryId,
+    chapterId,
+    setChapterId,
+    currentStory,
+    gettingCurrentStory,
+    currentChapter,
+    gettingCurrentChapter,
     hottestStories,
     gettingHottestStories,
     latestStories,

@@ -5,7 +5,7 @@ import { history } from 'umi';
 import styles from './StoryCard.less';
 
 interface StoryCardProps {
-  id?: number;
+  id?: string;
   img: string;
   chain: string;
 }

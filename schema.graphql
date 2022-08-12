@@ -71,6 +71,7 @@ type StoryChapter {
     content: String!
     createAt: DateTime!
     id: Int!
+    info: StoryInfo!
     name: String!
     updateAt: DateTime!
 }

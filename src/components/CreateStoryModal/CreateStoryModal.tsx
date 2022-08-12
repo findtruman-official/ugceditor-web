@@ -1,18 +1,25 @@
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
-import { uploadJson } from '@/services/api';
+import { getJson, uploadJson } from '@/services/api';
 import { useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { InfoCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Col, Form, Input, message, Modal, Row } from 'antd';
+import { useEffect } from 'react';
 import styles from './CreateStoryModal.less';
 
 interface CreateStoryModalProps {
+  id?: number;
+  update?: boolean;
+  contentHash?: string;
   visible: boolean;
   onClose: () => void;
 }
 
 export default function CreateStoryModal({
+  id,
+  update = false,
+  contentHash,
   visible,
   onClose,
 }: CreateStoryModalProps) {
@@ -22,6 +29,27 @@ export default function CreateStoryModal({
   const { token, wallet, chains } = useModel('walletModel');
   const { refreshMyStories, refreshLatestStories, refreshHottestStories } =
     useModel('storyModel');
+
+  const { data: initialData } = useRequest(
+    async () => {
+      if (!!contentHash) {
+        return await getJson<API.StoryDetail>(contentHash);
+      }
+    },
+    {
+      refreshDeps: [contentHash],
+    },
+  );
+
+  useEffect(() => {
+    if (!!initialData) {
+      form.setFieldsValue({
+        cover: initialData.cover,
+        title: initialData.title,
+        description: initialData.description,
+      });
+    }
+  }, [initialData]);
 
   const { loading: publishing, run: publishStory } = useRequest(
     async (values: any) => {
@@ -33,17 +61,29 @@ export default function CreateStoryModal({
             title: values.title,
             cover: values.cover,
             description: values.description,
-            chapters: [],
-            createAt: currentTime,
+            chapters: initialData?.chapters || [],
+            createAt: initialData?.createAt || currentTime,
             updateAt: currentTime,
             version: '1',
           },
           token,
         );
 
-        await wallet.provider.publishStory(cid, chains[0].factoryAddress);
+        if (update) {
+          await wallet.provider.updateStory(
+            id!!,
+            cid,
+            chains[0].factoryAddress,
+          );
+        } else {
+          await wallet.provider.publishStory(cid, chains[0].factoryAddress);
+        }
 
-        message.success(formatMessage({ id: 'story.story-published' }));
+        message.success(
+          formatMessage({
+            id: update ? 'story.story-updated' : 'story.story-published',
+          }),
+        );
         refreshMyStories();
         refreshHottestStories();
         refreshLatestStories();
@@ -78,7 +118,11 @@ export default function CreateStoryModal({
             !publishing && onClose();
           }}
         />
-        <div>{formatMessage({ id: 'writer.new-story' })}</div>
+        <div>
+          {formatMessage({
+            id: update ? 'writer.edit-story' : 'writer.new-story',
+          })}
+        </div>
       </div>
       <Form form={form} layout={'vertical'} onFinish={publishStory}>
         <Row gutter={24}>
@@ -134,7 +178,7 @@ export default function CreateStoryModal({
                 },
               ]}
             >
-              <Input.TextArea showCount={true} maxLength={1000} rows={5} />
+              <Input.TextArea showCount={true} maxLength={2000} rows={5} />
             </Form.Item>
           </Col>
         </Row>
@@ -143,7 +187,11 @@ export default function CreateStoryModal({
         <InfoCircleOutlined />
         <span>
           {formatMessage(
-            { id: 'create-story-modal.deploy-tip' },
+            {
+              id: update
+                ? 'create-story-modal.deployed-tip'
+                : 'create-story-modal.deploy-tip',
+            },
             { chain: chains?.[0].name || '' },
           )}
         </span>
@@ -155,7 +203,11 @@ export default function CreateStoryModal({
         size={'large'}
         loading={publishing}
       >
-        {formatMessage({ id: 'create-story-modal.create' })}
+        {formatMessage({
+          id: update
+            ? 'create-story-modal.update'
+            : 'create-story-modal.create',
+        })}
       </Button>
     </Modal>
   );

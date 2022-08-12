@@ -91,6 +91,66 @@ export const getStories = async (
   );
 };
 
+export const getStory = async (chain: string, chainStoryId: string) => {
+  return await client.request<{ story: API.Story }>(
+    gql`
+      query story($chain: String!, $chainStoryId: String!) {
+        story(chain: $chain, chainStoryId: $chainStoryId) {
+          author
+          chainInfo {
+            name
+            type
+          }
+          chainStoryId
+          contentHash
+          info {
+            chain
+            chainStoryId
+            id
+            title
+            cover
+            description
+            chapters {
+              id
+              name
+            }
+            createAt
+          }
+          nft {
+            price
+            uriPrefix
+          }
+          createTime
+        }
+      }
+    `,
+    {
+      chain,
+      chainStoryId,
+    },
+  );
+};
+
+export const getChapter = async (id: number) => {
+  return await client.request<{ chapter: API.StoryChapter }>(
+    gql`
+      query chapter($id: Int!) {
+        chapter(id: $id) {
+          id
+          name
+          content
+          createAt
+          updateAt
+          info {
+            chainStoryId
+          }
+        }
+      }
+    `,
+    { id },
+  );
+};
+
 export async function uploadJson<T>(data: T, token: string) {
   return await request<API.IpfsData>(`/api/ipfs/json`, {
     method: 'POST',

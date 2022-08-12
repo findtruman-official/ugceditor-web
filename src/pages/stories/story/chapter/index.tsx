@@ -14,17 +14,27 @@ import styles from './index.less';
 const Chapter: React.FC = () => {
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId/chapter/:chapterId');
-  const { chapterName, setChapterName } = useModel('storyModel');
+  const { currentChapter, setChapterId, setStoryId } = useModel(
+    'storyModel',
+    (model) => ({
+      currentChapter: model.currentChapter,
+      setChapterId: model.setChapterId,
+      setStoryId: model.setStoryId,
+    }),
+  );
 
   useEffect(() => {
     return () => {
-      setChapterName('');
+      setChapterId(0);
     };
   }, []);
 
   useEffect(() => {
-    if (match?.params.storyId) {
-      setChapterName('Chapter A');
+    if (match?.params.storyId && match?.params.chapterId) {
+      setStoryId(match?.params.storyId || '');
+      setChapterId(match?.params.chapterId || 0);
+    } else {
+      history.push('/');
     }
   }, [match]);
 
@@ -34,7 +44,7 @@ const Chapter: React.FC = () => {
       title={false}
       ghost
     >
-      <Helmet title={chapterName} />
+      <Helmet title={currentChapter?.name} />
       <div className={styles.header}>
         <Button
           shape={'circle'}

@@ -43,7 +43,7 @@ export default function StoryCardList({
         stories.map((e, index) => (
           <Col key={index} span={4}>
             <StoryCard
-              id={e.info?.id}
+              id={e.chainStoryId}
               img={`/ipfs/file/${e.info?.cover}`}
               chain={e.chainInfo.name}
             />

@@ -1,4 +1,7 @@
-// 示例方法，没有实际意义
-export function trim(str: string) {
-  return str.trim();
+export function shortenAccount(account: string) {
+  if (!account) return '';
+  return `${account.substring(0, 5)}...${account.substring(
+    account.length - 5,
+    account.length,
+  )}`;
 }

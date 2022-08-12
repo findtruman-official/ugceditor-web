@@ -3,11 +3,16 @@ import { Button, Col, InputNumber, Row } from 'antd';
 import styles from './NftCard.less';
 
 interface NftCardProps {
+  isAuthor: boolean;
   published: boolean;
   onPublish: () => void;
 }
 
-export default function NftCard({ published, onPublish }: NftCardProps) {
+export default function NftCard({
+  isAuthor,
+  published,
+  onPublish,
+}: NftCardProps) {
   const { formatMessage } = useIntl();
   return (
     <div className={styles.container}>

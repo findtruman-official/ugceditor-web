@@ -1,5 +1,6 @@
 import PhantomLogo from '@/assets/phantom-logo.png';
 import { getChains } from '@/services/api';
+import { shortenAccount } from '@/utils/format';
 import {
   getTokenFromStorage,
   getTokenMessage,
@@ -70,11 +71,7 @@ export default () => {
     }
   }, [accounts, wallet]);
   const shortAccount = useMemo(() => {
-    if (!account) return '';
-    return `${account.substring(0, 5)}...${account.substring(
-      account.length - 5,
-      account.length,
-    )}`;
+    return shortenAccount(account);
   }, [account]);
 
   const connect = useCallback(

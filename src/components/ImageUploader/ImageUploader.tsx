@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Upload, UploadFile } from 'antd';
 import ImgCrop from 'antd-img-crop';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ImageUploaderProps {
   aspect: number;
@@ -20,6 +20,19 @@ export default function ImageUploader({
 }: ImageUploaderProps) {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
+  useEffect(() => {
+    if (value) {
+      setFileList([
+        {
+          uid: '-1',
+          name: 'image.png',
+          status: 'done',
+          url: `/ipfs/file/${value}`,
+        },
+      ]);
+    }
+  }, [value]);
+
   return (
     <ImgCrop aspect={aspect} rotate>
       <Upload
@@ -36,6 +49,7 @@ export default function ImageUploader({
           window.open(`/ipfs/file/${file.response.cid}`);
         }}
         onChange={({ fileList: newFileList }) => {
+          console.log(newFileList);
           setFileList(newFileList);
           if (newFileList[0]?.response?.cid) {
             onChange?.(newFileList[0]?.response?.cid);

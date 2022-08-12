@@ -4,9 +4,62 @@ import { Modal } from 'antd';
 import { history } from 'umi';
 import styles from './StoryTab.less';
 
-interface StoryTabProps {}
+interface StoryTabProps {
+  isAuthor: boolean;
+  storyId: string;
+  chapters: API.StoryChapter[];
+}
 
-export default function StoryTab({}: StoryTabProps) {
+const ChapterItem = ({
+  isAuthor,
+  chapter,
+  storyId,
+  onDelete,
+}: {
+  isAuthor: boolean;
+  chapter: API.StoryChapter;
+  storyId: string;
+  onDelete: () => void;
+}) => {
+  return (
+    <div
+      className={styles.chapterCard}
+      onClick={() => history.push(`/story/${storyId}/chapter/${chapter.id}`)}
+    >
+      <div>{chapter.name}</div>
+      {isAuthor && (
+        <div>
+          <a
+            className={styles.actionButton}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              history.push(`/story/${storyId}/chapter/${chapter.id}/edit`);
+            }}
+          >
+            Edit
+          </a>
+          <a
+            className={styles.actionButton}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            Delete
+          </a>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default function StoryTab({
+  isAuthor,
+  chapters = [],
+  storyId,
+}: StoryTabProps) {
   const { formatMessage } = useIntl();
 
   const handleDelete = (name: string) => {
@@ -25,34 +78,20 @@ export default function StoryTab({}: StoryTabProps) {
 
   return (
     <div className={styles.container}>
-      <div
-        className={styles.chapterCard}
-        onClick={() => history.push('/story/0/chapter/0')}
-      >
-        <div>Chapter 1</div>
-        <div>
-          <a
-            className={styles.actionButton}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              history.push('/story/0/chapter/0/edit');
-            }}
-          >
-            Edit
-          </a>
-          <a
-            className={styles.actionButton}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleDelete('Chapter A');
-            }}
-          >
-            Delete
-          </a>
+      {chapters?.length === 0 ? (
+        <div className={styles.noChapterTip}>
+          {formatMessage({ id: 'story.no-chapter-tip' })}
         </div>
-      </div>
+      ) : (
+        chapters?.map((chapter) => (
+          <ChapterItem
+            isAuthor={isAuthor}
+            chapter={chapter}
+            storyId={storyId}
+            onDelete={() => {}}
+          />
+        ))
+      )}
     </div>
   );
 }
