@@ -14,25 +14,19 @@ import styles from './index.less';
 const Chapter: React.FC = () => {
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId/chapter/:chapterId');
-  const { currentChapter, setChapterId, setStoryId } = useModel(
-    'storyModel',
-    (model) => ({
+  const { currentChapter, setChapterId, storyId, chapterId, chapters } =
+    useModel('storyModel', (model) => ({
       currentChapter: model.currentChapter,
       setChapterId: model.setChapterId,
-      setStoryId: model.setStoryId,
-    }),
-  );
-
-  useEffect(() => {
-    return () => {
-      setChapterId(0);
-    };
-  }, []);
+      storyId: model.storyId,
+      chapterId: model.chapterId,
+      chapters: model.chapters,
+    }));
 
   useEffect(() => {
     if (match?.params.storyId && match?.params.chapterId) {
-      setStoryId(match?.params.storyId || '');
-      setChapterId(match?.params.chapterId || 0);
+      // setStoryId(match?.params.storyId || '');
+      setChapterId(parseInt(match?.params.chapterId) || 0);
     } else {
       history.push('/');
     }
@@ -51,16 +45,16 @@ const Chapter: React.FC = () => {
           size={'large'}
           icon={<LeftOutlined />}
           onClick={() => {
-            history.push('/story/0');
+            history.push(`/story/${storyId}`);
           }}
         />
       </div>
       <div className={styles.container}>
-        <div className={styles.title}>Chapter A</div>
+        <div className={styles.title}>{currentChapter?.name}</div>
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{
-            __html: '',
+            __html: currentChapter?.content,
           }}
         />
       </div>
@@ -71,17 +65,33 @@ const Chapter: React.FC = () => {
           size={'large'}
           type={'primary'}
           icon={<LeftOutlined />}
+          onClick={() => {
+            if (chapters.length === 1) return;
+            const idx = chapters.findIndex(
+              (c: API.StoryChapter) => c.id === chapterId,
+            );
+            if (idx === 0) {
+              history.push(
+                `/story/${storyId}/chapter/${chapters[chapters.length - 1].id}`,
+              );
+            } else {
+              history.push(`/story/${storyId}/chapter/${chapters[idx - 1].id}`);
+            }
+          }}
         />
         <Dropdown
           placement={'topCenter'}
           overlay={
             <Menu
-              items={[
-                {
-                  key: '1',
-                  label: 'Chapter 1',
-                },
-              ]}
+              items={chapters
+                .filter((c: API.StoryChapter) => !c.delete)
+                .map((c: API.StoryChapter) => ({
+                  key: c.id,
+                  label: c.name,
+                  onClick: () => {
+                    history.push(`/story/${storyId}/chapter/${c.id}`);
+                  },
+                }))}
             />
           }
         >
@@ -100,6 +110,17 @@ const Chapter: React.FC = () => {
           size={'large'}
           type={'primary'}
           icon={<RightOutlined />}
+          onClick={() => {
+            if (chapters.length === 1) return;
+            const idx = chapters.findIndex(
+              (c: API.StoryChapter) => c.id === chapterId,
+            );
+            if (idx === chapters.length - 1) {
+              history.push(`/story/${storyId}/chapter/${chapters[0].id}`);
+            } else {
+              history.push(`/story/${storyId}/chapter/${chapters[idx + 1].id}`);
+            }
+          }}
         />
       </div>
     </PageContainer>

@@ -27,8 +27,17 @@ export default function CreateStoryModal({
   const [form] = Form.useForm();
 
   const { token, wallet, chains } = useModel('walletModel');
-  const { refreshMyStories, refreshLatestStories, refreshHottestStories } =
-    useModel('storyModel');
+  const {
+    refreshMyStories,
+    refreshLatestStories,
+    refreshHottestStories,
+    refreshCurrentStory,
+  } = useModel('storyModel', (model) => ({
+    refreshMyStories: model.refreshMyStories,
+    refreshLatestStories: model.refreshLatestStories,
+    refreshHottestStories: model.refreshHottestStories,
+    refreshCurrentStory: model.refreshCurrentStory,
+  }));
 
   const { data: initialData } = useRequest(
     async () => {
@@ -85,8 +94,13 @@ export default function CreateStoryModal({
           }),
         );
         refreshMyStories();
-        refreshHottestStories();
-        refreshLatestStories();
+        if (update) {
+          refreshCurrentStory();
+        } else {
+          refreshHottestStories();
+          refreshLatestStories();
+        }
+
         form.resetFields();
         onClose();
       } catch (e) {

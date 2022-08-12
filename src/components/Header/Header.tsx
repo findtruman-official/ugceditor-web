@@ -9,10 +9,11 @@ export default function Header() {
   const location = useLocation();
   const { pathname } = location;
 
-  const { storyId, currentStory, currentChapter } = useModel(
+  const { storyId, chapterId, currentStory, currentChapter } = useModel(
     'storyModel',
     (model) => ({
       storyId: model.storyId,
+      chapterId: model.chapterId,
       currentStory: model.currentStory,
       currentChapter: model.currentChapter,
     }),
@@ -29,9 +30,6 @@ export default function Header() {
   const chapterPage = useMemo(() => {
     return /^\/story\/[a-zA-Z\d]+\/chapter\/[a-zA-Z\d]+/g.test(pathname);
   }, [pathname]);
-
-  console.log('storyPage', storyPage);
-  console.log('chapterPage', chapterPage);
 
   return (
     <>
@@ -73,9 +71,11 @@ export default function Header() {
               {currentStory.info.title}
             </div>
           )}
-          {chapterPage && !!currentChapter && (
+          {chapterPage && (
             <div className={[styles.menuItem, styles.menuItemActive].join(' ')}>
-              {currentChapter.name}
+              {chapterId === 0
+                ? formatMessage({ id: 'chapter.new-chapter' })
+                : currentChapter.name}
             </div>
           )}
         </div>

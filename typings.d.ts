@@ -24,7 +24,7 @@ declare global {
       chainInfo: Chain;
       chainStoryId: string;
       contentHash: string;
-      info?: StoryInfo;
+      info: StoryInfo;
       nft?: NftSale;
       onChainAddr: string;
       createTime: string;
@@ -50,6 +50,7 @@ declare global {
       content: string;
       createAt: string;
       updateAt: string;
+      delete?: boolean;
     };
 
     type StoryDetail = {
@@ -101,5 +102,15 @@ declare global {
       cid: string;
       size: number;
     };
+
+    type Save = Record<
+      string,
+      {
+        id: string;
+        title: string;
+        content: string;
+        timestamp: number;
+      }
+    >;
   }
 }

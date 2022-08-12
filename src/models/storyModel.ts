@@ -1,6 +1,6 @@
-import { getChapter, getStories, getStory } from '@/services/api';
+import { getStories, getStory } from '@/services/api';
 import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useModel } from 'umi';
 
 // @ts-ignore
@@ -13,22 +13,39 @@ export default () => {
   const [storyId, setStoryId] = useState('');
   const [chapterId, setChapterId] = useState(0);
 
-  const { data: currentStory, loading: gettingCurrentStory } = useRequest(
+  const [chapters, setChapters] = useState<API.StoryChapter[]>([]);
+
+  const {
+    data: currentStory,
+    loading: gettingCurrentStory,
+    refresh: refreshCurrentStory,
+  } = useRequest(
     async () => {
+      setChapters([]);
       if (!!storyId && !!chains?.[0]) {
-        return (await getStory(chains[0].type, storyId)).story;
+        const { story } = await getStory(chains[0].type, storyId);
+        setChapters(story.info.chapters);
+        return story;
       }
     },
     { refreshDeps: [storyId, chains] },
   );
-  const { data: currentChapter, loading: gettingCurrentChapter } = useRequest(
-    async () => {
-      if (!!chapterId) {
-        return (await getChapter(chapterId)).chapter;
-      }
-    },
-    { refreshDeps: [chapterId] },
-  );
+  // const {
+  //   data: currentChapter,
+  //   loading: gettingCurrentChapter,
+  // } = useRequest(
+  //   async () => {
+  //     if (!!chapterId) {
+  //       return (await getChapter(chapterId)).chapter;
+  //     }
+  //   },
+  //   { refreshDeps: [chapterId] },
+  // );
+  const currentChapter = useMemo(() => {
+    if (chapters) {
+      return chapters.find((c) => c.id === chapterId);
+    }
+  }, [chapterId, chapters]);
 
   const {
     data: hottestStories,
@@ -65,10 +82,13 @@ export default () => {
     setStoryId,
     chapterId,
     setChapterId,
+    chapters,
+    setChapters,
     currentStory,
     gettingCurrentStory,
+    refreshCurrentStory,
     currentChapter,
-    gettingCurrentChapter,
+    // gettingCurrentChapter,
     hottestStories,
     gettingHottestStories,
     latestStories,

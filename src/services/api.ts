@@ -113,6 +113,7 @@ export const getStory = async (chain: string, chainStoryId: string) => {
             chapters {
               id
               name
+              content
             }
             createAt
           }

@@ -3,12 +3,14 @@ import { Button, Col, InputNumber, Row } from 'antd';
 import styles from './NftCard.less';
 
 interface NftCardProps {
+  loading: boolean;
   isAuthor: boolean;
   published: boolean;
   onPublish: () => void;
 }
 
 export default function NftCard({
+  loading,
   isAuthor,
   published,
   onPublish,
@@ -58,7 +60,7 @@ export default function NftCard({
                 />
               </Col>
               <Col>
-                <Button type={'primary'}>
+                <Button type={'primary'} disabled={loading}>
                   {formatMessage({ id: 'story.claim' })}
                 </Button>
               </Col>
@@ -68,11 +70,17 @@ export default function NftCard({
       ) : (
         <div className={styles.publishCard}>
           <div className={styles.publishTitle}>
-            {formatMessage({ id: 'story.publish-story-nft' })}
+            {formatMessage({
+              id: isAuthor
+                ? 'story.publish-story-nft'
+                : 'story.nft-not-published',
+            })}
           </div>
-          <Button type={'primary'} onClick={onPublish}>
-            {formatMessage({ id: 'story.publish' })}
-          </Button>
+          {isAuthor && (
+            <Button type={'primary'} onClick={onPublish} disabled={loading}>
+              {formatMessage({ id: 'story.publish' })}
+            </Button>
+          )}
         </div>
       )}
     </div>

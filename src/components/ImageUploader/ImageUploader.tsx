@@ -49,7 +49,6 @@ export default function ImageUploader({
           window.open(`/ipfs/file/${file.response.cid}`);
         }}
         onChange={({ fileList: newFileList }) => {
-          console.log(newFileList);
           setFileList(newFileList);
           if (newFileList[0]?.response?.cid) {
             onChange?.(newFileList[0]?.response?.cid);

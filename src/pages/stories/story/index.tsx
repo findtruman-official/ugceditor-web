@@ -2,32 +2,55 @@ import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import NftCard from '@/components/NftCard/NftCard';
 import PublishNftModal from '@/components/PublishNftModal/PublishNftModal';
 import StoryTab from '@/components/StoryTab/StoryTab';
+import { uploadJson } from '@/services/api';
 import { shortenAccount } from '@/utils/format';
 import { useMatch } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { EditOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Badge, Button, Col, Row, Skeleton, Tabs, Typography } from 'antd';
+import { useRequest } from 'ahooks';
+import {
+  Badge,
+  Button,
+  Col,
+  message,
+  Row,
+  Skeleton,
+  Tabs,
+  Typography,
+} from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useModel } from 'umi';
+import { history, useModel } from 'umi';
 import styles from './index.less';
 
 const Story: React.FC = () => {
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId');
-  const { account } = useModel('walletModel', (model) => ({
-    account: model.account,
-  }));
-  const { currentStory, setStoryId, storyId, gettingCurrentStory } = useModel(
-    'storyModel',
+  const { account, chains, token, wallet } = useModel(
+    'walletModel',
     (model) => ({
-      currentStory: model.currentStory,
-      storyId: model.storyId,
-      setStoryId: model.setStoryId,
-      gettingCurrentStory: model.gettingCurrentStory,
+      account: model.account,
+      chains: model.chains,
+      token: model.token,
+      wallet: model.wallet,
     }),
   );
+  const {
+    currentStory,
+    setStoryId,
+    storyId,
+    gettingCurrentStory,
+    refreshCurrentStory,
+    chapters,
+  } = useModel('storyModel', (model) => ({
+    currentStory: model.currentStory,
+    storyId: model.storyId,
+    setStoryId: model.setStoryId,
+    gettingCurrentStory: model.gettingCurrentStory,
+    refreshCurrentStory: model.refreshCurrentStory,
+    chapters: model.chapters,
+  }));
 
   const [nftModalVisible, setNftModalVisible] = useState(false);
   const [storyModalVisible, setStoryModalVisible] = useState(false);
@@ -46,6 +69,53 @@ const Story: React.FC = () => {
     }
   }, [match]);
 
+  const { loading: saving, run: runSave } = useRequest(
+    async () => {
+      if (!wallet || !chains?.[0] || !currentStory) return;
+      try {
+        const { info } = currentStory;
+        const currentTime = new Date().valueOf();
+        const { cid } = await uploadJson<API.StoryDetail>(
+          {
+            title: info.title,
+            cover: info.cover,
+            description: info.description,
+            chapters: chapters
+              .filter((c: API.StoryChapter) => !c.delete)
+              .map((c: API.StoryChapter) => ({
+                name: c.name,
+                content: c.content,
+                createAt: c.createAt,
+                updateAt: c.updateAt,
+              })),
+            createAt: info.createAt,
+            updateAt: currentTime,
+            version: '1',
+          },
+          token,
+        );
+        console.log(cid);
+        await wallet.provider.updateStory(
+          storyId,
+          cid,
+          chains[0].factoryAddress,
+        );
+        message.success(
+          formatMessage({
+            id: 'story.story-updated',
+          }),
+        );
+        refreshCurrentStory();
+      } catch (e) {
+        console.log(e);
+        message.error(formatMessage({ id: 'request-failed' }));
+      }
+    },
+    {
+      manual: true,
+    },
+  );
+
   return (
     <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
       <Helmet title={currentStory?.info?.title} />
@@ -59,12 +129,12 @@ const Story: React.FC = () => {
           <Col>
             <Row gutter={48}>
               <Col>
-                {gettingCurrentStory ? (
+                {gettingCurrentStory || !currentStory ? (
                   <Skeleton.Image active={true} />
                 ) : (
                   <img
                     className={styles.cover}
-                    src={`/ipfs/file/${currentStory?.info?.cover}`}
+                    src={`/ipfs/file/${currentStory.info.cover}`}
                   />
                 )}
               </Col>
@@ -72,10 +142,13 @@ const Story: React.FC = () => {
                 <Skeleton loading={gettingCurrentStory} active={true}>
                   <div className={styles.name}>
                     <div>{currentStory?.info?.title}</div>
-                    <Button
-                      icon={<EditOutlined />}
-                      onClick={() => setStoryModalVisible(true)}
-                    />
+                    {isAuthor && (
+                      <Button
+                        disabled={saving}
+                        icon={<EditOutlined />}
+                        onClick={() => setStoryModalVisible(true)}
+                      />
+                    )}
                   </div>
                   <div className={styles.infoGroup}>
                     <div className={styles.infoTitle}>
@@ -120,6 +193,7 @@ const Story: React.FC = () => {
           </Col>
           <Col>
             <NftCard
+              loading={saving}
               isAuthor={isAuthor}
               published={!!currentStory?.nft}
               onPublish={() => setNftModalVisible(true)}
@@ -134,25 +208,35 @@ const Story: React.FC = () => {
             fontSize: 18,
           }}
           tabBarExtraContent={
-            <div>
-              <Badge dot={currentStory?.info?.chapters.length === 0}>
-                <Button>{formatMessage({ id: 'story.add-chapter' })}</Button>
-              </Badge>
-              <Button type={'primary'} style={{ marginLeft: 12 }}>
-                {formatMessage({ id: 'story.save' })}
-              </Button>
-            </div>
+            isAuthor && (
+              <div>
+                <Badge dot={chapters.length === 0}>
+                  <Button
+                    onClick={() =>
+                      history.push(`/story/${storyId}/chapter/0/edit`)
+                    }
+                    disabled={saving}
+                  >
+                    {formatMessage({ id: 'story.add-chapter' })}
+                  </Button>
+                </Badge>
+                <Button
+                  type={'primary'}
+                  style={{ marginLeft: 12 }}
+                  onClick={runSave}
+                  loading={saving}
+                >
+                  {formatMessage({ id: 'story.save' })}
+                </Button>
+              </div>
+            )
           }
         >
           <Tabs.TabPane
             tab={formatMessage({ id: 'story.tab.story' })}
             key={'story'}
           >
-            <StoryTab
-              isAuthor={isAuthor}
-              chapters={currentStory?.info?.chapters || []}
-              storyId={storyId}
-            />
+            <StoryTab loading={saving} isAuthor={isAuthor} storyId={storyId} />
           </Tabs.TabPane>
         </Tabs>
       </div>
@@ -163,7 +247,7 @@ const Story: React.FC = () => {
       />
 
       <CreateStoryModal
-        id={currentStory?.info?.id}
+        id={currentStory?.chainStoryId}
         update={true}
         contentHash={currentStory?.contentHash}
         visible={storyModalVisible}

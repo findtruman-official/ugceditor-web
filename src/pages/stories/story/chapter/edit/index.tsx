@@ -6,7 +6,7 @@ import { useMatch, useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { ExclamationCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Col, Input, Modal, Row } from 'antd';
+import { Button, Col, Input, message, Modal, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { history } from 'umi';
@@ -37,13 +37,28 @@ const CmdButton = ({
 
 const Edit: React.FC = () => {
   const { formatMessage } = useIntl();
-  const match = useMatch('/story/:storyId/chapter/:chapterId');
-  const { chapterName, setChapterName } = useModel('storyModel');
+  const match = useMatch('/story/:storyId/chapter/:chapterId/edit');
+  const {
+    storyId,
+    chapterId,
+    setChapterId,
+    currentChapter,
+    chapters,
+    setChapters,
+  } = useModel('storyModel', (model) => ({
+    storyId: model.storyId,
+    chapterId: model.chapterId,
+    setChapterId: model.setChapterId,
+    currentChapter: model.currentChapter,
+    chapters: model.chapters,
+    setChapters: model.setChapters,
+  }));
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [saved, setSaved] = useState(true);
   const [promptVisible, setPromptVisible] = useState(false);
+  const [newChapterId, setNewChapterId] = useState(0);
 
   const handleChange = useRefCallback((evt) => {
     setContent(evt.target.value);
@@ -52,45 +67,100 @@ const Edit: React.FC = () => {
 
   const handleBlur = useRefCallback(() => {}, [content]);
 
-  useEffect(() => {
-    return () => {
-      setChapterName('');
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     setChapterId(0);
+  //   };
+  // }, []);
 
   useEffect(() => {
-    if (match?.params.storyId) {
-      setChapterName('Chapter A');
+    const chapterId = match?.params.chapterId;
+    if (chapterId) {
+      setChapterId(parseInt(chapterId));
+      if (parseInt(chapterId) === 0) {
+        setNewChapterId(new Date().valueOf());
+      }
     }
   }, [match]);
 
+  useEffect(() => {
+    if (currentChapter) {
+      setTitle(currentChapter.name);
+      setContent(currentChapter.content);
+    }
+  }, [currentChapter]);
+
   const saveDraft = () => {
-    localStorage.setItem(
-      chapterName,
-      JSON.stringify({
-        title,
-        content,
-        timestamp: new Date().valueOf(),
-      }),
-    );
+    // localStorage.setItem(
+    //   title,
+    //   JSON.stringify({
+    //     title,
+    //     content,
+    //     timestamp: new Date().valueOf(),
+    //   }),
+    // );
+    const timestamp = new Date().valueOf();
+    if (chapterId === 0) {
+      const _chapters = [...chapters];
+      const idx = _chapters.findIndex(
+        (c: API.StoryChapter) => c.id === newChapterId,
+      );
+      if (idx !== -1) {
+        _chapters[idx] = {
+          ..._chapters[idx],
+          name: title,
+          content: content,
+          createAt: timestamp,
+          updateAt: timestamp,
+        };
+      } else {
+        _chapters.push({
+          id: newChapterId,
+          name: title,
+          content: content,
+          createAt: timestamp,
+          updateAt: timestamp,
+        });
+      }
+      setChapters(_chapters);
+    } else {
+      const _chapters = [...chapters];
+      const idx = _chapters.findIndex(
+        (c: API.StoryChapter) => c.id === chapterId,
+      );
+      if (idx !== -1) {
+        _chapters[idx] = {
+          ..._chapters[idx],
+          name: title,
+          content: content,
+          updateAt: timestamp,
+        };
+      }
+      setChapters(_chapters);
+    }
+    message.success(formatMessage({ id: 'chapter.saved' }));
     setSaved(true);
   };
 
-  const getDraft = () => {
-    try {
-      const storage = localStorage.getItem(chapterName);
-      if (storage) {
-        const { title, content, timestamp } = JSON.parse(storage);
-        // TODO: 与数据时间戳比较
-        setTitle(title);
-        setContent(content);
-      }
-    } catch (e) {}
+  const backToStory = () => {
+    history.push(`/story/${storyId}`);
   };
 
-  useEffect(() => {
-    getDraft();
-  }, [chapterName]);
+  // const getDraft = () => {
+  //   try {
+  //     const storage = localStorage.getItem(chapterId);
+  //     if (storage) {
+  //       const { title, content, timestamp } = JSON.parse(storage);
+  //       // TODO: 与数据时间戳比较
+  //       setTitle(title);
+  //       setContent(content);
+  //     }
+  //   } catch (e) {}
+  // };
+  //
+  // useEffect(() => {
+  //   !!chapterId && getDraft();
+  // }, [chapterId]);
 
   return (
     <PageContainer
@@ -98,7 +168,11 @@ const Edit: React.FC = () => {
       title={false}
       ghost
     >
-      <Helmet title={chapterName} />
+      <Helmet
+        title={
+          currentChapter?.name || formatMessage({ id: 'chapter.new-chapter' })
+        }
+      />
       <Row align={'middle'} justify={'space-between'} className={styles.header}>
         <Col>
           <Button
@@ -107,7 +181,7 @@ const Edit: React.FC = () => {
             icon={<LeftOutlined />}
             onClick={() => {
               if (saved) {
-                history.push('/story/0');
+                backToStory();
               } else {
                 setPromptVisible(true);
               }
@@ -178,7 +252,7 @@ const Edit: React.FC = () => {
             </Button>
           </Col>
           <Col>
-            <Button danger={true} onClick={() => history.push('/story/0')}>
+            <Button danger={true} onClick={() => backToStory()}>
               {formatMessage({ id: 'chapter.discard-and-leave' })}
             </Button>
           </Col>
@@ -187,7 +261,7 @@ const Edit: React.FC = () => {
               type={'primary'}
               onClick={() => {
                 saveDraft();
-                history.push('/story/0');
+                backToStory();
               }}
             >
               {formatMessage({ id: 'chapter.save-draft-and-leave' })}
