@@ -51,6 +51,7 @@ declare global {
       createAt: string;
       updateAt: string;
       delete?: boolean;
+      new?: boolean;
     };
 
     type StoryDetail = {
@@ -108,10 +109,14 @@ declare global {
       url: string;
     };
 
-    type Save = Record<
-      string,
+    /**
+     * Record<chainStoryId, >
+     */
+    type ChapterStorage = Record<
+      string, // chainStoryId
       {
-        id: string;
+        account: string;
+        chapterId: string;
         title: string;
         content: string;
         timestamp: number;

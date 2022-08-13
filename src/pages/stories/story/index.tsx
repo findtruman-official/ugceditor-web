@@ -20,7 +20,7 @@ import {
   Tabs,
   Typography,
 } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { history, useModel } from 'umi';
 import styles from './index.less';
@@ -29,16 +29,13 @@ const Story: React.FC = () => {
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId');
 
-  const { account, chains, token, wallet } = useModel(
-    'walletModel',
-    (model) => ({
-      account: model.account,
-      chains: model.chains,
-      token: model.token,
-      wallet: model.wallet,
-    }),
-  );
+  const { chains, token, wallet } = useModel('walletModel', (model) => ({
+    chains: model.chains,
+    token: model.token,
+    wallet: model.wallet,
+  }));
   const {
+    isAuthor,
     currentStory,
     setStoryId,
     storyId,
@@ -46,6 +43,7 @@ const Story: React.FC = () => {
     refreshCurrentStory,
     chapters,
   } = useModel('storyModel', (model) => ({
+    isAuthor: model.isAuthor,
     currentStory: model.currentStory,
     storyId: model.storyId,
     setStoryId: model.setStoryId,
@@ -58,15 +56,8 @@ const Story: React.FC = () => {
   const [storyModalVisible, setStoryModalVisible] = useState(false);
   const [descModalVisible, setDescModalVisible] = useState(false);
 
-  const isAuthor = useMemo(() => {
-    if (currentStory && !!account) {
-      return currentStory.author === account;
-    } else {
-      return false;
-    }
-  }, [currentStory, account]);
-
   useEffect(() => {
+    console.log('match?.params.storyId', match?.params.storyId);
     if (match?.params.storyId) {
       setStoryId(match?.params.storyId);
     }
@@ -97,7 +88,6 @@ const Story: React.FC = () => {
           },
           token,
         );
-        console.log(cid);
         await wallet.provider.updateStory(
           storyId,
           cid,
@@ -245,7 +235,7 @@ const Story: React.FC = () => {
             tab={formatMessage({ id: 'story.tab.story' })}
             key={'story'}
           >
-            <StoryTab loading={saving} isAuthor={isAuthor} storyId={storyId} />
+            <StoryTab loading={saving} storyId={storyId} />
           </Tabs.TabPane>
         </Tabs>
       </div>

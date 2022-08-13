@@ -12,6 +12,21 @@ import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default () => {
+  const [connecting, setConnecting] = useState(false);
+
+  const { data: chains } = useRequest(async () => {
+    return (await getChains()).chains;
+  });
+  const [wallet, setWallet] = useState<{
+    name: string;
+    icon: string;
+    walletType: WalletType;
+    provider: WalletProvider;
+  }>();
+  const [accounts, setAccounts] = useState<Record<WalletType, string>>({
+    [WalletType.Phantom]: '',
+  });
+
   const Wallets: {
     name: string;
     icon: string;
@@ -47,21 +62,6 @@ export default () => {
     ],
     [],
   );
-
-  const [connecting, setConnecting] = useState(false);
-
-  const { data: chains } = useRequest(async () => {
-    return (await getChains()).chains;
-  });
-  const [wallet, setWallet] = useState<{
-    name: string;
-    icon: string;
-    walletType: WalletType;
-    provider: WalletProvider;
-  }>();
-  const [accounts, setAccounts] = useState<Record<WalletType, string>>({
-    [WalletType.Phantom]: '',
-  });
 
   const account = useMemo(() => {
     if (wallet) {

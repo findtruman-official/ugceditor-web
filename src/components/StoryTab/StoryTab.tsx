@@ -6,7 +6,6 @@ import styles from './StoryTab.less';
 
 interface StoryTabProps {
   loading: boolean;
-  isAuthor: boolean;
   storyId: string;
 }
 
@@ -76,17 +75,17 @@ const ChapterItem = ({
   );
 };
 
-export default function StoryTab({
-  loading,
-  isAuthor,
-  storyId,
-}: StoryTabProps) {
+export default function StoryTab({ loading, storyId }: StoryTabProps) {
   const { formatMessage } = useIntl();
 
-  const { chapters, setChapters } = useModel('storyModel', (model) => ({
-    chapters: model.chapters,
-    setChapters: model.setChapters,
-  }));
+  const { isAuthor, chapters, setChapters } = useModel(
+    'storyModel',
+    (model) => ({
+      isAuthor: model.isAuthor,
+      chapters: model.chapters,
+      setChapters: model.setChapters,
+    }),
+  );
 
   const handleDelete = (id: number, name: string) => {
     Modal.confirm({

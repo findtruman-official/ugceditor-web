@@ -21,12 +21,20 @@ export default defineConfig({
       component: './stories',
     },
     {
+      path: '/story',
+      redirect: '/stories',
+    },
+    {
       path: '/story/:storyId',
       component: './stories/story',
     },
     {
       path: '/story/:storyId/chapter/:chapterId',
       component: './stories/story/chapter',
+    },
+    {
+      path: '/story/:storyId/chapter',
+      redirect: '/story/:storyId',
     },
     {
       path: '/story/:storyId/chapter/:chapterId/edit',
@@ -36,6 +44,9 @@ export default defineConfig({
       name: 'writer',
       path: '/writer',
       component: './writer',
+    },
+    {
+      redirect: '/stories',
     },
   ],
   locale: {

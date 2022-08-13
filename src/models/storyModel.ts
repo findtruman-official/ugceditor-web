@@ -47,6 +47,16 @@ export default () => {
     }
   }, [chapterId, chapters]);
 
+  console.log(account);
+
+  const isAuthor = useMemo(() => {
+    if (currentStory && !!account) {
+      return currentStory.author === account;
+    } else {
+      return false;
+    }
+  }, [currentStory, account]);
+
   const {
     data: hottestStories,
     loading: gettingHottestStories,
@@ -98,5 +108,6 @@ export default () => {
     refreshHottestStories,
     refreshLatestStories,
     refreshMyStories,
+    isAuthor,
   };
 };
