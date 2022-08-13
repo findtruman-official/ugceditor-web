@@ -67,11 +67,11 @@ const Edit: React.FC = () => {
 
   const handleBlur = useRefCallback(() => {}, [content]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     setChapterId(0);
-  //   };
-  // }, []);
+  useEffect(() => {
+    return () => {
+      setChapterId(0);
+    };
+  }, []);
 
   useEffect(() => {
     const chapterId = match?.params.chapterId;

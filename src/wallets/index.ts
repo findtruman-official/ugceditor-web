@@ -39,4 +39,14 @@ export interface WalletProvider {
   publishStory(cid: string, factoryAddress: string): Promise<void>;
 
   updateStory(id: number, cid: string, factoryAddress: string): Promise<void>;
+
+  publishStoryNft(
+    id: number,
+    price: number,
+    total: number,
+    reserved: number,
+    title: string,
+    uriPrefix: string,
+    factoryAddress: string,
+  ): Promise<void>;
 }

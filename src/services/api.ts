@@ -165,3 +165,35 @@ export async function uploadJson<T>(data: T, token: string) {
 export async function getJson<T>(cid: string) {
   return await request<T>(`/api/ipfs/json/${cid}`, { method: 'GET' });
 }
+
+export async function getMetadataUriPrefix(
+  amount: number,
+  chain: string,
+  description: string,
+  image: string,
+  name: string,
+) {
+  return await client.request<{ metadataUriPrefix: API.IpfsResult }>(
+    gql`
+      mutation metadataUriPrefix(
+        $amount: Int!
+        $chain: String!
+        $description: String!
+        $image: String!
+        $name: String!
+      ) {
+        metadataUriPrefix(
+          amount: $amount
+          chain: $chain
+          description: $description
+          image: $image
+          name: $name
+        ) {
+          cid
+          url
+        }
+      }
+    `,
+    { amount, chain, description, image, name },
+  );
+}

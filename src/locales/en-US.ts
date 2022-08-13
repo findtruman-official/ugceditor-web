@@ -65,5 +65,8 @@ export default {
   'publish-nft-modal.nft-reserved-amount':
     'Writer Reserved Amount (For Rewards)',
   'publish-nft-modal.nft-reserved-amount.require': 'Please enter!',
+  'publish-nft-modal.reserve-less-than-total':
+    'Reserved Amount must be smaller than Total Supply!',
+  'publish-nft-modal.published': 'Published！',
   'request-failed': 'Request Failed!',
 };

@@ -64,5 +64,7 @@ export default {
   'publish-nft-modal.nft-total-supply.require': '请输入发行量！',
   'publish-nft-modal.nft-reserved-amount': '作者保留量 (For Rewards)',
   'publish-nft-modal.nft-reserved-amount.require': '请输入作者保留量！',
+  'publish-nft-modal.reserve-less-than-total': '保留量应小于发行量！',
+  'publish-nft-modal.published': '已发行！',
   'request-failed': '请求失败！',
 };

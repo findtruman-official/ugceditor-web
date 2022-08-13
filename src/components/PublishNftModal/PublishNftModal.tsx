@@ -1,7 +1,18 @@
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
+import { getMetadataUriPrefix } from '@/services/api';
 import { useIntl } from '@@/plugin-locale';
 import { LeftOutlined } from '@ant-design/icons';
-import { Button, Col, Form, Input, InputNumber, Modal, Row } from 'antd';
+import { useRequest } from 'ahooks';
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Row,
+} from 'antd';
 import { useModel } from 'umi';
 import styles from './PublishNftModal.less';
 
@@ -16,13 +27,73 @@ export default function PublishNftModal({
 }: PublishNftModalProps) {
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
-  const { token } = useModel('walletModel');
+  const { token, chains, wallet } = useModel('walletModel', (model) => ({
+    token: model.token,
+    chains: model.chains,
+    wallet: model.wallet,
+  }));
+  const { currentStory, refreshCurrentStory } = useModel(
+    'storyModel',
+    (model) => ({
+      currentStory: model.currentStory,
+      refreshCurrentStory: model.refreshCurrentStory,
+    }),
+  );
+
+  const { loading: publishingNft, run: runPublishNft } = useRequest(
+    async (values) => {
+      console.log(values);
+      if (!chains?.[0] || !wallet) return;
+
+      try {
+        const name = `${currentStory.info.title} NFT`;
+
+        const { img, desc, price, totalSupply, reservedAmount } = values;
+        if (reservedAmount >= totalSupply) {
+          message.warning(
+            formatMessage({ id: 'publish-nft-modal.reserve-less-than-total' }),
+          );
+          return;
+        }
+
+        const { url: uriPrefix } = (
+          await getMetadataUriPrefix(
+            totalSupply,
+            chains[0].type,
+            desc,
+            img,
+            name,
+          )
+        ).metadataUriPrefix;
+
+        await wallet.publishStoryNft(
+          currentStory.chainStoryId,
+          price,
+          totalSupply,
+          reservedAmount,
+          name,
+          uriPrefix,
+          chains[0].factoryAddress,
+        );
+
+        message.success(formatMessage({ id: 'publish-nft-modal.published' }));
+        refreshCurrentStory();
+        onClose();
+      } catch (e) {
+        console.log(e);
+        message.error(formatMessage({ id: 'request-failed' }));
+      }
+    },
+    { manual: true },
+  );
 
   return (
     <Modal
       className={'publish-nft-modal'}
       visible={visible}
-      onCancel={onClose}
+      onCancel={() => {
+        !publishingNft && onClose();
+      }}
       title={null}
       closable={false}
       centered={true}
@@ -30,10 +101,21 @@ export default function PublishNftModal({
       width={550}
     >
       <div className={styles.header}>
-        <Button shape={'circle'} icon={<LeftOutlined />} onClick={onClose} />
-        <div>Story A NFT</div>
+        <Button
+          shape={'circle'}
+          icon={<LeftOutlined />}
+          onClick={() => {
+            !publishingNft && onClose();
+          }}
+        />
+        <div>{currentStory?.info.title} NFT</div>
       </div>
-      <Form form={form} layout={'vertical'}>
+      <Form
+        form={form}
+        layout={'vertical'}
+        disabled={publishingNft}
+        onFinish={runPublishNft}
+      >
         <Row gutter={24}>
           <Col>
             <Form.Item

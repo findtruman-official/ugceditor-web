@@ -103,6 +103,11 @@ declare global {
       size: number;
     };
 
+    type IpfsResult = {
+      cid: string;
+      url: string;
+    };
+
     type Save = Record<
       string,
       {

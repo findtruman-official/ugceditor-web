@@ -138,7 +138,12 @@ export default function CreateStoryModal({
           })}
         </div>
       </div>
-      <Form form={form} layout={'vertical'} onFinish={publishStory}>
+      <Form
+        form={form}
+        layout={'vertical'}
+        onFinish={publishStory}
+        disabled={publishing}
+      >
         <Row gutter={24}>
           <Col span={9}>
             <Form.Item

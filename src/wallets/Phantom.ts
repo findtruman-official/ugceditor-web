@@ -34,8 +34,8 @@ export class PhantomWalletProvider implements WalletProvider {
 
         const wallet = window.solana;
         const network = clusterApiUrl('devnet');
-        const connection = new Connection(network, 'recent');
-        this.anchorProvider = new AnchorProvider(connection, wallet, {
+        this.connection = new Connection(network, 'recent');
+        this.anchorProvider = new AnchorProvider(this.connection, wallet, {
           preflightCommitment: 'recent',
         });
       });
@@ -110,6 +110,7 @@ export class PhantomWalletProvider implements WalletProvider {
     return encodeBase64(signature);
   }
 
+  connection: any;
   anchorProvider: any;
 
   async getProgram(factoryAddress: string) {
@@ -124,7 +125,7 @@ export class PhantomWalletProvider implements WalletProvider {
     return { factoryKey, program };
   }
 
-  async getStoryKey(program: any, storyId: BN) {
+  async getKey(program: any, storyId: BN, key: 'story-' | 'story-mint-') {
     return (
       await web3.PublicKey.findProgramAddress(
         [
@@ -143,7 +144,7 @@ export class PhantomWalletProvider implements WalletProvider {
       factoryKey,
     );
     const storyId = factoryAccountData.nextId;
-    const storyKey = await this.getStoryKey(program, storyId);
+    const storyKey = await this.getKey(program, storyId, 'story-');
 
     const { publicKey } = await this.provider.connect();
 
@@ -163,7 +164,7 @@ export class PhantomWalletProvider implements WalletProvider {
     const { program } = await this.getProgram(factoryAddress);
 
     const storyId = new BN(id);
-    const storyKey = await this.getStoryKey(program, storyId);
+    const storyKey = await this.getKey(program, storyId, 'story-');
 
     const { publicKey } = await this.provider.connect();
 
@@ -175,8 +176,44 @@ export class PhantomWalletProvider implements WalletProvider {
       })
       // .signers([])
       .rpc({});
+  }
 
-    // const storyData = await program.account.story.fetch(storyKey);
-    // console.log('storyData', storyData);
+  async publishStoryNft(
+    id: number,
+    price: number,
+    total: number,
+    reserved: number,
+    title: string,
+    uriPrefix: string,
+    factoryAddress: string,
+  ) {
+    const { program } = await this.getProgram(factoryAddress);
+    const _price = new BN(price);
+    const _total = new BN(total);
+    const _reserved = new BN(reserved);
+    const storyId = new BN(id);
+    const storyKey = await this.getKey(program, storyId, 'story-');
+    const mintStateKey = await this.getKey(program, storyId, 'story-mint-');
+    const fromWallet = await this.provider.connect();
+
+    // const fromTokenAccount = await getOrCreateAssociatedTokenAccount(
+    //   this.connection,
+    //   fromWallet,
+    //   mint,
+    //   fromWallet.publicKey,
+    // );
+    //
+    // await program.methods
+    //   .publishStoryNft(storyId, _price, _total, _reserved, title, uriPrefix)
+    //   .accounts({
+    //     author: fromWallet.publicKey,
+    //     story: storyKey,
+    //     mintState: mintStateKey,
+    //     findsMint: null,
+    //     findsRecvAccount: fromTokenAccount.address,
+    //     systemProgram: web3.SystemProgram.programId,
+    //   })
+    //   // .signers([])
+    //   .rpc({});
   }
 }
