@@ -6,7 +6,7 @@ import {
   RightOutlined,
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Dropdown, Menu } from 'antd';
+import { Button, Dropdown, Menu, Skeleton } from 'antd';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import styles from './index.less';
@@ -14,18 +14,27 @@ import styles from './index.less';
 const Chapter: React.FC = () => {
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId/chapter/:chapterId');
-  const { currentChapter, setChapterId, storyId, chapterId, chapters } =
-    useModel('storyModel', (model) => ({
-      currentChapter: model.currentChapter,
-      setChapterId: model.setChapterId,
-      storyId: model.storyId,
-      chapterId: model.chapterId,
-      chapters: model.chapters,
-    }));
+  const {
+    gettingCurrentStory,
+    currentChapter,
+    setStoryId,
+    setChapterId,
+    storyId,
+    chapterId,
+    chapters,
+  } = useModel('storyModel', (model) => ({
+    gettingCurrentStory: model.gettingCurrentStory,
+    currentChapter: model.currentChapter,
+    setStoryId: model.setStoryId,
+    setChapterId: model.setChapterId,
+    storyId: model.storyId,
+    chapterId: model.chapterId,
+    chapters: model.chapters,
+  }));
 
   useEffect(() => {
     if (match?.params.storyId && match?.params.chapterId) {
-      // setStoryId(match?.params.storyId || '');
+      setStoryId(match?.params.storyId || '');
       setChapterId(parseInt(match?.params.chapterId) || 0);
     } else {
       history.push('/');
@@ -39,90 +48,118 @@ const Chapter: React.FC = () => {
       ghost
     >
       <Helmet title={currentChapter?.name} />
-      <div className={styles.header}>
-        <Button
-          shape={'circle'}
-          size={'large'}
-          icon={<LeftOutlined />}
-          onClick={() => {
-            history.push(`/story/${storyId}`);
-          }}
-        />
-      </div>
+      {currentChapter && (
+        <div className={styles.header}>
+          <Button
+            shape={'circle'}
+            size={'large'}
+            icon={<LeftOutlined />}
+            onClick={() => {
+              history.push(`/story/${storyId}`);
+            }}
+          />
+        </div>
+      )}
       <div className={styles.container}>
-        <div className={styles.title}>{currentChapter?.name}</div>
-        <div
-          className={styles.content}
-          dangerouslySetInnerHTML={{
-            __html: currentChapter?.content,
-          }}
-        />
+        <Skeleton loading={gettingCurrentStory} active={true}>
+          {currentChapter ? (
+            <>
+              <div className={styles.title}>{currentChapter?.name}</div>
+              <div
+                className={styles.content}
+                dangerouslySetInnerHTML={{
+                  __html: currentChapter?.content,
+                }}
+              />
+            </>
+          ) : (
+            <div className={styles.notFoundTip}>
+              <div>{formatMessage({ id: 'chapter.chapter-not-found' })}</div>
+              <Button
+                shape={'circle'}
+                size={'large'}
+                icon={<LeftOutlined />}
+                onClick={() => {
+                  history.push(`/story/${storyId}`);
+                }}
+              />
+            </div>
+          )}
+        </Skeleton>
       </div>
-      <div className={styles.actionButtonRow}>
-        <Button
-          className={styles.actionButton}
-          shape={'circle'}
-          size={'large'}
-          type={'primary'}
-          icon={<LeftOutlined />}
-          onClick={() => {
-            if (chapters.length === 1) return;
-            const idx = chapters.findIndex(
-              (c: API.StoryChapter) => c.id === chapterId,
-            );
-            if (idx === 0) {
-              history.push(
-                `/story/${storyId}/chapter/${chapters[chapters.length - 1].id}`,
-              );
-            } else {
-              history.push(`/story/${storyId}/chapter/${chapters[idx - 1].id}`);
-            }
-          }}
-        />
-        <Dropdown
-          placement={'topCenter'}
-          overlay={
-            <Menu
-              items={chapters
-                .filter((c: API.StoryChapter) => !c.delete)
-                .map((c: API.StoryChapter) => ({
-                  key: c.id,
-                  label: c.name,
-                  onClick: () => {
-                    history.push(`/story/${storyId}/chapter/${c.id}`);
-                  },
-                }))}
-            />
-          }
-        >
+      {currentChapter && (
+        <div className={styles.actionButtonRow}>
           <Button
             className={styles.actionButton}
             shape={'circle'}
             size={'large'}
             type={'primary'}
-            icon={<OrderedListOutlined />}
+            icon={<LeftOutlined />}
+            onClick={() => {
+              if (chapters.length === 1) return;
+              const idx = chapters.findIndex(
+                (c: API.StoryChapter) => c.id === chapterId,
+              );
+              if (idx === 0) {
+                history.push(
+                  `/story/${storyId}/chapter/${
+                    chapters[chapters.length - 1].id
+                  }`,
+                );
+              } else {
+                history.push(
+                  `/story/${storyId}/chapter/${chapters[idx - 1].id}`,
+                );
+              }
+            }}
           />
-        </Dropdown>
-
-        <Button
-          className={styles.actionButton}
-          shape={'circle'}
-          size={'large'}
-          type={'primary'}
-          icon={<RightOutlined />}
-          onClick={() => {
-            if (chapters.length === 1) return;
-            const idx = chapters.findIndex(
-              (c: API.StoryChapter) => c.id === chapterId,
-            );
-            if (idx === chapters.length - 1) {
-              history.push(`/story/${storyId}/chapter/${chapters[0].id}`);
-            } else {
-              history.push(`/story/${storyId}/chapter/${chapters[idx + 1].id}`);
+          <Dropdown
+            placement={'topCenter'}
+            overlay={
+              <Menu
+                items={chapters
+                  .filter((c: API.StoryChapter) => !c.delete)
+                  .map((c: API.StoryChapter) => ({
+                    key: c.id,
+                    label: c.name,
+                    onClick: () => {
+                      history.push(`/story/${storyId}/chapter/${c.id}`);
+                    },
+                  }))}
+              />
             }
-          }}
-        />
-      </div>
+          >
+            <Button
+              className={styles.actionButton}
+              shape={'circle'}
+              size={'large'}
+              type={'primary'}
+              icon={<OrderedListOutlined />}
+            />
+          </Dropdown>
+
+          <Button
+            className={styles.actionButton}
+            shape={'circle'}
+            size={'large'}
+            type={'primary'}
+            icon={<RightOutlined />}
+            onClick={() => {
+              if (chapters.length === 1) return;
+              const idx = chapters.findIndex(
+                (c: API.StoryChapter) => c.id === chapterId,
+              );
+              if (idx === chapters.length - 1) {
+                history.push(`/story/${storyId}/chapter/${chapters[0].id}`);
+              } else {
+                history.push(
+                  `/story/${storyId}/chapter/${chapters[idx + 1].id}`,
+                );
+              }
+            }}
+          />
+        </div>
+      )}
     </PageContainer>
   );
 };

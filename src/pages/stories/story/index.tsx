@@ -14,6 +14,7 @@ import {
   Button,
   Col,
   message,
+  Modal,
   Row,
   Skeleton,
   Tabs,
@@ -27,6 +28,7 @@ import styles from './index.less';
 const Story: React.FC = () => {
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId');
+
   const { account, chains, token, wallet } = useModel(
     'walletModel',
     (model) => ({
@@ -54,6 +56,7 @@ const Story: React.FC = () => {
 
   const [nftModalVisible, setNftModalVisible] = useState(false);
   const [storyModalVisible, setStoryModalVisible] = useState(false);
+  const [descModalVisible, setDescModalVisible] = useState(false);
 
   const isAuthor = useMemo(() => {
     if (currentStory && !!account) {
@@ -138,7 +141,7 @@ const Story: React.FC = () => {
                   />
                 )}
               </Col>
-              <Col style={{ width: 400 }}>
+              <Col style={{ width: 500 }}>
                 <Skeleton loading={gettingCurrentStory} active={true}>
                   <div className={styles.name}>
                     <div>{currentStory?.info?.title}</div>
@@ -166,11 +169,17 @@ const Story: React.FC = () => {
                       ellipsis={{
                         rows: 8,
                         expandable: true,
-                        symbol: 'more',
-                        onExpand: (e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        },
+                        symbol: (
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setDescModalVisible(true);
+                            }}
+                          >
+                            {formatMessage({ id: 'story.more' })}
+                          </span>
+                        ),
                       }}
                       className={styles.infoDescription}
                     >
@@ -253,6 +262,17 @@ const Story: React.FC = () => {
         visible={storyModalVisible}
         onClose={() => setStoryModalVisible(false)}
       />
+
+      <Modal
+        visible={descModalVisible}
+        onCancel={() => setDescModalVisible(false)}
+        title={false}
+        closable={false}
+        centered={true}
+        footer={false}
+      >
+        <div style={{ fontSize: 16 }}>{currentStory?.info?.description}</div>
+      </Modal>
     </PageContainer>
   );
 };

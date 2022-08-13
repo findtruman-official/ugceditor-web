@@ -214,6 +214,8 @@ const Edit: React.FC = () => {
             fontSize: '1.1rem',
             marginTop: 24,
             marginBottom: 256,
+            cursor: 'text',
+            minHeight: 500,
           }}
         />
       </div>

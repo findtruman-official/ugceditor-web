@@ -1,14 +1,24 @@
 import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import StoryCardList from '@/components/StoryCard/StoryCardList';
+import { WalletContext, WalletContextType } from '@/layouts';
 import { useIntl } from '@@/plugin-locale';
 import { useModel } from '@@/plugin-model';
 import { PageContainer } from '@ant-design/pro-components';
-import React, { useState } from 'react';
+import { Button } from 'antd';
+import React, { useContext, useState } from 'react';
 import styles from './index.less';
 
 const Writer: React.FC = () => {
   const { formatMessage } = useIntl();
-  const { myStories, gettingMyStories } = useModel('storyModel');
+
+  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
+  const { myStories, gettingMyStories } = useModel('storyModel', (model) => ({
+    myStories: model.myStories,
+    gettingMyStories: model.gettingMyStories,
+  }));
+  const { account } = useModel('walletModel', (model) => ({
+    account: model.account,
+  }));
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
 
@@ -18,12 +28,26 @@ const Writer: React.FC = () => {
         <div className={styles.title}>
           {formatMessage({ id: 'writer.title.my-stories' })}
         </div>
-        <StoryCardList
-          stories={myStories}
-          loading={gettingMyStories}
-          createStory={true}
-          onCreateStory={() => setCreateModalVisible(true)}
-        />
+        {!account ? (
+          <div style={{ textAlign: 'center' }}>
+            <Button
+              style={{ margin: '24px auto' }}
+              shape={'round'}
+              type={'primary'}
+              size={'large'}
+              onClick={openWalletModal}
+            >
+              {formatMessage({ id: 'header.connect-wallet' })}
+            </Button>
+          </div>
+        ) : (
+          <StoryCardList
+            stories={myStories}
+            loading={gettingMyStories}
+            createStory={true}
+            onCreateStory={() => setCreateModalVisible(true)}
+          />
+        )}
       </div>
       <CreateStoryModal
         visible={createModalVisible}

@@ -65,7 +65,9 @@ export default function Header() {
                 chapterPage ? '' : styles.menuItemActive,
               ].join(' ')}
               onClick={() => {
-                chapterPage && history.push(`/story/${storyId}`);
+                if (chapterPage) {
+                  history.push(`/story/${storyId}`);
+                }
               }}
             >
               {currentStory.info.title}
@@ -75,7 +77,7 @@ export default function Header() {
             <div className={[styles.menuItem, styles.menuItemActive].join(' ')}>
               {chapterId === 0
                 ? formatMessage({ id: 'chapter.new-chapter' })
-                : currentChapter.name}
+                : currentChapter?.name}
             </div>
           )}
         </div>
