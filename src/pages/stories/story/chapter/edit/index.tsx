@@ -50,8 +50,8 @@ const Edit: React.FC = () => {
     chapterId,
     setChapterId,
     currentChapter,
-    chapters,
-    setChapters,
+    chapterCache,
+    saveChapterCache,
   } = useModel('storyModel', (model) => ({
     isAuthor: model.isAuthor,
     storyId: model.storyId,
@@ -59,8 +59,8 @@ const Edit: React.FC = () => {
     chapterId: model.chapterId,
     setChapterId: model.setChapterId,
     currentChapter: model.currentChapter,
-    chapters: model.chapters,
-    setChapters: model.setChapters,
+    chapterCache: model.chapterCache,
+    saveChapterCache: model.saveChapterCache,
   }));
 
   const [title, setTitle] = useState('');
@@ -104,79 +104,26 @@ const Edit: React.FC = () => {
   }, [match]);
 
   useEffect(() => {
-    if (currentChapter) {
-      setTitle(currentChapter.name);
-      setContent(currentChapter.content);
+    if (currentChapter || chapterCache) {
+      if (chapterCache?.new) {
+        setTitle(chapterCache.name);
+        setContent(chapterCache.content);
+      } else {
+        setTitle(currentChapter.name);
+        setContent(currentChapter.content);
+      }
+    } else {
+      setTitle('');
+      setContent('');
     }
-  }, [currentChapter]);
+  }, [currentChapter, chapterCache]);
 
   const saveDraft = () => {
-    // localStorage.setItem(
-    //   title,
-    //   JSON.stringify({
-    //     title,
-    //     content,
-    //     timestamp: new Date().valueOf(),
-    //   }),
-    // );
     const timestamp = new Date().valueOf();
-    if (chapterId === 0) {
-      const _chapters = [...chapters];
-      const idx = _chapters.findIndex(
-        (c: API.StoryChapter) => c.id === newChapterId,
-      );
-      if (idx !== -1) {
-        _chapters[idx] = {
-          ..._chapters[idx],
-          name: title,
-          content: content,
-          createAt: timestamp,
-          updateAt: timestamp,
-        };
-      } else {
-        _chapters.push({
-          id: newChapterId,
-          name: title,
-          content: content,
-          createAt: timestamp,
-          updateAt: timestamp,
-        });
-      }
-      setChapters(_chapters);
-    } else {
-      const _chapters = [...chapters];
-      const idx = _chapters.findIndex(
-        (c: API.StoryChapter) => c.id === chapterId,
-      );
-      if (idx !== -1) {
-        _chapters[idx] = {
-          ..._chapters[idx],
-          name: title,
-          content: content,
-          updateAt: timestamp,
-        };
-      }
-      setChapters(_chapters);
-    }
+    saveChapterCache(chapterId || newChapterId, title, content, timestamp);
     message.success(formatMessage({ id: 'chapter.saved' }));
     setSaved(true);
   };
-
-  // const getDraft = () => {
-  //   try {
-  //     const storage = localStorage.getItem(chapterId);
-  //     if (storage) {
-  //       const { title, content, timestamp } = JSON.parse(storage);
-  //       // TODO: 与数据时间戳比较
-  //       setTitle(title);
-  //       setContent(content);
-  //     }
-  //   } catch (e) {}
-  // };
-  //
-  // useEffect(() => {
-  //   !!chapterId && getDraft();
-  // }, [chapterId]);
 
   return (
     <PageContainer

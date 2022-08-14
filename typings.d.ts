@@ -51,7 +51,6 @@ declare global {
       createAt: string;
       updateAt: string;
       delete?: boolean;
-      new?: boolean;
     };
 
     type StoryDetail = {
@@ -110,17 +109,14 @@ declare global {
     };
 
     /**
-     * Record<chainStoryId, >
+     * Record<`FCC_CHAPTER_CACHE_${chainStoryId}`, ChapterStorage[]>
      */
-    type ChapterStorage = Record<
-      string, // chainStoryId
-      {
-        account: string;
-        chapterId: string;
-        title: string;
-        content: string;
-        timestamp: number;
-      }
-    >;
+    type ChapterStorage = {
+      id: number;
+      name: string;
+      content: string;
+      timestamp: number;
+      new: boolean;
+    };
   }
 }

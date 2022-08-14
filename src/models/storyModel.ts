@@ -1,6 +1,6 @@
 import { getStories, getStory } from '@/services/api';
 import { useRequest } from 'ahooks';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useModel } from 'umi';
 
 // @ts-ignore
@@ -47,7 +47,72 @@ export default () => {
     }
   }, [chapterId, chapters]);
 
-  console.log(account);
+  const { data: chapterCaches, refresh: refreshChapterCaches } = useRequest(
+    async () => {
+      if (!storyId) return [];
+
+      try {
+        const storage = localStorage.getItem(`FCC_CHAPTER_CACHE_${storyId}`);
+        if (storage) {
+          return (JSON.parse(storage) as API.ChapterStorage[]).filter((e) => {
+            const _chapter = chapters.find((c) => c.id === e.id);
+            return (
+              !_chapter || e.timestamp > new Date(_chapter.updateAt).valueOf()
+            );
+          });
+        }
+      } catch (e) {}
+      return [];
+    },
+    {
+      refreshDeps: [storyId, chapters],
+    },
+  );
+  const chapterCache = useMemo(() => {
+    return chapterCaches?.find((c: API.ChapterStorage) => c.id === chapterId);
+  }, [chapterCaches, chapterId]);
+  const saveChapterCache = useCallback(
+    (id: number, name: string, content: string, timestamp: number) => {
+      const _chapterStorage = chapterCaches ? [...chapterCaches] : [];
+      const idx = _chapterStorage?.findIndex((e) => e.id === id);
+      const chapter = {
+        id,
+        name,
+        content,
+        timestamp,
+        new: true,
+      };
+      if (idx !== -1) {
+        _chapterStorage[idx] = chapter;
+      } else {
+        _chapterStorage.push(chapter);
+      }
+      localStorage.setItem(
+        `FCC_CHAPTER_CACHE_${storyId}`,
+        JSON.stringify(_chapterStorage),
+      );
+      refreshChapterCaches();
+    },
+    [storyId, chapterCaches],
+  );
+  const deleteChapterCache = useCallback(
+    (id: number) => {
+      const _chapterStorage = chapterCaches ? [...chapterCaches] : [];
+      const idx = _chapterStorage?.findIndex((e) => e.id === id);
+      if (idx !== -1) {
+        _chapterStorage.splice(idx, 1);
+        localStorage.setItem(
+          `FCC_CHAPTER_CACHE_${storyId}`,
+          JSON.stringify(_chapterStorage),
+        );
+        refreshChapterCaches();
+      }
+    },
+    [storyId, chapterCaches],
+  );
+  const clearChapterCaches = useCallback(() => {
+    localStorage.removeItem(`FCC_CHAPTER_CACHE_${storyId}`);
+  }, [storyId]);
 
   const isAuthor = useMemo(() => {
     if (currentStory && !!account) {
@@ -94,6 +159,11 @@ export default () => {
     setChapterId,
     chapters,
     setChapters,
+    chapterCache,
+    chapterCaches,
+    saveChapterCache,
+    deleteChapterCache,
+    clearChapterCaches,
     currentStory,
     gettingCurrentStory,
     refreshCurrentStory,

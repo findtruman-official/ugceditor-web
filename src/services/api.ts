@@ -114,6 +114,8 @@ export const getStory = async (chain: string, chainStoryId: string) => {
               id
               name
               content
+              createAt
+              updateAt
             }
             createAt
           }

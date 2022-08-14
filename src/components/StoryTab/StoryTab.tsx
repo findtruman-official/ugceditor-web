@@ -1,6 +1,6 @@
 import { useIntl } from '@@/plugin-locale';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Modal, Spin } from 'antd';
+import { Modal, Spin, Tag } from 'antd';
 import { history, useModel } from 'umi';
 import styles from './StoryTab.less';
 
@@ -10,6 +10,7 @@ interface StoryTabProps {
 }
 
 const ChapterItem = ({
+  type = 'default',
   isAuthor,
   chapter,
   storyId,
@@ -17,22 +18,33 @@ const ChapterItem = ({
   onDelete,
   onUndoDelete,
 }: {
+  type: 'new' | 'modified' | 'default';
   isAuthor: boolean;
-  chapter: API.StoryChapter;
+  chapter: { id: number; name: string };
   storyId: string;
   deleted?: boolean;
   onDelete: () => void;
-  onUndoDelete: () => void;
+  onUndoDelete?: () => void;
 }) => {
   const { formatMessage } = useIntl();
   return (
     <div
       className={deleted ? styles.chapterCardDelete : styles.chapterCard}
       onClick={() => {
-        !deleted && history.push(`/story/${storyId}/chapter/${chapter.id}`);
+        if (!deleted && type !== 'new') {
+          history.push(`/story/${storyId}/chapter/${chapter.id}`);
+        }
       }}
     >
-      <div>{chapter.name}</div>
+      <div>
+        {isAuthor && type === 'modified' && (
+          <Tag color={'#3e38d9'}>{formatMessage({ id: 'story.modified' })}</Tag>
+        )}
+        {isAuthor && type === 'new' && (
+          <Tag color={'#3e38d9'}>{formatMessage({ id: 'story.new' })}</Tag>
+        )}
+        {chapter.name}
+      </div>
       {isAuthor &&
         (deleted ? (
           <div>
@@ -41,7 +53,7 @@ const ChapterItem = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onUndoDelete();
+                onUndoDelete?.();
               }}
             >
               {formatMessage({ id: 'story.undo-delete' })}
@@ -78,33 +90,37 @@ const ChapterItem = ({
 export default function StoryTab({ loading, storyId }: StoryTabProps) {
   const { formatMessage } = useIntl();
 
-  const { isAuthor, chapters, setChapters } = useModel(
-    'storyModel',
-    (model) => ({
+  const { isAuthor, chapters, chapterCaches, deleteChapterCache, setChapters } =
+    useModel('storyModel', (model) => ({
       isAuthor: model.isAuthor,
       chapters: model.chapters,
+      chapterCaches: model.chapterCaches,
+      deleteChapterCache: model.deleteChapterCache,
       setChapters: model.setChapters,
-    }),
-  );
+    }));
 
-  const handleDelete = (id: number, name: string) => {
+  const handleDelete = (id: number, name: string, isCache = false) => {
     Modal.confirm({
       centered: true,
       title: formatMessage({ id: 'story.delete-confirm-title' }, { name }),
       icon: <ExclamationCircleOutlined />,
-      content: formatMessage({ id: 'story.delete-confirm-desc' }),
+      content: !isCache && formatMessage({ id: 'story.delete-confirm-desc' }),
       okText: formatMessage({ id: 'story.delete-confirm.confirm' }),
       okType: 'danger',
       cancelText: formatMessage({ id: 'story.delete-confirm.cancel' }),
       onOk() {
-        setChapters((state: API.StoryChapter[]) =>
-          state.map((e) => {
-            return {
-              ...e,
-              delete: e.id === id ? true : e.delete,
-            };
-          }),
-        );
+        if (isCache) {
+          deleteChapterCache(id);
+        } else {
+          setChapters((state: API.StoryChapter[]) =>
+            state.map((e) => {
+              return {
+                ...e,
+                delete: e.id === id ? true : e.delete,
+              };
+            }),
+          );
+        }
       },
       onCancel() {},
     });
@@ -124,22 +140,46 @@ export default function StoryTab({ loading, storyId }: StoryTabProps) {
   return (
     <div className={styles.container}>
       <Spin spinning={loading}>
-        {chapters.length === 0 ? (
+        {chapters.length === 0 && chapterCaches?.length === 0 ? (
           <div className={styles.noChapterTip}>
             {formatMessage({ id: 'story.no-chapter-tip' })}
           </div>
         ) : (
-          chapters.map((chapter: API.StoryChapter) => (
-            <ChapterItem
-              key={chapter.id}
-              isAuthor={isAuthor}
-              chapter={chapter}
-              storyId={storyId}
-              deleted={chapter.delete}
-              onDelete={() => handleDelete(chapter.id, chapter.name)}
-              onUndoDelete={() => handleUndoDelete(chapter.id)}
-            />
-          ))
+          <>
+            {chapters.map((chapter: API.StoryChapter) => {
+              const cache = chapterCaches?.find(
+                (c: API.ChapterStorage) => c.id === chapter.id,
+              );
+              return (
+                <ChapterItem
+                  type={!!cache ? 'modified' : 'default'}
+                  key={chapter.id}
+                  isAuthor={isAuthor}
+                  chapter={cache || chapter}
+                  storyId={storyId}
+                  deleted={chapter.delete}
+                  onDelete={() => handleDelete(chapter.id, chapter.name)}
+                  onUndoDelete={() => handleUndoDelete(chapter.id)}
+                />
+              );
+            })}
+            {chapterCaches
+              ?.filter(
+                (chapter: API.ChapterStorage) =>
+                  !chapters.find((c: API.StoryChapter) => c.id === chapter.id),
+              )
+              .map((chapter: API.ChapterStorage) => (
+                <ChapterItem
+                  type={'new'}
+                  key={chapter.id}
+                  isAuthor={isAuthor}
+                  chapter={chapter}
+                  storyId={storyId}
+                  deleted={false}
+                  onDelete={() => handleDelete(chapter.id, chapter.name, true)}
+                />
+              ))}
+          </>
         )}
       </Spin>
     </div>

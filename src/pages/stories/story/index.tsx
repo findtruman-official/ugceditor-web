@@ -42,6 +42,8 @@ const Story: React.FC = () => {
     gettingCurrentStory,
     refreshCurrentStory,
     chapters,
+    chapterCaches,
+    clearChapterCaches,
   } = useModel('storyModel', (model) => ({
     isAuthor: model.isAuthor,
     currentStory: model.currentStory,
@@ -50,6 +52,8 @@ const Story: React.FC = () => {
     gettingCurrentStory: model.gettingCurrentStory,
     refreshCurrentStory: model.refreshCurrentStory,
     chapters: model.chapters,
+    chapterCaches: model.chapterCaches,
+    clearChapterCaches: model.clearChapterCaches,
   }));
 
   const [nftModalVisible, setNftModalVisible] = useState(false);
@@ -57,7 +61,6 @@ const Story: React.FC = () => {
   const [descModalVisible, setDescModalVisible] = useState(false);
 
   useEffect(() => {
-    console.log('match?.params.storyId', match?.params.storyId);
     if (match?.params.storyId) {
       setStoryId(match?.params.storyId);
     }
@@ -74,14 +77,34 @@ const Story: React.FC = () => {
             title: info.title,
             cover: info.cover,
             description: info.description,
-            chapters: chapters
-              .filter((c: API.StoryChapter) => !c.delete)
-              .map((c: API.StoryChapter) => ({
-                name: c.name,
-                content: c.content,
-                createAt: c.createAt,
-                updateAt: c.updateAt,
-              })),
+            chapters: [
+              ...chapters
+                .filter((c: API.StoryChapter) => !c.delete)
+                .map((c: API.StoryChapter) => {
+                  const cache = chapterCaches?.find(
+                    (_c: API.ChapterStorage) => _c.id === c.id,
+                  );
+                  return {
+                    name: cache.name || c.name,
+                    content: cache.content || c.content,
+                    createAt: c.createAt,
+                    updateAt: cache.timestamp || c.updateAt,
+                  };
+                }),
+              ...chapterCaches
+                ?.filter(
+                  (chapter: API.ChapterStorage) =>
+                    !chapters.find(
+                      (c: API.StoryChapter) => c.id === chapter.id,
+                    ),
+                )
+                .map((chapter: API.ChapterStorage) => ({
+                  name: chapter.name,
+                  content: chapter.content,
+                  createAt: chapter.timestamp,
+                  updateAt: chapter.timestamp,
+                })),
+            ],
             createAt: info.createAt,
             updateAt: currentTime,
             version: '1',
@@ -98,6 +121,7 @@ const Story: React.FC = () => {
             id: 'story.story-updated',
           }),
         );
+        clearChapterCaches();
         refreshCurrentStory();
       } catch (e) {
         console.log(e);

@@ -46,6 +46,8 @@ export default {
   'story.delete': 'Delete',
   'story.undo-delete': 'Undo Delete',
   'story.nft-not-published': 'Story NFT has not been published yet.',
+  'story.modified': 'Modified',
+  'story.new': 'New',
   'chapter.title.placeholder': 'Give it a title',
   'chapter.content.placeholder': 'Your story here...',
   'chapter.save-draft': 'Save Draft',
