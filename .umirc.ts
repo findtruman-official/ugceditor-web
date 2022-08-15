@@ -72,4 +72,8 @@ export default defineConfig({
       pathRewrite: { '^/fcc-story/ipfs': '' },
     },
   },
+  history: {
+    type: 'hash',
+  },
+  publicPath: './',
 });
