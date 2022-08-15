@@ -60,14 +60,16 @@ export default defineConfig({
   mfsu: false,
   proxy: {
     '/api': {
-      target: 'http://10.243.248.69:3000/',
+      // target: 'http://10.243.248.69:3000/',
+      target: 'https://findtruman.io/fcc-story/graphql',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
-    '/ipfs': {
-      target: 'http://10.243.248.69:3000/',
+    '/fcc-story/ipfs': {
+      // target: 'http://10.243.248.69:3000/',
+      target: 'https://findtruman.io/fcc-story/ipfs',
       changeOrigin: true,
-      pathRewrite: { '^/ipfs': '/ipfs' },
+      pathRewrite: { '^/fcc-story/ipfs': '' },
     },
   },
 });

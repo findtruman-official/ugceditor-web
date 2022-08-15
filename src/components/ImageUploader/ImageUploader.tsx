@@ -27,7 +27,7 @@ export default function ImageUploader({
           uid: '-1',
           name: 'image.png',
           status: 'done',
-          url: `/ipfs/file/${encodeURIComponent(value)}`,
+          url: `/fcc-story/ipfs/file/${encodeURIComponent(value)}`,
         },
       ]);
     }
@@ -37,7 +37,7 @@ export default function ImageUploader({
     <ImgCrop aspect={aspect} rotate>
       <Upload
         headers={{ 'x-token': token }}
-        action={'/api/ipfs/file'}
+        action={'/fcc-story/ipfs/file'}
         name={'file'}
         accept={'image/*'}
         maxCount={1}

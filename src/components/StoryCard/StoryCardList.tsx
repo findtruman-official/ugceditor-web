@@ -44,7 +44,7 @@ export default function StoryCardList({
           <Col key={index} span={4}>
             <StoryCard
               id={e.chainStoryId}
-              img={`/ipfs/file/${encodeURIComponent(e.info.cover)}`}
+              img={`/fcc-story/ipfs/file/${encodeURIComponent(e.info.cover)}`}
               chain={e.chainInfo.name}
             />
           </Col>

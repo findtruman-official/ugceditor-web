@@ -96,7 +96,7 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
         <div className={styles.nftCard}>
           <img
             className={styles.nftCover}
-            src={`/ipfs/file/${encodeURIComponent(
+            src={`/fcc-story/ipfs/file/${encodeURIComponent(
               currentStory.nft.image.split('://')[1],
             )}`}
           />
