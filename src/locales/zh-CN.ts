@@ -48,6 +48,7 @@ export default {
   'story.nft-not-published': '故事NFT暂未发行',
   'story.modified': '有修改',
   'story.new': '新章节',
+  'story.claimed': '铸造完成！',
   'chapter.title.placeholder': '起一个标题',
   'chapter.content.placeholder': '你的故事...',
   'chapter.save-draft': '保存草稿',

@@ -1,4 +1,3 @@
-import IDL from '@/assets/solana_programs.json';
 import {
   WalletAutoConnectType,
   WalletEvents,
@@ -6,15 +5,44 @@ import {
   WalletType,
 } from '@/wallets/index';
 import {
+  keypairIdentity,
+  Metaplex,
+  TokenMetadataProgram,
+} from '@metaplex-foundation/js';
+import {
   AnchorProvider,
   BN,
   Program,
   utils,
   web3,
 } from '@project-serum/anchor';
-import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import {
+  Account,
+  createAssociatedTokenAccountInstruction,
+  getAccount,
+  getAssociatedTokenAddress,
+} from '@solana/spl-token';
+import {
+  clusterApiUrl,
+  Connection,
+  Keypair,
+  PublicKey,
+  Signer,
+  Transaction,
+} from '@solana/web3.js';
 import { message } from 'antd';
 import { encodeBase64 } from 'tweetnacl-util';
+import { IDL, SolanaPrograms } from './types/solana-program';
+
+/** Address of the SPL Token program */
+const TOKEN_PROGRAM_ID = new PublicKey(
+  'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+);
+
+/** Address of the SPL Associated Token Account program */
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
+  'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+);
 
 export class PhantomWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Phantom;
@@ -34,9 +62,9 @@ export class PhantomWalletProvider implements WalletProvider {
 
         const wallet = window.solana;
         const network = clusterApiUrl('devnet');
-        this.connection = new Connection(network, 'recent');
+        this.connection = new Connection(network, 'confirmed');
         this.anchorProvider = new AnchorProvider(this.connection, wallet, {
-          preflightCommitment: 'recent',
+          preflightCommitment: 'confirmed',
         });
       });
       this.provider.on('disconnect', () => {
@@ -121,7 +149,11 @@ export class PhantomWalletProvider implements WalletProvider {
         programId,
       )
     )[0];
-    const program = new Program(IDL as any, programId, this.anchorProvider);
+    const program = new Program<SolanaPrograms>(
+      IDL as any,
+      programId,
+      this.anchorProvider,
+    );
     return { factoryKey, program };
   }
 
@@ -129,7 +161,7 @@ export class PhantomWalletProvider implements WalletProvider {
     return (
       await web3.PublicKey.findProgramAddress(
         [
-          Buffer.from(utils.bytes.utf8.encode('story-')),
+          Buffer.from(utils.bytes.utf8.encode(key)),
           storyId.toArrayLike(Uint8Array, 'le', 8),
         ],
         program.programId,
@@ -149,12 +181,12 @@ export class PhantomWalletProvider implements WalletProvider {
     const { publicKey } = await this.provider.connect();
 
     await program.methods
-      .publishStory(cid) // CID 表示故事内容在IPFS中的ContentId
+      .publishStory(cid)
       .accounts({
         author: publicKey,
         factory: factoryKey,
         story: storyKey,
-        systemProgram: web3.SystemProgram.programId, // 采用ChainInfo中的factoryAddress
+        systemProgram: web3.SystemProgram.programId,
       })
       // .signers([])
       .rpc({});
@@ -178,6 +210,39 @@ export class PhantomWalletProvider implements WalletProvider {
       .rpc({});
   }
 
+  async getOrCreateAssociatedTokenAccount(
+    connection: Connection,
+    payer: Signer,
+    mint: PublicKey,
+    owner: PublicKey,
+  ) {
+    const associatedToken = await getAssociatedTokenAddress(mint, owner);
+    let account: Account;
+    try {
+      account = await getAccount(connection, associatedToken, 'confirmed');
+    } catch (e) {
+      let recentBlockhash = (await connection.getLatestBlockhash('finalized'))
+        .blockhash;
+      const transaction = new Transaction({
+        recentBlockhash,
+        feePayer: payer.publicKey,
+      }).add(
+        createAssociatedTokenAccountInstruction(
+          payer.publicKey,
+          associatedToken,
+          owner,
+          mint,
+        ),
+      );
+      const { signature } = await this.provider.signAndSendTransaction(
+        transaction,
+      );
+      await connection.getSignatureStatus(signature);
+      account = await getAccount(connection, associatedToken, 'confirmed');
+    }
+    return account;
+  }
+
   async publishStoryNft(
     id: number,
     price: number,
@@ -186,6 +251,7 @@ export class PhantomWalletProvider implements WalletProvider {
     title: string,
     uriPrefix: string,
     factoryAddress: string,
+    findsMintAddress: string,
   ) {
     const { program } = await this.getProgram(factoryAddress);
     const _price = new BN(price);
@@ -195,25 +261,124 @@ export class PhantomWalletProvider implements WalletProvider {
     const storyKey = await this.getKey(program, storyId, 'story-');
     const mintStateKey = await this.getKey(program, storyId, 'story-mint-');
     const fromWallet = await this.provider.connect();
+    const findsMint = new PublicKey(findsMintAddress);
+    const fromTokenAccount = await this.getOrCreateAssociatedTokenAccount(
+      this.connection,
+      fromWallet,
+      findsMint,
+      fromWallet.publicKey,
+    );
 
-    // const fromTokenAccount = await getOrCreateAssociatedTokenAccount(
-    //   this.connection,
-    //   fromWallet,
-    //   mint,
-    //   fromWallet.publicKey,
-    // );
-    //
-    // await program.methods
-    //   .publishStoryNft(storyId, _price, _total, _reserved, title, uriPrefix)
-    //   .accounts({
-    //     author: fromWallet.publicKey,
-    //     story: storyKey,
-    //     mintState: mintStateKey,
-    //     findsMint: null,
-    //     findsRecvAccount: fromTokenAccount.address,
-    //     systemProgram: web3.SystemProgram.programId,
-    //   })
-    //   // .signers([])
-    //   .rpc({});
+    await program.methods
+      .publishStoryNft(storyId, _price, _total, _reserved, title, uriPrefix)
+      .accounts({
+        author: fromWallet.publicKey,
+        story: storyKey,
+        mintState: mintStateKey,
+        findsMint: findsMint,
+        findsRecvAccount: fromTokenAccount.address,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      // .signers([])
+      .rpc({});
+  }
+
+  async getMetadataKey(mint: web3.PublicKey) {
+    return (
+      await web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from('metadata'),
+          TokenMetadataProgram.publicKey.toBuffer(),
+          mint.toBuffer(),
+        ],
+        TokenMetadataProgram.publicKey,
+      )
+    )[0];
+  }
+
+  async getMasterEditionKey(mint: web3.PublicKey) {
+    return (
+      await web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from('metadata'),
+          TokenMetadataProgram.publicKey.toBuffer(),
+          mint.toBuffer(),
+          Buffer.from('edition'),
+        ],
+        TokenMetadataProgram.publicKey,
+      )
+    )[0];
+  }
+
+  async mintStoryNft(
+    id: number,
+    author: string,
+    factoryAddress: string,
+    findsMintAddress: string,
+  ) {
+    const { program } = await this.getProgram(factoryAddress);
+    const storyId = new BN(id);
+    const storyKey = await this.getKey(program, storyId, 'story-');
+    const mintStateKey = await this.getKey(program, storyId, 'story-mint-');
+    const minter = await this.provider.connect();
+    const findsMint = new PublicKey(findsMintAddress);
+
+    const findsSendAccount = await this.getOrCreateAssociatedTokenAccount(
+      this.connection,
+      minter,
+      findsMint,
+      minter.publicKey,
+    );
+
+    const findsRecvAccount = await getAccount(
+      this.connection,
+      await getAssociatedTokenAddress(findsMint, new PublicKey(author)),
+      'confirmed',
+    );
+
+    const mint = Keypair.generate();
+    const tokenAccount = await getAssociatedTokenAddress(
+      mint.publicKey,
+      minter.publicKey,
+    );
+    const metadata = await this.getMetadataKey(mint.publicKey);
+    const masterEdition = await this.getMasterEditionKey(mint.publicKey);
+
+    await program.methods
+      .mintStoryNft(storyId)
+      .accounts({
+        minter: minter.publicKey,
+        story: storyKey,
+        mintState: mintStateKey,
+        mint: mint.publicKey,
+        tokenAccount: tokenAccount,
+        findsMint: findsMint,
+        findsSendAccount: findsSendAccount.address,
+        findsRecvAccount: findsRecvAccount.address,
+        metadata: metadata,
+        tokenMetadataProgram: TokenMetadataProgram.publicKey,
+        masterEdition: masterEdition,
+        systemProgram: web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        // rent: new PublicKey(''), // rent
+      })
+      .signers([mint]) // mint, minter
+      .rpc({});
+  }
+
+  async balanceOfStoryNft(account: number, name: string) {
+    const metaplex = Metaplex.make(this.connection).use(
+      keypairIdentity(await this.provider.connect()),
+    );
+    const nfts = await metaplex
+      .nfts()
+      .findAllByOwner(new PublicKey(account))
+      .run();
+    if (!nfts) {
+      return 0;
+    } else {
+      return nfts.map((e: any) => e.name === name).length;
+    }
   }
 }

@@ -29,9 +29,11 @@ const ChapterItem = ({
   const { formatMessage } = useIntl();
   return (
     <div
-      className={deleted ? styles.chapterCardDelete : styles.chapterCard}
+      className={
+        isAuthor && deleted ? styles.chapterCardDelete : styles.chapterCard
+      }
       onClick={() => {
-        if (!deleted && type !== 'new') {
+        if (!isAuthor || (!deleted && type !== 'new')) {
           history.push(`/story/${storyId}/chapter/${chapter.id}`);
         }
       }}
@@ -147,9 +149,11 @@ export default function StoryTab({ loading, storyId }: StoryTabProps) {
         ) : (
           <>
             {chapters.map((chapter: API.StoryChapter) => {
-              const cache = chapterCaches?.find(
-                (c: API.ChapterStorage) => c.id === chapter.id,
-              );
+              const cache =
+                isAuthor &&
+                chapterCaches?.find(
+                  (c: API.ChapterStorage) => c.id === chapter.id,
+                );
               return (
                 <ChapterItem
                   type={!!cache ? 'modified' : 'default'}
@@ -163,22 +167,27 @@ export default function StoryTab({ loading, storyId }: StoryTabProps) {
                 />
               );
             })}
-            {chapterCaches
-              ?.filter(
-                (chapter: API.ChapterStorage) =>
-                  !chapters.find((c: API.StoryChapter) => c.id === chapter.id),
-              )
-              .map((chapter: API.ChapterStorage) => (
-                <ChapterItem
-                  type={'new'}
-                  key={chapter.id}
-                  isAuthor={isAuthor}
-                  chapter={chapter}
-                  storyId={storyId}
-                  deleted={false}
-                  onDelete={() => handleDelete(chapter.id, chapter.name, true)}
-                />
-              ))}
+            {isAuthor &&
+              chapterCaches
+                ?.filter(
+                  (chapter: API.ChapterStorage) =>
+                    !chapters.find(
+                      (c: API.StoryChapter) => c.id === chapter.id,
+                    ),
+                )
+                .map((chapter: API.ChapterStorage) => (
+                  <ChapterItem
+                    type={'new'}
+                    key={chapter.id}
+                    isAuthor={isAuthor}
+                    chapter={chapter}
+                    storyId={storyId}
+                    deleted={false}
+                    onDelete={() =>
+                      handleDelete(chapter.id, chapter.name, true)
+                    }
+                  />
+                ))}
           </>
         )}
       </Spin>

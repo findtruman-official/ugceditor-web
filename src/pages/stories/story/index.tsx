@@ -29,11 +29,15 @@ const Story: React.FC = () => {
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId');
 
-  const { chains, token, wallet } = useModel('walletModel', (model) => ({
-    chains: model.chains,
-    token: model.token,
-    wallet: model.wallet,
-  }));
+  const { account, chains, token, wallet } = useModel(
+    'walletModel',
+    (model) => ({
+      account: model.account,
+      chains: model.chains,
+      token: model.token,
+      wallet: model.wallet,
+    }),
+  );
   const {
     isAuthor,
     currentStory,
@@ -59,6 +63,11 @@ const Story: React.FC = () => {
   const [nftModalVisible, setNftModalVisible] = useState(false);
   const [storyModalVisible, setStoryModalVisible] = useState(false);
   const [descModalVisible, setDescModalVisible] = useState(false);
+
+  useEffect(() => {
+    setNftModalVisible(false);
+    setStoryModalVisible(false);
+  }, [account]);
 
   useEffect(() => {
     if (match?.params.storyId) {
@@ -151,7 +160,9 @@ const Story: React.FC = () => {
                 ) : (
                   <img
                     className={styles.cover}
-                    src={`/ipfs/file/${currentStory.info.cover}`}
+                    src={`/ipfs/file/${encodeURIComponent(
+                      currentStory.info.cover,
+                    )}`}
                   />
                 )}
               </Col>
@@ -217,8 +228,6 @@ const Story: React.FC = () => {
           <Col>
             <NftCard
               loading={saving}
-              isAuthor={isAuthor}
-              published={!!currentStory?.nft}
               onPublish={() => setNftModalVisible(true)}
             />
           </Col>

@@ -48,6 +48,7 @@ export default {
   'story.nft-not-published': 'Story NFT has not been published yet.',
   'story.modified': 'Modified',
   'story.new': 'New',
+  'story.claimed': 'Claimed!',
   'chapter.title.placeholder': 'Give it a title',
   'chapter.content.placeholder': 'Your story here...',
   'chapter.save-draft': 'Save Draft',

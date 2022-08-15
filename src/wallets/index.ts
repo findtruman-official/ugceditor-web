@@ -48,5 +48,15 @@ export interface WalletProvider {
     title: string,
     uriPrefix: string,
     factoryAddress: string,
+    findsMintAddress: string,
   ): Promise<void>;
+
+  mintStoryNft(
+    id: number,
+    author: string,
+    factoryAddress: string,
+    findsMintAddress: string,
+  ): Promise<void>;
+
+  balanceOfStoryNft(account: number, name: string): Promise<number>;
 }

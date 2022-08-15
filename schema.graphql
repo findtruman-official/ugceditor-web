@@ -8,6 +8,8 @@ schema {
 type Chain {
     "story factory address"
     factoryAddress: String!
+    "finds token address (solana mint)"
+    findsAddress: String!
     "chain readable name"
     name: String!
     "chain identifier"
@@ -35,6 +37,7 @@ type NftSale {
     chain: String!
     chainStoryId: String!
     createTime: DateTime!
+    image: String!
     name: String!
     nftSaleAddr: String!
     price: Int!
@@ -46,6 +49,7 @@ type NftSale {
 }
 
 type Query {
+    chain(chain: String!): Chain
     chains: [Chain!]!
     chapter(id: Int!): StoryChapter!
     "return user info if x-token is valid."

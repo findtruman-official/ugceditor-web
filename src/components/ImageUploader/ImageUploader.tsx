@@ -27,7 +27,7 @@ export default function ImageUploader({
           uid: '-1',
           name: 'image.png',
           status: 'done',
-          url: `/ipfs/file/${value}`,
+          url: `/ipfs/file/${encodeURIComponent(value)}`,
         },
       ]);
     }
@@ -46,7 +46,7 @@ export default function ImageUploader({
         style={{ width: '100%', height: 260 }}
         fileList={fileList}
         onPreview={(file) => {
-          window.open(`/ipfs/file/${file.response.cid}`);
+          window.open(`/ipfs/file/${encodeURIComponent(file.response.cid)}`);
         }}
         onChange={({ fileList: newFileList }) => {
           setFileList(newFileList);

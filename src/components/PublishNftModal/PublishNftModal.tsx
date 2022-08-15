@@ -42,7 +42,6 @@ export default function PublishNftModal({
 
   const { loading: publishingNft, run: runPublishNft } = useRequest(
     async (values) => {
-      console.log(values);
       if (!chains?.[0] || !wallet) return;
 
       try {
@@ -66,7 +65,8 @@ export default function PublishNftModal({
           )
         ).metadataUriPrefix;
 
-        await wallet.publishStoryNft(
+        // TODO: 发行NFT
+        await wallet.provider.publishStoryNft(
           currentStory.chainStoryId,
           price,
           totalSupply,
@@ -74,6 +74,7 @@ export default function PublishNftModal({
           name,
           uriPrefix,
           chains[0].factoryAddress,
+          chains[0].findsAddress,
         );
 
         message.success(formatMessage({ id: 'publish-nft-modal.published' }));
@@ -224,6 +225,7 @@ export default function PublishNftModal({
         onClick={form.submit}
         size={'large'}
         htmlType={'submit'}
+        loading={publishingNft}
       >
         {formatMessage({ id: 'publish-nft-modal.publish' })}
       </Button>

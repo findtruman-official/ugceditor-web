@@ -40,6 +40,7 @@ export const getChains = async () => {
         name
         type
         factoryAddress
+        findsAddress
       }
     }
   `);
@@ -122,6 +123,12 @@ export const getStory = async (chain: string, chainStoryId: string) => {
           nft {
             price
             uriPrefix
+            name
+            total
+            sold
+            authorReserved
+            authorClaimed
+            image
           }
           createTime
         }
@@ -165,7 +172,9 @@ export async function uploadJson<T>(data: T, token: string) {
 }
 
 export async function getJson<T>(cid: string) {
-  return await request<T>(`/api/ipfs/json/${cid}`, { method: 'GET' });
+  return await request<T>(`/api/ipfs/json/${encodeURIComponent(cid)}`, {
+    method: 'GET',
+  });
 }
 
 export async function getMetadataUriPrefix(

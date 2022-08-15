@@ -11,6 +11,7 @@ declare global {
       name: string;
       type: string;
       factoryAddress: string;
+      findsAddress: string;
     };
 
     type Jwt = {

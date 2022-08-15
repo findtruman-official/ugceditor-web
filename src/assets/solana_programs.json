@@ -136,6 +136,10 @@
           "type": "u64"
         },
         {
+          "name": "image",
+          "type": "string"
+        },
+        {
           "name": "title",
           "type": "string"
         },

@@ -14,7 +14,6 @@ export default function StoryCard({ id, img, chain }: StoryCardProps) {
   const { formatMessage } = useIntl();
   const [loaded, setLoaded] = useState(false);
 
-  // TODO: 显示chain
   return (
     <div style={{ position: 'relative' }} className={styles.storyCard}>
       <img
