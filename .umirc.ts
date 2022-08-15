@@ -59,15 +59,15 @@ export default defineConfig({
   },
   mfsu: false,
   proxy: {
-    '/api': {
-      // target: 'http://10.243.248.69:3000/',
-      target: 'https://findtruman.io/fcc-story/graphql',
+    '/fcc-story/graphql': {
+      target: 'http://10.243.248.69:3000/graphql/',
+      // target: 'https://findtruman.io/fcc-story/graphql',
       changeOrigin: true,
-      pathRewrite: { '^/api': '' },
+      pathRewrite: { '^/fcc-story/graphql': '' },
     },
     '/fcc-story/ipfs': {
-      // target: 'http://10.243.248.69:3000/',
-      target: 'https://findtruman.io/fcc-story/ipfs',
+      target: 'http://10.243.248.69:3000/ipfs',
+      // target: 'https://findtruman.io/fcc-story/ipfs',
       changeOrigin: true,
       pathRewrite: { '^/fcc-story/ipfs': '' },
     },
@@ -75,5 +75,5 @@ export default defineConfig({
   history: {
     type: 'hash',
   },
-  publicPath: './',
+  // publicPath: './',
 });

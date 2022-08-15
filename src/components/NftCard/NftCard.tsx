@@ -1,8 +1,9 @@
+import { WalletContext, WalletContextType } from '@/layouts';
 import { useIntl } from '@@/plugin-locale';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Col, message, Modal, Row } from 'antd';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { useModel } from 'umi';
 import styles from './NftCard.less';
 
@@ -13,6 +14,7 @@ interface NftCardProps {
 
 export default function NftCard({ loading, onPublish }: NftCardProps) {
   const { formatMessage } = useIntl();
+  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
   const { wallet, chains, account } = useModel('walletModel', (model) => ({
     wallet: model.wallet,
     chains: model.chains,
@@ -139,15 +141,27 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
                 </div>
               </Col>
             </Row>
-            <Button
-              type={'primary'}
-              loading={minting}
-              disabled={loading}
-              onClick={runMint}
-              block={true}
-            >
-              {formatMessage({ id: 'story.claim' })}
-            </Button>
+            {!!account ? (
+              <Button
+                type={'primary'}
+                loading={minting}
+                disabled={loading}
+                onClick={runMint}
+                block={true}
+              >
+                {formatMessage({ id: 'story.claim' })}
+              </Button>
+            ) : (
+              <Button
+                style={{ margin: '24px auto' }}
+                shape={'round'}
+                type={'primary'}
+                size={'large'}
+                onClick={openWalletModal}
+              >
+                {formatMessage({ id: 'header.connect-wallet' })}
+              </Button>
+            )}
           </div>
         </div>
       ) : (

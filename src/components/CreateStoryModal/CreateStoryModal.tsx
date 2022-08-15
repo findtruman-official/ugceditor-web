@@ -197,7 +197,7 @@ export default function CreateStoryModal({
                 },
               ]}
             >
-              <Input.TextArea showCount={true} maxLength={2000} rows={5} />
+              <Input.TextArea showCount={true} maxLength={300} rows={5} />
             </Form.Item>
           </Col>
         </Row>

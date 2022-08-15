@@ -152,7 +152,7 @@ export default function PublishNftModal({
                 },
               ]}
             >
-              <Input.TextArea showCount={true} maxLength={1000} rows={6} />
+              <Input.TextArea showCount={true} maxLength={500} rows={6} />
             </Form.Item>
           </Col>
         </Row>
