@@ -56,6 +56,8 @@ export interface WalletProvider {
     author: string,
     factoryAddress: string,
     findsMintAddress: string,
+    price: number,
+    onInsufficientFinds?: (account: string, amount: string) => void,
   ): Promise<void>;
 
   balanceOfStoryNft(account: number, name: string): Promise<number>;

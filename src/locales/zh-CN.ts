@@ -24,7 +24,7 @@ export default {
   'story.claim': '购买',
   'story.amount': '数量',
   'story.total': '总量',
-  'story.price': '售价',
+  'story.price': '售价($Finds)',
   'story.rest': '剩余',
   'story.own': '已持有',
   'story.author': '作者',
@@ -49,6 +49,9 @@ export default {
   'story.modified': '有修改',
   'story.new': '新章节',
   'story.claimed': '铸造完成！',
+  'story.insufficient-finds-title': 'Finds Token 不足',
+  'story.insufficient-finds-desc':
+    '请向以下账户转入 {amount} Finds Token：{account}',
   'chapter.title.placeholder': '起一个标题',
   'chapter.content.placeholder': '你的故事...',
   'chapter.save-draft': '保存草稿',
@@ -73,4 +76,5 @@ export default {
   'publish-nft-modal.reserve-less-than-total': '保留量应小于发行量！',
   'publish-nft-modal.published': '已发行！',
   'request-failed': '请求失败！',
+  'mint-failed': '铸造失败！',
 };

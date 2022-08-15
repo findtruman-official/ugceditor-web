@@ -24,7 +24,7 @@ export default {
   'story.claim': 'Claim',
   'story.amount': 'Amount',
   'story.total': 'Total',
-  'story.price': 'Price',
+  'story.price': 'Price($Finds)',
   'story.rest': 'Rest',
   'story.own': 'You own',
   'story.author': 'Author',
@@ -49,6 +49,9 @@ export default {
   'story.modified': 'Modified',
   'story.new': 'New',
   'story.claimed': 'Claimed!',
+  'story.insufficient-finds-title': 'Insufficient Finds Token',
+  'story.insufficient-finds-desc':
+    'Please transfer {amount} Finds Token to the following account: {account}',
   'chapter.title.placeholder': 'Give it a title',
   'chapter.content.placeholder': 'Your story here...',
   'chapter.save-draft': 'Save Draft',
@@ -75,4 +78,5 @@ export default {
     'Reserved Amount must be smaller than Total Supply!',
   'publish-nft-modal.published': 'Published！',
   'request-failed': 'Request Failed!',
+  'mint-failed': 'Mint Failed!',
 };

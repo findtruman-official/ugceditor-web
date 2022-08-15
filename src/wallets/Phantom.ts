@@ -315,6 +315,8 @@ export class PhantomWalletProvider implements WalletProvider {
     author: string,
     factoryAddress: string,
     findsMintAddress: string,
+    price: number,
+    onInsufficientFinds?: (account: string, amount: string) => void,
   ) {
     const { program } = await this.getProgram(factoryAddress);
     const storyId = new BN(id);
@@ -329,6 +331,18 @@ export class PhantomWalletProvider implements WalletProvider {
       findsMint,
       minter.publicKey,
     );
+
+    let tokenAmount = (
+      await this.connection.getTokenAccountBalance(findsSendAccount.address)
+    ).value.amount;
+    const enoughToken = new BN(tokenAmount).gte(new BN(price));
+    if (!enoughToken) {
+      onInsufficientFinds?.(
+        findsSendAccount.address.toString(),
+        new BN(price).sub(new BN(tokenAmount)).toString(),
+      );
+      throw new Error('Insufficient Finds Token');
+    }
 
     const findsRecvAccount = await getAccount(
       this.connection,

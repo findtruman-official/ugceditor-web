@@ -1,7 +1,7 @@
 import { useIntl } from '@@/plugin-locale';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Button, Col, message, Row } from 'antd';
+import { Button, Col, message, Modal, Row } from 'antd';
 import { useMemo } from 'react';
 import { useModel } from 'umi';
 import styles from './NftCard.less';
@@ -52,6 +52,17 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
           currentStory.author,
           chains[0].factoryAddress,
           chains[0].findsAddress,
+          currentStory.nft.price,
+          (account: string, amount: string) => {
+            Modal.error({
+              title: formatMessage({ id: 'story.insufficient-finds-title' }),
+              content: formatMessage(
+                { id: 'story.insufficient-finds-desc' },
+                { account, amount },
+              ),
+              centered: true,
+            });
+          },
         );
 
         message.success(formatMessage({ id: 'story.claimed' }));
@@ -59,7 +70,7 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
         refreshCurrentStory();
       } catch (e) {
         console.log(e);
-        message.error(formatMessage({ id: 'request-failed' }));
+        message.error(formatMessage({ id: 'mint-failed' }));
       }
     },
     {
@@ -92,7 +103,7 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
           <div className={styles.nftMeta}>
             <div className={styles.nftName}>{currentStory.nft.name}</div>
             <Row gutter={[8, 8]} style={{ marginBottom: 12 }}>
-              <Col span={12}>
+              <Col span={10}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.total' })}
                 </div>
@@ -100,21 +111,21 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
                   {currentStory.nft.total}
                 </div>
               </Col>
-              <Col span={12}>
+              <Col span={14}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.price' })}
                 </div>
                 <div className={styles.nftMetaValue}>
-                  {currentStory.nft.price} $Finds
+                  {currentStory.nft.price}
                 </div>
               </Col>
-              <Col span={12}>
+              <Col span={10}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.rest' })}
                 </div>
                 <div className={styles.nftMetaValue}>{rest}</div>
               </Col>
-              <Col span={12}>
+              <Col span={14}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.own' })}
                 </div>
