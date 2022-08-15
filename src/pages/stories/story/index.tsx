@@ -161,7 +161,7 @@ const Story: React.FC = () => {
                   <img
                     className={styles.cover}
                     src={`/fcc-story/ipfs/file/${encodeURIComponent(
-                      currentStory.info.cover,
+                      currentStory.info?.cover,
                     )}`}
                   />
                 )}

@@ -70,7 +70,7 @@ export default function Header() {
                 }
               }}
             >
-              {currentStory.info.title}
+              {currentStory.info?.title}
             </div>
           )}
           {chapterPage && (

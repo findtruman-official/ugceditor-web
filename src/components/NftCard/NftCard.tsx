@@ -152,13 +152,7 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
                 {formatMessage({ id: 'story.claim' })}
               </Button>
             ) : (
-              <Button
-                style={{ margin: '24px auto' }}
-                shape={'round'}
-                type={'primary'}
-                size={'large'}
-                onClick={openWalletModal}
-              >
+              <Button type={'primary'} onClick={openWalletModal} block={true}>
                 {formatMessage({ id: 'header.connect-wallet' })}
               </Button>
             )}

@@ -24,7 +24,7 @@ export default () => {
       setChapters([]);
       if (!!storyId && !!chains?.[0]) {
         const { story } = await getStory(chains[0].type, storyId);
-        setChapters(story.info.chapters);
+        setChapters(story.info?.chapters);
         return story;
       }
     },

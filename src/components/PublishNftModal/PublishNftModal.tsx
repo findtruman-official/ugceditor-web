@@ -45,7 +45,7 @@ export default function PublishNftModal({
       if (!chains?.[0] || !wallet) return;
 
       try {
-        const name = `${currentStory.info.title} NFT`;
+        const name = `${currentStory.info?.title} NFT`;
 
         const { img, desc, price, totalSupply, reservedAmount } = values;
         if (reservedAmount >= totalSupply) {
@@ -109,7 +109,7 @@ export default function PublishNftModal({
             !publishingNft && onClose();
           }}
         />
-        <div>{currentStory?.info.title} NFT</div>
+        <div>{currentStory?.info?.title} NFT</div>
       </div>
       <Form
         form={form}

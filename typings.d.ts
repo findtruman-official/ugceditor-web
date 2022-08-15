@@ -25,7 +25,7 @@ declare global {
       chainInfo: Chain;
       chainStoryId: string;
       contentHash: string;
-      info: StoryInfo;
+      info?: StoryInfo;
       nft?: NftSale;
       onChainAddr: string;
       createTime: string;
