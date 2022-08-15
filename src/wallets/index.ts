@@ -40,6 +40,8 @@ export interface WalletProvider {
 
   updateStory(id: number, cid: string, factoryAddress: string): Promise<void>;
 
+  getMintDecimals(findsMintAddress: string): Promise<number>;
+
   publishStoryNft(
     id: number,
     price: number,

@@ -1,6 +1,7 @@
 import { WalletContext, WalletContextType } from '@/layouts';
 import { useIntl } from '@@/plugin-locale';
 import { LoadingOutlined } from '@ant-design/icons';
+import { BN } from '@project-serum/anchor';
 import { useRequest } from 'ahooks';
 import { Button, Col, message, Modal, Row } from 'antd';
 import { useContext, useMemo } from 'react';
@@ -27,6 +28,17 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
       isAuthor: model.isAuthor,
       refreshCurrentStory: model.refreshCurrentStory,
     }),
+  );
+
+  const { data: mintDecimals } = useRequest(
+    async () => {
+      if (wallet && chains?.[0]) {
+        return await wallet.provider.getMintDecimals(chains[0].findsAddress);
+      }
+    },
+    {
+      refreshDeps: [wallet, chains],
+    },
   );
 
   const {
@@ -118,7 +130,9 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
                   {formatMessage({ id: 'story.price' })}
                 </div>
                 <div className={styles.nftMetaValue}>
-                  {currentStory.nft.price}
+                  {new BN(currentStory.nft.price)
+                    .div(new BN(10).pow(new BN(mintDecimals || 1)))
+                    .toString()}
                 </div>
               </Col>
               <Col span={10}>

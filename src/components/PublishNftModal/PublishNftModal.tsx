@@ -65,7 +65,6 @@ export default function PublishNftModal({
           )
         ).metadataUriPrefix;
 
-        // TODO: 发行NFT
         await wallet.provider.publishStoryNft(
           currentStory.chainStoryId,
           price,

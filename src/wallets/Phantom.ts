@@ -21,6 +21,7 @@ import {
   createAssociatedTokenAccountInstruction,
   getAccount,
   getAssociatedTokenAddress,
+  getMint,
 } from '@solana/spl-token';
 import {
   clusterApiUrl,
@@ -245,6 +246,11 @@ export class PhantomWalletProvider implements WalletProvider {
     return account;
   }
 
+  async getMintDecimals(findsMintAddress: string) {
+    const findsMint = new PublicKey(findsMintAddress);
+    return (await getMint(this.connection, findsMint)).decimals;
+  }
+
   async publishStoryNft(
     id: number,
     price: number,
@@ -256,14 +262,16 @@ export class PhantomWalletProvider implements WalletProvider {
     findsMintAddress: string,
   ) {
     const { program } = await this.getProgram(factoryAddress);
-    const _price = new BN(price);
+
+    const findsMint = new PublicKey(findsMintAddress);
+    const decimals = await this.getMintDecimals(findsMintAddress);
+    const _price = new BN(price).mul(new BN(10).pow(new BN(decimals)));
     const _total = new BN(total);
     const _reserved = new BN(reserved);
     const storyId = new BN(id);
     const storyKey = await this.getKey(program, storyId, 'story-');
     const mintStateKey = await this.getKey(program, storyId, 'story-mint-');
     const fromWallet = await this.provider.connect();
-    const findsMint = new PublicKey(findsMintAddress);
     const fromTokenAccount = await this.getOrCreateAssociatedTokenAccount(
       this.connection,
       fromWallet,
