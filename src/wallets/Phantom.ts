@@ -392,7 +392,7 @@ export class PhantomWalletProvider implements WalletProvider {
     if (!nfts) {
       return 0;
     } else {
-      return nfts.map((e: any) => e.name === name).length;
+      return nfts.filter((e: any) => e.name === name).length;
     }
   }
 }
