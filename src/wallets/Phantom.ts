@@ -221,23 +221,25 @@ export class PhantomWalletProvider implements WalletProvider {
     try {
       account = await getAccount(connection, associatedToken, 'confirmed');
     } catch (e) {
-      let recentBlockhash = (await connection.getLatestBlockhash('finalized'))
-        .blockhash;
-      const transaction = new Transaction({
-        recentBlockhash,
-        feePayer: payer.publicKey,
-      }).add(
-        createAssociatedTokenAccountInstruction(
-          payer.publicKey,
-          associatedToken,
-          owner,
-          mint,
-        ),
-      );
-      const { signature } = await this.provider.signAndSendTransaction(
-        transaction,
-      );
-      await connection.getSignatureStatus(signature);
+      try {
+        let recentBlockhash = (await connection.getLatestBlockhash('finalized'))
+          .blockhash;
+        const transaction = new Transaction({
+          recentBlockhash,
+          feePayer: payer.publicKey,
+        }).add(
+          createAssociatedTokenAccountInstruction(
+            payer.publicKey,
+            associatedToken,
+            owner,
+            mint,
+          ),
+        );
+        const { signature } = await this.provider.signAndSendTransaction(
+          transaction,
+        );
+        await connection.getSignatureStatus(signature);
+      } catch (e) {}
       account = await getAccount(connection, associatedToken, 'confirmed');
     }
     return account;
