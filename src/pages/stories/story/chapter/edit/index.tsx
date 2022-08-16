@@ -7,7 +7,7 @@ import { useMatch, useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { ExclamationCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Col, Input, message, Modal, Row } from 'antd';
+import { Button, Col, Input, message, Modal, Row, Tooltip } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { history } from 'umi';
@@ -158,9 +158,11 @@ const Edit: React.FC = () => {
               />
             </Col>
             <Col>
-              <Button size={'large'} type={'primary'} onClick={saveDraft}>
-                {formatMessage({ id: 'chapter.save-draft' })}
-              </Button>
+              <Tooltip title={formatMessage({ id: 'chapter.save-draft-tip' })}>
+                <Button size={'large'} type={'primary'} onClick={saveDraft}>
+                  {formatMessage({ id: 'chapter.save-draft' })}
+                </Button>
+              </Tooltip>
             </Col>
           </Row>
           <div className={styles.container}>
@@ -278,15 +280,17 @@ const Edit: React.FC = () => {
             </Button>
           </Col>
           <Col>
-            <Button
-              type={'primary'}
-              onClick={() => {
-                saveDraft();
-                backToStory();
-              }}
-            >
-              {formatMessage({ id: 'chapter.save-draft-and-leave' })}
-            </Button>
+            <Tooltip title={formatMessage({ id: 'chapter.save-draft-tip' })}>
+              <Button
+                type={'primary'}
+                onClick={() => {
+                  saveDraft();
+                  backToStory();
+                }}
+              >
+                {formatMessage({ id: 'chapter.save-draft-and-leave' })}
+              </Button>
+            </Tooltip>
           </Col>
         </Row>
       </Modal>
