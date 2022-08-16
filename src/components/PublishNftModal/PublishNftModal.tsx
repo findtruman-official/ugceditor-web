@@ -1,5 +1,5 @@
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
-import { getMetadataUriPrefix, syncStoryNftSale } from '@/services/api';
+import { getMetadataUriPrefix } from '@/services/api';
 import { useIntl } from '@@/plugin-locale';
 import { LeftOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
@@ -75,8 +75,6 @@ export default function PublishNftModal({
           chains[0].factoryAddress,
           chains[0].findsAddress,
         );
-
-        await syncStoryNftSale(chains[0].type, currentStory.chainStoryId);
 
         message.success(formatMessage({ id: 'publish-nft-modal.published' }));
 

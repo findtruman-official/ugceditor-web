@@ -1,4 +1,10 @@
-import { getNftInfo, getStories, getStory } from '@/services/api';
+import {
+  getNftInfo,
+  getStories,
+  getStory,
+  syncStoryContentHash,
+  syncStoryNftSale,
+} from '@/services/api';
 import { useRequest } from 'ahooks';
 import { useCallback, useMemo, useState } from 'react';
 import { useModel } from 'umi';
@@ -190,6 +196,7 @@ export default () => {
       const list = [...createStoryPollingList];
       let changed = false;
       for (let i = list.length - 1; i >= 0; i--) {
+        await syncStoryContentHash(chains[0].type, list[i].id);
         const { story } = await getStory(chains[0].type, list[i].id);
         if (story) {
           list.splice(i, 1);
@@ -228,6 +235,7 @@ export default () => {
       if (!nftSalePollingList.length || !account || !chains?.[0]) return;
       const list = [...nftSalePollingList];
       for (let i = list.length - 1; i >= 0; i--) {
+        await syncStoryNftSale(chains[0].type, list[i]);
         const { story } = await getNftInfo(chains[0].type, list[i]);
         if (story.nft) {
           list.splice(i, 1);
@@ -280,6 +288,7 @@ export default () => {
       if (!updateStoryPollingList.length || !account || !chains?.[0]) return;
       const list = [...updateStoryPollingList];
       for (let i = list.length - 1; i >= 0; i--) {
+        await syncStoryContentHash(chains[0].type, list[i].id);
         const { story } = await getStory(chains[0].type, list[i].id);
         if (story.contentHash === list[i].contentHash) {
           list.splice(i, 1);

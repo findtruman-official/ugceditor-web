@@ -1,5 +1,5 @@
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
-import { getJson, syncStoryContentHash, uploadJson } from '@/services/api';
+import { getJson, uploadJson } from '@/services/api';
 import { useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { InfoCircleOutlined, LeftOutlined } from '@ant-design/icons';
@@ -81,7 +81,6 @@ export default function CreateStoryModal({
             chains[0].factoryAddress,
           );
           addUpdateStoryPolling(id!!, cid);
-          await syncStoryContentHash(chains[0].type, id!!);
         } else {
           const newStoryId = await wallet.provider.publishStory(
             cid,
@@ -92,7 +91,6 @@ export default function CreateStoryModal({
             cover: values.cover,
             chain: chains[0].name,
           });
-          await syncStoryContentHash(chains[0].type, newStoryId);
         }
 
         message.success(

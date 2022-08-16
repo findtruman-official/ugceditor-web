@@ -2,7 +2,7 @@ import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import NftCard from '@/components/NftCard/NftCard';
 import PublishNftModal from '@/components/PublishNftModal/PublishNftModal';
 import StoryTab from '@/components/StoryTab/StoryTab';
-import { syncStoryContentHash, uploadJson } from '@/services/api';
+import { uploadJson } from '@/services/api';
 import { shortenAccount } from '@/utils/format';
 import { useMatch } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
@@ -99,10 +99,10 @@ const Story: React.FC = () => {
                     (_c: API.ChapterStorage) => _c.id === c.id,
                   );
                   return {
-                    name: cache.name || c.name,
-                    content: cache.content || c.content,
+                    name: cache?.name || c.name,
+                    content: cache?.content || c.content,
                     createAt: c.createAt,
-                    updateAt: cache.timestamp || c.updateAt,
+                    updateAt: cache?.timestamp || c.updateAt,
                   };
                 }),
               ...chapterCaches
@@ -132,7 +132,6 @@ const Story: React.FC = () => {
         );
 
         addUpdateStoryPolling(storyId, cid);
-        await syncStoryContentHash(chains[0].type, storyId);
 
         message.success(
           formatMessage({
