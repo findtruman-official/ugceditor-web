@@ -238,13 +238,10 @@ export default () => {
         await syncStoryNftSale(chains[0].type, list[i]);
         const { story } = await getNftInfo(chains[0].type, list[i]);
         if (story.nft) {
-          list.splice(i, 1);
-          if (story.chainStoryId === currentStory.chainStoryId) {
-            mutateCurrentStory((state: API.Story) => ({
-              ...state,
-              nft: state.nft,
-            }));
+          if (list[i] === currentStory.chainStoryId) {
+            refreshCurrentStory();
           }
+          list.splice(i, 1);
         }
       }
       setNftSalePollingList(list);

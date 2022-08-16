@@ -254,7 +254,7 @@ export async function syncStoryNftSale(chain: string, chainStoryId: string) {
   return await client.request<{ story: API.Story }>(
     gql`
       mutation story($chain: String!, $chainStoryId: String!) {
-        syncStoryContentHash(chain: $chain, chainStoryId: $chainStoryId) {
+        syncStoryNftSale(chain: $chain, chainStoryId: $chainStoryId) {
           chainStoryId
         }
       }
