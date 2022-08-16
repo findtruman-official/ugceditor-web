@@ -27,16 +27,8 @@ export default function CreateStoryModal({
   const [form] = Form.useForm();
 
   const { token, wallet, chains } = useModel('walletModel');
-  const {
-    refreshMyStories,
-    refreshLatestStories,
-    refreshHottestStories,
-    refreshCurrentStory,
-  } = useModel('storyModel', (model) => ({
-    refreshMyStories: model.refreshMyStories,
-    refreshLatestStories: model.refreshLatestStories,
-    refreshHottestStories: model.refreshHottestStories,
-    refreshCurrentStory: model.refreshCurrentStory,
+  const { addCreateStoryPolling } = useModel('storyModel', (model) => ({
+    addCreateStoryPolling: model.addCreateStoryPolling,
   }));
 
   const { data: initialData } = useRequest(
@@ -85,7 +77,15 @@ export default function CreateStoryModal({
             chains[0].factoryAddress,
           );
         } else {
-          await wallet.provider.publishStory(cid, chains[0].factoryAddress);
+          const newStoryId = await wallet.provider.publishStory(
+            cid,
+            chains[0].factoryAddress,
+          );
+          addCreateStoryPolling({
+            id: newStoryId,
+            cover: values.cover,
+            chain: chains[0].name,
+          });
         }
 
         message.success(
@@ -93,13 +93,14 @@ export default function CreateStoryModal({
             id: update ? 'story.story-updated' : 'story.story-published',
           }),
         );
-        refreshMyStories();
-        if (update) {
-          refreshCurrentStory();
-        } else {
-          refreshHottestStories();
-          refreshLatestStories();
-        }
+
+        // refreshMyStories();
+        // if (update) {
+        //   refreshCurrentStory();
+        // } else {
+        //   refreshHottestStories();
+        //   refreshLatestStories();
+        // }
 
         form.resetFields();
         onClose();

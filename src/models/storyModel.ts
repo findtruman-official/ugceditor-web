@@ -127,7 +127,11 @@ export default () => {
     loading: gettingHottestStories,
     refresh: refreshHottestStories,
   } = useRequest(async () => {
-    return (await getStories('Hotest')).stories;
+    return (await getStories('Hotest')).stories.map((e) => ({
+      id: e.chainStoryId,
+      cover: e.info?.cover,
+      chain: e.chainInfo.name,
+    }));
   });
 
   const {
@@ -135,7 +139,11 @@ export default () => {
     loading: gettingLatestStories,
     refresh: refreshLatestStories,
   } = useRequest(async () => {
-    return (await getStories('Latest')).stories;
+    return (await getStories('Latest')).stories.map((e) => ({
+      id: e.chainStoryId,
+      cover: e.info?.cover,
+      chain: e.chainInfo.name,
+    }));
   });
 
   const {
@@ -145,11 +153,63 @@ export default () => {
   } = useRequest(
     async () => {
       if (!!account && !!chains?.[0]) {
-        return (await getStories('Latest', [account], [chains[0].type]))
-          .stories;
+        return (
+          await getStories('Latest', [account], [chains[0].type])
+        ).stories.map((e) => ({
+          id: e.chainStoryId,
+          cover: e.info?.cover,
+          chain: e.chainInfo.name,
+        }));
       }
     },
     { refreshDeps: [account, chains] },
+  );
+
+  const [createStoryPollingList, setCreateStoryPollingList] = useState<
+    { id: string; cover: string; chain: string }[]
+  >([]);
+
+  const addCreateStoryPolling = useCallback(
+    ({ id, cover, chain }: { id: string; cover: string; chain: string }) => {
+      const item = {
+        id,
+        cover,
+        chain,
+        loading: true,
+      };
+      const list = [...createStoryPollingList];
+      const idx = list.findIndex((e) => e.id === id);
+      if (idx !== -1) {
+        list[idx] = item;
+      } else {
+        list.push(item);
+      }
+      setCreateStoryPollingList(list);
+    },
+    [createStoryPollingList],
+  );
+
+  const {} = useRequest(
+    async () => {
+      if (!createStoryPollingList.length || !account || !chains?.[0]) return;
+      const list = [...createStoryPollingList];
+      let changed = false;
+      for (let i = list.length - 1; i >= 0; i--) {
+        const { story } = await getStory(chains[0].type, list[i].id);
+        if (story) {
+          list.splice(i, 1);
+          changed = true;
+        }
+      }
+      setCreateStoryPollingList(list);
+      if (changed) {
+        refreshMyStories();
+        refreshLatestStories();
+      }
+    },
+    {
+      pollingInterval: 5000,
+    },
   );
 
   return {
@@ -179,5 +239,7 @@ export default () => {
     refreshLatestStories,
     refreshMyStories,
     isAuthor,
+    createStoryPollingList,
+    addCreateStoryPolling,
   };
 };

@@ -12,10 +12,14 @@ const Writer: React.FC = () => {
   const { formatMessage } = useIntl();
 
   const { openWalletModal } = useContext<WalletContextType>(WalletContext);
-  const { myStories, gettingMyStories } = useModel('storyModel', (model) => ({
-    myStories: model.myStories,
-    gettingMyStories: model.gettingMyStories,
-  }));
+  const { myStories, gettingMyStories, createStoryPollingList } = useModel(
+    'storyModel',
+    (model) => ({
+      myStories: model.myStories,
+      gettingMyStories: model.gettingMyStories,
+      createStoryPollingList: model.createStoryPollingList,
+    }),
+  );
   const { account } = useModel('walletModel', (model) => ({
     account: model.account,
   }));
@@ -42,7 +46,7 @@ const Writer: React.FC = () => {
           </div>
         ) : (
           <StoryCardList
-            stories={myStories}
+            stories={createStoryPollingList.concat(myStories)}
             loading={gettingMyStories}
             createStory={true}
             onCreateStory={() => setCreateModalVisible(true)}

@@ -77,7 +77,7 @@ export default function PublishNftModal({
         );
 
         message.success(formatMessage({ id: 'publish-nft-modal.published' }));
-        refreshCurrentStory();
+        // refreshCurrentStory();
         onClose();
       } catch (e) {
         console.log(e);

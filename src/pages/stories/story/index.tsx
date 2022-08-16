@@ -166,7 +166,7 @@ const Story: React.FC = () => {
                   />
                 )}
               </Col>
-              <Col style={{ width: 500 }}>
+              <Col style={{ width: 400 }}>
                 <Skeleton loading={gettingCurrentStory} active={true}>
                   <div className={styles.name}>
                     <div>{currentStory?.info?.title}</div>

@@ -36,7 +36,7 @@ export interface WalletProvider {
 
   signMessage(message: any): Promise<any>;
 
-  publishStory(cid: string, factoryAddress: string): Promise<void>;
+  publishStory(cid: string, factoryAddress: string): Promise<string>;
 
   updateStory(id: number, cid: string, factoryAddress: string): Promise<void>;
 

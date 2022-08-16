@@ -191,6 +191,8 @@ export class PhantomWalletProvider implements WalletProvider {
       })
       // .signers([])
       .rpc({});
+
+    return storyId.toString();
   }
 
   async updateStory(id: number, cid: string, factoryAddress: string) {

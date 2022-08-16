@@ -45,8 +45,8 @@ export default function ImageUploader({
         listType="picture-card"
         style={{ width: '100%', height: 260 }}
         fileList={fileList}
-        onPreview={(file) => {
-          window.open(`/ipfs/file/${encodeURIComponent(file.response.cid)}`);
+        showUploadList={{
+          showPreviewIcon: false,
         }}
         onChange={({ fileList: newFileList }) => {
           setFileList(newFileList);

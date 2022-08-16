@@ -52,6 +52,7 @@ export default {
   'story.insufficient-finds-title': 'Finds Token 不足',
   'story.insufficient-finds-desc':
     '请向以下账户转入 {amount} Finds Token：{account}',
+  'story.waiting-for-sync': '等待同步...',
   'chapter.title.placeholder': '起一个标题',
   'chapter.content.placeholder': '你的故事...',
   'chapter.save-draft': '保存草稿',

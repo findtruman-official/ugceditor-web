@@ -5,7 +5,7 @@ import { Col, Row, Skeleton } from 'antd';
 import styles from './StoryCard.less';
 
 interface StoryCardListProps {
-  stories?: API.Story[];
+  stories?: { id: string; cover: string; chain: string; loading?: boolean }[];
   loading: boolean;
   createStory?: boolean;
   onCreateStory?: () => void;
@@ -43,11 +43,10 @@ export default function StoryCardList({
         stories.map((e, index) => (
           <Col key={index} span={4}>
             <StoryCard
-              id={e.chainStoryId}
-              img={`/fcc-story/ipfs/file/${encodeURIComponent(
-                e.info?.cover || '',
-              )}`}
-              chain={e.chainInfo.name}
+              id={e.id}
+              img={`/fcc-story/ipfs/file/${encodeURIComponent(e.cover || '')}`}
+              chain={e.chain}
+              loading={e.loading}
             />
           </Col>
         ))
