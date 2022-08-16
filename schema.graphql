@@ -29,6 +29,10 @@ type Jwt {
 type Mutation {
     login(account: String!, chain: String!, message: String!, signature: String!): Jwt!
     metadataUriPrefix(amount: Int!, chain: String!, description: String!, image: String!, name: String!): IpfsResult!
+    "returns null if no story on chain."
+    syncStoryContentHash(chain: String!, chainStoryId: String!): Story
+    "returns null if no story nft sale on chain."
+    syncStoryNftSale(chain: String!, chainStoryId: String!): Story
 }
 
 type NftSale {

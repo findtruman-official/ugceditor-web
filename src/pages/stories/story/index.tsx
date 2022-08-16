@@ -44,20 +44,20 @@ const Story: React.FC = () => {
     setStoryId,
     storyId,
     gettingCurrentStory,
-    refreshCurrentStory,
     chapters,
     chapterCaches,
     clearChapterCaches,
+    nftSalePolling,
   } = useModel('storyModel', (model) => ({
     isAuthor: model.isAuthor,
     currentStory: model.currentStory,
     storyId: model.storyId,
     setStoryId: model.setStoryId,
     gettingCurrentStory: model.gettingCurrentStory,
-    refreshCurrentStory: model.refreshCurrentStory,
     chapters: model.chapters,
     chapterCaches: model.chapterCaches,
     clearChapterCaches: model.clearChapterCaches,
+    nftSalePolling: model.nftSalePolling,
   }));
 
   const [nftModalVisible, setNftModalVisible] = useState(false);
@@ -131,7 +131,7 @@ const Story: React.FC = () => {
           }),
         );
         clearChapterCaches();
-        refreshCurrentStory();
+        // refreshCurrentStory();
       } catch (e) {
         console.log(e);
         message.error(formatMessage({ id: 'request-failed' }));
@@ -141,6 +141,29 @@ const Story: React.FC = () => {
       manual: true,
     },
   );
+  //
+  // const {
+  //   data: nftStatus,
+  //   run: startPollingNft,
+  //   cancel: cancelPollingNft,
+  // } = useRequest(
+  //   async () => {
+  //     const { nft } = (
+  //       await getNftInfo(chains[0].type, currentStory.chainStoryId)
+  //     ).story;
+  //     console.log('polling nft', nft);
+  //     if (nft) {
+  //       cancelPollingNft();
+  //       refreshCurrentStory();
+  //       return 'finished';
+  //     }
+  //     return 'polling';
+  //   },
+  //   {
+  //     manual: true,
+  //     pollingInterval: 5000,
+  //   },
+  // );
 
   return (
     <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
@@ -227,6 +250,7 @@ const Story: React.FC = () => {
           </Col>
           <Col>
             <NftCard
+              syncing={nftSalePolling}
               loading={saving}
               onPublish={() => setNftModalVisible(true)}
             />

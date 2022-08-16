@@ -1,5 +1,5 @@
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
-import { getMetadataUriPrefix } from '@/services/api';
+import { getMetadataUriPrefix, syncStoryNftSale } from '@/services/api';
 import { useIntl } from '@@/plugin-locale';
 import { LeftOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
@@ -32,11 +32,11 @@ export default function PublishNftModal({
     chains: model.chains,
     wallet: model.wallet,
   }));
-  const { currentStory, refreshCurrentStory } = useModel(
+  const { currentStory, addNftSalePolling } = useModel(
     'storyModel',
     (model) => ({
       currentStory: model.currentStory,
-      refreshCurrentStory: model.refreshCurrentStory,
+      addNftSalePolling: model.addNftSalePolling,
     }),
   );
 
@@ -76,8 +76,11 @@ export default function PublishNftModal({
           chains[0].findsAddress,
         );
 
+        await syncStoryNftSale(chains[0].type, currentStory.chainStoryId);
+
         message.success(formatMessage({ id: 'publish-nft-modal.published' }));
-        // refreshCurrentStory();
+
+        addNftSalePolling(currentStory.chainStoryId);
         onClose();
       } catch (e) {
         console.log(e);

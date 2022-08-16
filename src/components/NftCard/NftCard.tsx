@@ -3,17 +3,18 @@ import { useIntl } from '@@/plugin-locale';
 import { LoadingOutlined } from '@ant-design/icons';
 import { BN } from '@project-serum/anchor';
 import { useRequest } from 'ahooks';
-import { Button, Col, message, Modal, Row } from 'antd';
+import { Button, Col, message, Modal, Row, Spin } from 'antd';
 import { useContext, useMemo } from 'react';
 import { useModel } from 'umi';
 import styles from './NftCard.less';
 
 interface NftCardProps {
   loading: boolean;
+  syncing: boolean;
   onPublish: () => void;
 }
 
-export default function NftCard({ loading, onPublish }: NftCardProps) {
+export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
   const { formatMessage } = useIntl();
   const { openWalletModal } = useContext<WalletContextType>(WalletContext);
   const { wallet, chains, account } = useModel('walletModel', (model) => ({
@@ -171,6 +172,13 @@ export default function NftCard({ loading, onPublish }: NftCardProps) {
               </Button>
             )}
           </div>
+        </div>
+      ) : syncing ? (
+        <div className={styles.publishCard}>
+          <Spin
+            spinning={true}
+            tip={formatMessage({ id: 'story.waiting-for-sync' })}
+          />
         </div>
       ) : (
         <div className={styles.publishCard}>

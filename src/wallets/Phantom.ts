@@ -349,9 +349,13 @@ export class PhantomWalletProvider implements WalletProvider {
     ).value.amount;
     const enoughToken = new BN(tokenAmount).gte(new BN(price));
     if (!enoughToken) {
+      const mintDecimals = this.getMintDecimals(findsMintAddress);
       onInsufficientFinds?.(
         findsSendAccount.address.toString(),
-        new BN(price).sub(new BN(tokenAmount)).toString(),
+        new BN(price)
+          .sub(new BN(tokenAmount))
+          .div(new BN(10).pow(new BN(mintDecimals)))
+          .toString(),
       );
       throw new Error('Insufficient Finds Token');
     }

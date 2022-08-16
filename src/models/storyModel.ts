@@ -1,4 +1,4 @@
-import { getStories, getStory } from '@/services/api';
+import { getNftInfo, getStories, getStory } from '@/services/api';
 import { useRequest } from 'ahooks';
 import { useCallback, useMemo, useState } from 'react';
 import { useModel } from 'umi';
@@ -19,6 +19,7 @@ export default () => {
     data: currentStory,
     loading: gettingCurrentStory,
     refresh: refreshCurrentStory,
+    mutate: mutateCurrentStory,
   } = useRequest(
     async () => {
       setChapters([]);
@@ -166,24 +167,18 @@ export default () => {
   );
 
   const [createStoryPollingList, setCreateStoryPollingList] = useState<
-    { id: string; cover: string; chain: string }[]
+    { id: string; cover: string; chain: string; loading: boolean }[]
   >([]);
 
   const addCreateStoryPolling = useCallback(
     ({ id, cover, chain }: { id: string; cover: string; chain: string }) => {
-      const item = {
+      const list = [...createStoryPollingList];
+      list.push({
         id,
         cover,
         chain,
         loading: true,
-      };
-      const list = [...createStoryPollingList];
-      const idx = list.findIndex((e) => e.id === id);
-      if (idx !== -1) {
-        list[idx] = item;
-      } else {
-        list.push(item);
-      }
+      });
       setCreateStoryPollingList(list);
     },
     [createStoryPollingList],
@@ -206,6 +201,45 @@ export default () => {
         refreshMyStories();
         refreshLatestStories();
       }
+    },
+    {
+      pollingInterval: 5000,
+    },
+  );
+
+  const [nftSalePollingList, setNftSalePollingList] = useState<string[]>([]);
+
+  const nftSalePolling = useMemo(() => {
+    if (!currentStory) return false;
+    return !!nftSalePollingList.find((e) => e === currentStory.chainStoryId);
+  }, [nftSalePollingList, currentStory]);
+
+  const addNftSalePolling = useCallback(
+    (id: string) => {
+      const list = [...nftSalePollingList];
+      list.push(id);
+      setNftSalePollingList(list);
+    },
+    [nftSalePollingList],
+  );
+
+  const {} = useRequest(
+    async () => {
+      if (!nftSalePollingList.length || !account || !chains?.[0]) return;
+      const list = [...nftSalePollingList];
+      for (let i = list.length - 1; i >= 0; i--) {
+        const { story } = await getNftInfo(chains[0].type, list[i]);
+        if (story.nft) {
+          list.splice(i, 1);
+          if (story.chainStoryId === currentStory.chainStoryId) {
+            mutateCurrentStory((state: API.Story) => ({
+              ...state,
+              nft: state.nft,
+            }));
+          }
+        }
+      }
+      setNftSalePollingList(list);
     },
     {
       pollingInterval: 5000,
@@ -241,5 +275,7 @@ export default () => {
     isAuthor,
     createStoryPollingList,
     addCreateStoryPolling,
+    nftSalePolling,
+    addNftSalePolling,
   };
 };

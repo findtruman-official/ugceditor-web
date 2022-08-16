@@ -141,6 +141,31 @@ export const getStory = async (chain: string, chainStoryId: string) => {
   );
 };
 
+export const getNftInfo = async (chain: string, chainStoryId: string) => {
+  return await client.request<{ story: API.Story }>(
+    gql`
+      query story($chain: String!, $chainStoryId: String!) {
+        story(chain: $chain, chainStoryId: $chainStoryId) {
+          nft {
+            price
+            uriPrefix
+            name
+            total
+            sold
+            authorReserved
+            authorClaimed
+            image
+          }
+        }
+      }
+    `,
+    {
+      chain,
+      chainStoryId,
+    },
+  );
+};
+
 export const getChapter = async (id: number) => {
   return await client.request<{ chapter: API.StoryChapter }>(
     gql`
@@ -206,5 +231,34 @@ export async function getMetadataUriPrefix(
       }
     `,
     { amount, chain, description, image, name },
+  );
+}
+
+export async function syncStoryContentHash(
+  chain: string,
+  chainStoryId: string,
+) {
+  return await client.request<{ story: API.Story }>(
+    gql`
+      mutation story($chain: String!, $chainStoryId: String!) {
+        syncStoryContentHash(chain: $chain, chainStoryId: $chainStoryId) {
+          chainStoryId
+        }
+      }
+    `,
+    { chain, chainStoryId },
+  );
+}
+
+export async function syncStoryNftSale(chain: string, chainStoryId: string) {
+  return await client.request<{ story: API.Story }>(
+    gql`
+      mutation story($chain: String!, $chainStoryId: String!) {
+        syncStoryContentHash(chain: $chain, chainStoryId: $chainStoryId) {
+          chainStoryId
+        }
+      }
+    `,
+    { chain, chainStoryId },
   );
 }
