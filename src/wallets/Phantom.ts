@@ -195,7 +195,7 @@ export class PhantomWalletProvider implements WalletProvider {
     return storyId.toString();
   }
 
-  async updateStory(id: number, cid: string, factoryAddress: string) {
+  async updateStory(id: string, cid: string, factoryAddress: string) {
     const { program } = await this.getProgram(factoryAddress);
 
     const storyId = new BN(id);

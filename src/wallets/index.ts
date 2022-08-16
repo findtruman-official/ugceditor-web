@@ -38,7 +38,7 @@ export interface WalletProvider {
 
   publishStory(cid: string, factoryAddress: string): Promise<string>;
 
-  updateStory(id: number, cid: string, factoryAddress: string): Promise<void>;
+  updateStory(id: string, cid: string, factoryAddress: string): Promise<void>;
 
   getMintDecimals(findsMintAddress: string): Promise<number>;
 

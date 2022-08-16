@@ -246,6 +246,55 @@ export default () => {
     },
   );
 
+  const [updateStoryPollingList, setUpdateStoryPollingList] = useState<
+    { id: string; contentHash: string }[]
+  >([]);
+
+  const updateStoryPolling = useMemo(() => {
+    if (!currentStory) return false;
+    return !!updateStoryPollingList.find(
+      (e) => e.id === currentStory.chainStoryId,
+    );
+  }, [updateStoryPollingList, currentStory]);
+
+  const addUpdateStoryPolling = useCallback(
+    (id: string, contentHash: string) => {
+      const list = [...updateStoryPollingList];
+      const item = {
+        id,
+        contentHash,
+      };
+      const idx = list.findIndex((e) => e.id === id);
+      if (idx !== -1) {
+        list[idx] = item;
+      } else {
+        list.push(item);
+      }
+      setUpdateStoryPollingList(list);
+    },
+    [updateStoryPollingList],
+  );
+
+  const {} = useRequest(
+    async () => {
+      if (!updateStoryPollingList.length || !account || !chains?.[0]) return;
+      const list = [...updateStoryPollingList];
+      for (let i = list.length - 1; i >= 0; i--) {
+        const { story } = await getStory(chains[0].type, list[i].id);
+        if (story.contentHash === list[i].contentHash) {
+          list.splice(i, 1);
+          if (story.chainStoryId === currentStory.chainStoryId) {
+            refreshCurrentStory();
+          }
+        }
+      }
+      setUpdateStoryPollingList(list);
+    },
+    {
+      pollingInterval: 5000,
+    },
+  );
+
   return {
     storyId,
     setStoryId,
@@ -277,5 +326,7 @@ export default () => {
     addCreateStoryPolling,
     nftSalePolling,
     addNftSalePolling,
+    updateStoryPolling,
+    addUpdateStoryPolling,
   };
 };

@@ -141,7 +141,10 @@ export default function StoryTab({ loading, storyId }: StoryTabProps) {
 
   return (
     <div className={styles.container}>
-      <Spin spinning={loading}>
+      <Spin
+        spinning={loading}
+        tip={formatMessage({ id: 'story.waiting-for-sync' })}
+      >
         {chapters.length === 0 && chapterCaches?.length === 0 ? (
           <div className={styles.noChapterTip}>
             {formatMessage({ id: 'story.no-chapter-tip' })}

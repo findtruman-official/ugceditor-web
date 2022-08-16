@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import styles from './CreateStoryModal.less';
 
 interface CreateStoryModalProps {
-  id?: number;
+  id?: string;
   update?: boolean;
   contentHash?: string;
   visible: boolean;
@@ -27,9 +27,13 @@ export default function CreateStoryModal({
   const [form] = Form.useForm();
 
   const { token, wallet, chains } = useModel('walletModel');
-  const { addCreateStoryPolling } = useModel('storyModel', (model) => ({
-    addCreateStoryPolling: model.addCreateStoryPolling,
-  }));
+  const { addCreateStoryPolling, addUpdateStoryPolling } = useModel(
+    'storyModel',
+    (model) => ({
+      addCreateStoryPolling: model.addCreateStoryPolling,
+      addUpdateStoryPolling: model.addUpdateStoryPolling,
+    }),
+  );
 
   const { data: initialData } = useRequest(
     async () => {
@@ -76,6 +80,7 @@ export default function CreateStoryModal({
             cid,
             chains[0].factoryAddress,
           );
+          addUpdateStoryPolling(id!!, cid);
           await syncStoryContentHash(chains[0].type, id!!);
         } else {
           const newStoryId = await wallet.provider.publishStory(

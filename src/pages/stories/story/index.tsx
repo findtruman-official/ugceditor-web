@@ -2,7 +2,7 @@ import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import NftCard from '@/components/NftCard/NftCard';
 import PublishNftModal from '@/components/PublishNftModal/PublishNftModal';
 import StoryTab from '@/components/StoryTab/StoryTab';
-import { uploadJson } from '@/services/api';
+import { syncStoryContentHash, uploadJson } from '@/services/api';
 import { shortenAccount } from '@/utils/format';
 import { useMatch } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
@@ -17,6 +17,7 @@ import {
   Modal,
   Row,
   Skeleton,
+  Spin,
   Tabs,
   Typography,
 } from 'antd';
@@ -48,6 +49,8 @@ const Story: React.FC = () => {
     chapterCaches,
     clearChapterCaches,
     nftSalePolling,
+    updateStoryPolling,
+    addUpdateStoryPolling,
   } = useModel('storyModel', (model) => ({
     isAuthor: model.isAuthor,
     currentStory: model.currentStory,
@@ -58,6 +61,8 @@ const Story: React.FC = () => {
     chapterCaches: model.chapterCaches,
     clearChapterCaches: model.clearChapterCaches,
     nftSalePolling: model.nftSalePolling,
+    updateStoryPolling: model.updateStoryPolling,
+    addUpdateStoryPolling: model.addUpdateStoryPolling,
   }));
 
   const [nftModalVisible, setNftModalVisible] = useState(false);
@@ -125,6 +130,10 @@ const Story: React.FC = () => {
           cid,
           chains[0].factoryAddress,
         );
+
+        addUpdateStoryPolling(storyId, cid);
+        await syncStoryContentHash(chains[0].type, storyId);
+
         message.success(
           formatMessage({
             id: 'story.story-updated',
@@ -141,29 +150,6 @@ const Story: React.FC = () => {
       manual: true,
     },
   );
-  //
-  // const {
-  //   data: nftStatus,
-  //   run: startPollingNft,
-  //   cancel: cancelPollingNft,
-  // } = useRequest(
-  //   async () => {
-  //     const { nft } = (
-  //       await getNftInfo(chains[0].type, currentStory.chainStoryId)
-  //     ).story;
-  //     console.log('polling nft', nft);
-  //     if (nft) {
-  //       cancelPollingNft();
-  //       refreshCurrentStory();
-  //       return 'finished';
-  //     }
-  //     return 'polling';
-  //   },
-  //   {
-  //     manual: true,
-  //     pollingInterval: 5000,
-  //   },
-  // );
 
   return (
     <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
@@ -178,73 +164,83 @@ const Story: React.FC = () => {
           <Col>
             <Row gutter={48}>
               <Col>
-                {gettingCurrentStory || !currentStory ? (
-                  <Skeleton.Image active={true} />
-                ) : (
-                  <img
-                    className={styles.cover}
-                    src={`/fcc-story/ipfs/file/${encodeURIComponent(
-                      currentStory.info?.cover,
-                    )}`}
-                  />
-                )}
+                <Spin
+                  spinning={updateStoryPolling}
+                  tip={formatMessage({ id: 'story.waiting-for-sync' })}
+                >
+                  {gettingCurrentStory || !currentStory ? (
+                    <Skeleton.Image active={true} />
+                  ) : (
+                    <img
+                      className={styles.cover}
+                      src={`/fcc-story/ipfs/file/${encodeURIComponent(
+                        currentStory.info?.cover,
+                      )}`}
+                    />
+                  )}
+                </Spin>
               </Col>
               <Col style={{ width: 400 }}>
-                <Skeleton loading={gettingCurrentStory} active={true}>
-                  <div className={styles.name}>
-                    <div>{currentStory?.info?.title}</div>
-                    {isAuthor && (
-                      <Button
-                        disabled={saving}
-                        icon={<EditOutlined />}
-                        onClick={() => setStoryModalVisible(true)}
-                      />
-                    )}
-                  </div>
-                  <div className={styles.infoGroup}>
-                    <div className={styles.infoTitle}>
-                      {formatMessage({ id: 'story.author' })}
+                <Spin
+                  spinning={updateStoryPolling}
+                  tip={formatMessage({ id: 'story.waiting-for-sync' })}
+                >
+                  <Skeleton loading={gettingCurrentStory} active={true}>
+                    <div className={styles.name}>
+                      <div>{currentStory?.info?.title}</div>
+                      {isAuthor && (
+                        <Button
+                          disabled={saving}
+                          icon={<EditOutlined />}
+                          onClick={() => setStoryModalVisible(true)}
+                        />
+                      )}
                     </div>
-                    <div className={styles.infoDescription}>
-                      {shortenAccount(currentStory?.author)}
+                    <div className={styles.infoGroup}>
+                      <div className={styles.infoTitle}>
+                        {formatMessage({ id: 'story.author' })}
+                      </div>
+                      <div className={styles.infoDescription}>
+                        {shortenAccount(currentStory?.author)}
+                      </div>
                     </div>
-                  </div>
-                  <div className={styles.infoGroup}>
-                    <div className={styles.infoTitle}>
-                      {formatMessage({ id: 'story.outline' })}
+                    <div className={styles.infoGroup}>
+                      <div className={styles.infoTitle}>
+                        {formatMessage({ id: 'story.outline' })}
+                      </div>
+                      <Typography.Paragraph
+                        ellipsis={{
+                          rows: 8,
+                          expandable: true,
+                          symbol: (
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setDescModalVisible(true);
+                              }}
+                            >
+                              {formatMessage({ id: 'story.more' })}
+                            </span>
+                          ),
+                        }}
+                        className={styles.infoDescription}
+                      >
+                        {currentStory?.info?.description}
+                      </Typography.Paragraph>
                     </div>
-                    <Typography.Paragraph
-                      ellipsis={{
-                        rows: 8,
-                        expandable: true,
-                        symbol: (
-                          <span
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              setDescModalVisible(true);
-                            }}
-                          >
-                            {formatMessage({ id: 'story.more' })}
-                          </span>
-                        ),
-                      }}
-                      className={styles.infoDescription}
-                    >
-                      {currentStory?.info?.description}
-                    </Typography.Paragraph>
-                  </div>
-                  <div className={styles.infoGroup}>
-                    <div className={styles.infoTitle}>
-                      {formatMessage({ id: 'story.publish-at' })}
+                    <div className={styles.infoGroup}>
+                      <div className={styles.infoTitle}>
+                        {formatMessage({ id: 'story.publish-at' })}
+                      </div>
+                      <div className={styles.infoDescription}>
+                        {new Date(
+                          currentStory?.info?.createAt,
+                        ).toLocaleDateString()}
+                      </div>
                     </div>
-                    <div className={styles.infoDescription}>
-                      {new Date(
-                        currentStory?.info?.createAt,
-                      ).toLocaleDateString()}
-                    </div>
-                  </div>
-                </Skeleton>
+                  </Skeleton>
+                </Spin>
               </Col>
             </Row>
           </Col>
@@ -271,7 +267,7 @@ const Story: React.FC = () => {
                     onClick={() =>
                       history.push(`/story/${storyId}/chapter/0/edit`)
                     }
-                    disabled={saving}
+                    disabled={saving || updateStoryPolling}
                   >
                     {formatMessage({ id: 'story.add-chapter' })}
                   </Button>
@@ -280,7 +276,7 @@ const Story: React.FC = () => {
                   type={'primary'}
                   style={{ marginLeft: 12 }}
                   onClick={runSave}
-                  loading={saving}
+                  loading={saving || updateStoryPolling}
                 >
                   {formatMessage({ id: 'story.save' })}
                 </Button>
@@ -292,7 +288,10 @@ const Story: React.FC = () => {
             tab={formatMessage({ id: 'story.tab.story' })}
             key={'story'}
           >
-            <StoryTab loading={saving} storyId={storyId} />
+            <StoryTab
+              loading={saving || updateStoryPolling}
+              storyId={storyId}
+            />
           </Tabs.TabPane>
         </Tabs>
       </div>

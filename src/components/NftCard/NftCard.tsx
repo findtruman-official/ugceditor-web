@@ -160,7 +160,6 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
               <Button
                 type={'primary'}
                 loading={minting}
-                disabled={loading}
                 onClick={runMint}
                 block={true}
               >
