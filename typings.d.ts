@@ -80,7 +80,7 @@ declare global {
       image: string;
       name: string;
       nftSaleAddr: string;
-      price: number;
+      price: string;
       sold: number;
       total: number;
       type: number;

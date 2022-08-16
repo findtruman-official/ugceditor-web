@@ -63,9 +63,9 @@ export class PhantomWalletProvider implements WalletProvider {
 
         const wallet = window.solana;
         const network = clusterApiUrl('devnet');
-        this.connection = new Connection(network, 'confirmed');
+        this.connection = new Connection(network, 'finalized');
         this.anchorProvider = new AnchorProvider(this.connection, wallet, {
-          preflightCommitment: 'confirmed',
+          preflightCommitment: 'finalized',
         });
       });
       this.provider.on('disconnect', () => {
@@ -222,7 +222,7 @@ export class PhantomWalletProvider implements WalletProvider {
     const associatedToken = await getAssociatedTokenAddress(mint, owner);
     let account: Account;
     try {
-      account = await getAccount(connection, associatedToken, 'confirmed');
+      account = await getAccount(connection, associatedToken, 'finalized');
     } catch (e) {
       try {
         let recentBlockhash = (await connection.getLatestBlockhash('finalized'))
@@ -243,7 +243,7 @@ export class PhantomWalletProvider implements WalletProvider {
         );
         await connection.getSignatureStatus(signature);
       } catch (e) {}
-      account = await getAccount(connection, associatedToken, 'confirmed');
+      account = await getAccount(connection, associatedToken, 'finalized');
     }
     return account;
   }
@@ -363,7 +363,7 @@ export class PhantomWalletProvider implements WalletProvider {
     const findsRecvAccount = await getAccount(
       this.connection,
       await getAssociatedTokenAddress(findsMint, new PublicKey(author)),
-      'confirmed',
+      'finalized',
     );
 
     const mint = Keypair.generate();
