@@ -213,6 +213,49 @@ export class PhantomWalletProvider implements WalletProvider {
       .rpc({});
   }
 
+  async waitForSignatureStatus(signature: string, connection: Connection) {
+    return new Promise((resolve, reject) => {
+      const MAX_TRY = 300;
+      let count = 0;
+      const interval = setInterval(async () => {
+        if (count === MAX_TRY) {
+          clearInterval(interval);
+          reject();
+        }
+        console.log('waitForSignatureStatus', count);
+        const { value } = await connection.getSignatureStatus(signature);
+        const confirmationStatus = value?.confirmationStatus;
+
+        if (confirmationStatus) {
+          const hasReachedSufficientCommitment =
+            confirmationStatus === 'confirmed' ||
+            confirmationStatus === 'finalized';
+          console.log({
+            status: hasReachedSufficientCommitment ? 'success' : 'info',
+            method: 'signAndSendTransaction',
+            message: `Transaction: ${signature}`,
+            messageTwo: `Status: ${
+              confirmationStatus.charAt(0).toUpperCase() +
+              confirmationStatus.slice(1)
+            }`,
+          });
+          if (hasReachedSufficientCommitment) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        } else {
+          console.log({
+            status: 'info',
+            method: 'signAndSendTransaction',
+            message: `Transaction: ${signature}`,
+            messageTwo: 'Status: Waiting on confirmation...',
+          });
+        }
+        count++;
+      }, 1000);
+    });
+  }
+
   async getOrCreateAssociatedTokenAccount(
     connection: Connection,
     payer: Signer,
@@ -222,7 +265,7 @@ export class PhantomWalletProvider implements WalletProvider {
     const associatedToken = await getAssociatedTokenAddress(mint, owner);
     let account: Account;
     try {
-      account = await getAccount(connection, associatedToken, 'finalized');
+      account = await getAccount(connection, associatedToken, 'confirmed');
     } catch (e) {
       try {
         let recentBlockhash = (await connection.getLatestBlockhash('finalized'))
@@ -241,9 +284,9 @@ export class PhantomWalletProvider implements WalletProvider {
         const { signature } = await this.provider.signAndSendTransaction(
           transaction,
         );
-        await connection.getSignatureStatus(signature);
+        await this.waitForSignatureStatus(signature, this.connection);
       } catch (e) {}
-      account = await getAccount(connection, associatedToken, 'finalized');
+      account = await getAccount(connection, associatedToken, 'confirmed');
     }
     return account;
   }
@@ -280,6 +323,8 @@ export class PhantomWalletProvider implements WalletProvider {
       findsMint,
       fromWallet.publicKey,
     );
+    console.log(fromTokenAccount);
+    console.log(fromTokenAccount.address.toString());
 
     await program.methods
       .publishStoryNft(storyId, _price, _total, _reserved, title, uriPrefix)
