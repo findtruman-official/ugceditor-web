@@ -40,16 +40,20 @@ export default function StoryCardList({
           {formatMessage({ id: 'stories.no-story-tip' })}
         </div>
       ) : (
-        stories.map((e, index) => (
-          <Col key={index} span={4}>
-            <StoryCard
-              id={e.id}
-              img={`/fcc-story/ipfs/file/${encodeURIComponent(e.cover || '')}`}
-              chain={e.chain}
-              loading={e.loading}
-            />
-          </Col>
-        ))
+        stories
+          ?.filter((e) => !!e)
+          .map((e, index) => (
+            <Col key={index} span={4}>
+              <StoryCard
+                id={e.id}
+                img={`/fcc-story/ipfs/file/${encodeURIComponent(
+                  e.cover || '',
+                )}`}
+                chain={e.chain}
+                loading={e.loading}
+              />
+            </Col>
+          ))
       )}
     </Row>
   );

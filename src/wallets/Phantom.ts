@@ -281,8 +281,6 @@ export class PhantomWalletProvider implements WalletProvider {
       findsMint,
       fromWallet.publicKey,
     );
-    console.log(fromTokenAccount);
-    console.log(fromTokenAccount.address.toString());
 
     await program.methods
       .publishStoryNft(storyId, _price, _total, _reserved, title, uriPrefix)
@@ -352,7 +350,7 @@ export class PhantomWalletProvider implements WalletProvider {
     ).value.amount;
     const enoughToken = new BN(tokenAmount).gte(new BN(price));
     if (!enoughToken) {
-      const mintDecimals = this.getMintDecimals(findsMintAddress);
+      const mintDecimals = await this.getMintDecimals(findsMintAddress);
       onInsufficientFinds?.(
         findsSendAccount.address.toString(),
         new BN(price)
