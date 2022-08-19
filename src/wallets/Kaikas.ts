@@ -31,7 +31,7 @@ export class KaikasWalletProvider implements WalletProvider {
     this.provider = this.getProvider<any>();
     if (this.provider) {
       this.caver = new Caver(this.provider);
-      this.contract = this.caver.contract.create(
+      this.contract = new this.caver.klay.Contract(
         ABI as any,
         this.factoryAddress,
       );
@@ -118,8 +118,33 @@ export class KaikasWalletProvider implements WalletProvider {
 
   async publishStory(cid: string) {
     if (!this.contract) throw new Error('Contract Unavailable');
-    await this.contract.methods.publishStory(cid).call();
-    return '';
+    const author = this.provider.selectedAddress;
+    const method = this.contract.methods.publishStory(cid);
+    // TODO: fix error newLogFilter is not a function
+    const storyId = await this.contract.methods.nextId().call();
+    await method.send({
+      from: author,
+      gas: await method.estimateGas({ from: author }),
+    });
+    // const storyId = await new Promise<string>(async (resolve, reject) => {
+    //   this.contract!.once(
+    //     'StoryUpdated',
+    //     {
+    //       filter: { author: author },
+    //     },
+    //     (error, event) => {
+    //       console.log(error, event);
+    //       if (error || !event) {
+    //         reject();
+    //       } else {
+    //         const { returnValues } = event;
+    //         resolve(returnValues?.id || '');
+    //       }
+    //     },
+    //   );
+    // });
+
+    return storyId;
   }
 
   async publishStoryNft(

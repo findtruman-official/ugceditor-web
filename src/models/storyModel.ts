@@ -27,7 +27,6 @@ export default () => {
     data: currentStory,
     loading: gettingCurrentStory,
     refresh: refreshCurrentStory,
-    mutate: mutateCurrentStory,
   } = useRequest(
     async () => {
       setChapters([]);

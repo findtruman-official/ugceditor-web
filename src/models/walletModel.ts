@@ -201,7 +201,7 @@ export default () => {
         _wallet?.provider.silentConnect();
       }
     }
-  }, []);
+  }, [chainWallets]);
 
   // const { data: tokens } = useRequest(
   //   async () => {
