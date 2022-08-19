@@ -1,4 +1,5 @@
 import ABI from '@/assets/klaytn_abi.json';
+import FINDS_ABI from '@/assets/klaytn_finds_abi.json';
 import {
   ChainType,
   WalletAutoConnectType,
@@ -15,6 +16,7 @@ export class KaikasWalletProvider implements WalletProvider {
   provider: any;
   caver?: Caver;
   contract?: Contract;
+  findsContract?: Contract;
   factoryAddress: string = '';
   findsMintAddress: string = '';
 
@@ -31,9 +33,10 @@ export class KaikasWalletProvider implements WalletProvider {
     this.provider = this.getProvider<any>();
     if (this.provider) {
       this.caver = new Caver(this.provider);
-      this.contract = new this.caver.klay.Contract(
-        ABI as any,
-        this.factoryAddress,
+      this.contract = new this.caver.klay.Contract(ABI as any, factoryAddress);
+      this.findsContract = new this.caver.klay.Contract(
+        FINDS_ABI as any,
+        findsMintAddress,
       );
       this.onConnect = onConnect || (() => {});
       this.onDisconnect = onDisconnect || (() => {});
@@ -106,7 +109,7 @@ export class KaikasWalletProvider implements WalletProvider {
   }
 
   async getMintDecimals() {
-    return 0;
+    return await this.findsContract!.methods.decimals().call();
   }
 
   async mintStoryNft(
