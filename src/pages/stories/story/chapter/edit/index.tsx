@@ -37,9 +37,11 @@ const CmdButton = ({
 
 const Edit: React.FC = () => {
   const { formatMessage } = useIntl();
-  const match = useMatch('/story/:storyId/chapter/:chapterId/edit');
+  const match = useMatch('/story/:chainType/:storyId/chapter/:chapterId/edit');
   const {
     isAuthor,
+    chainType,
+    setChainType,
     storyId,
     setStoryId,
     chapterId,
@@ -49,6 +51,8 @@ const Edit: React.FC = () => {
     saveChapterCache,
   } = useModel('storyModel', (model) => ({
     isAuthor: model.isAuthor,
+    chainType: model.chainType,
+    setChainType: model.setChainType,
     storyId: model.storyId,
     setStoryId: model.setStoryId,
     chapterId: model.chapterId,
@@ -72,7 +76,7 @@ const Edit: React.FC = () => {
   const handleBlur = useRefCallback(() => {}, [content]);
 
   const backToStory = () => {
-    history.push(`/story/${storyId}`);
+    history.push(`/story/${chainType}/${storyId}`);
   };
 
   useEffect(() => {
@@ -83,7 +87,8 @@ const Edit: React.FC = () => {
 
   useEffect(() => {
     const params = match?.params;
-    if (params?.chapterId && params?.storyId) {
+    if (params?.chapterId && params?.storyId && params?.chainType) {
+      setChainType(params.chainType);
       setStoryId(params.storyId);
       setChapterId(parseInt(params.chapterId));
       if (parseInt(chapterId) === 0) {
@@ -225,7 +230,7 @@ const Edit: React.FC = () => {
             size={'large'}
             icon={<LeftOutlined />}
             onClick={() => {
-              history.push(`/story/${storyId}`);
+              history.push(`/story/${chainType}/${storyId}`);
             }}
           />
         </div>

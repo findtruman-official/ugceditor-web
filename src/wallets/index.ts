@@ -24,6 +24,8 @@ export interface WalletProvider {
   providerType: WalletType;
   provider?: any;
   chainType: ChainType;
+  factoryAddress: string;
+  findsMintAddress: string;
 
   isAvailable(): boolean;
 
@@ -43,11 +45,11 @@ export interface WalletProvider {
 
   signMessage(message: any): Promise<any>;
 
-  publishStory(cid: string, factoryAddress: string): Promise<string>;
+  publishStory(cid: string): Promise<string>;
 
-  updateStory(id: string, cid: string, factoryAddress: string): Promise<void>;
+  updateStory(id: string, cid: string): Promise<void>;
 
-  getMintDecimals(findsMintAddress: string): Promise<number>;
+  getMintDecimals(): Promise<number>;
 
   publishStoryNft(
     id: number,
@@ -56,15 +58,11 @@ export interface WalletProvider {
     reserved: number,
     title: string,
     uriPrefix: string,
-    factoryAddress: string,
-    findsMintAddress: string,
   ): Promise<void>;
 
   mintStoryNft(
     id: number,
     author: string,
-    factoryAddress: string,
-    findsMintAddress: string,
     price: number,
     onInsufficientFinds?: (account: string, amount: string) => void,
   ): Promise<void>;

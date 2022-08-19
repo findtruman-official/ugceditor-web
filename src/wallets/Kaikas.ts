@@ -1,3 +1,4 @@
+import ABI from '@/assets/klaytn_abi.json';
 import {
   ChainType,
   WalletAutoConnectType,
@@ -6,26 +7,34 @@ import {
   WalletType,
 } from '@/wallets/index';
 import { message } from 'antd';
-import Caver from 'caver-js';
+import Caver, { Contract } from 'caver-js';
 
 export class KaikasWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Kaikas;
   chainType: ChainType = ChainType.Klaytn;
   provider: any;
   caver?: Caver;
+  contract?: Contract;
+  factoryAddress: string = '';
+  findsMintAddress: string = '';
 
   onConnect?: (address: string) => void;
   onDisconnect?: () => void;
 
-  constructor({
-    onConnect,
-    onDisconnect,
-    onAccountChanged,
-    onChainChanged,
-  }: WalletEvents) {
+  constructor(
+    { onConnect, onDisconnect, onAccountChanged, onChainChanged }: WalletEvents,
+    factoryAddress: string,
+    findsMintAddress: string,
+  ) {
+    this.factoryAddress = factoryAddress;
+    this.findsMintAddress = findsMintAddress;
     this.provider = this.getProvider<any>();
     if (this.provider) {
       this.caver = new Caver(this.provider);
+      this.contract = this.caver.contract.create(
+        ABI as any,
+        this.factoryAddress,
+      );
       this.onConnect = onConnect || (() => {});
       this.onDisconnect = onDisconnect || (() => {});
       this.provider.on('accountsChanged', (accounts: string[]) => {
@@ -96,20 +105,20 @@ export class KaikasWalletProvider implements WalletProvider {
     return 0;
   }
 
-  async getMintDecimals(findsMintAddress: string) {
+  async getMintDecimals() {
     return 0;
   }
 
   async mintStoryNft(
     id: number,
     author: string,
-    factoryAddress: string,
-    findsMintAddress: string,
     price: number,
     onInsufficientFinds?: (account: string, amount: string) => void,
   ) {}
 
-  async publishStory(cid: string, factoryAddress: string) {
+  async publishStory(cid: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    await this.contract.methods.publishStory(cid).call();
     return '';
   }
 
@@ -120,9 +129,7 @@ export class KaikasWalletProvider implements WalletProvider {
     reserved: number,
     title: string,
     uriPrefix: string,
-    factoryAddress: string,
-    findsMintAddress: string,
   ) {}
 
-  async updateStory(id: string, cid: string, factoryAddress: string) {}
+  async updateStory(id: string, cid: string) {}
 }

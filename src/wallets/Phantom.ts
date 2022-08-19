@@ -50,13 +50,16 @@ export class PhantomWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Phantom;
   chainType: ChainType = ChainType.Solana;
   provider: any;
+  factoryAddress: string = '';
+  findsMintAddress: string = '';
 
-  constructor({
-    onConnect,
-    onDisconnect,
-    onAccountChanged,
-    onChainChanged,
-  }: WalletEvents) {
+  constructor(
+    { onConnect, onDisconnect, onAccountChanged, onChainChanged }: WalletEvents,
+    factoryAddress: string,
+    findsMintAddress: string,
+  ) {
+    this.factoryAddress = factoryAddress;
+    this.findsMintAddress = findsMintAddress;
     this.provider = this.getProvider<any>();
     if (this.provider) {
       this.provider.on('connect', async (publicKey: string) => {
@@ -144,8 +147,8 @@ export class PhantomWalletProvider implements WalletProvider {
   connection: any;
   anchorProvider: any;
 
-  async getProgram(factoryAddress: string) {
-    const programId = new PublicKey(factoryAddress);
+  async getProgram() {
+    const programId = new PublicKey(this.factoryAddress);
     const factoryKey = (
       await PublicKey.findProgramAddress(
         [Buffer.from(utils.bytes.utf8.encode('factory'))],
@@ -172,8 +175,8 @@ export class PhantomWalletProvider implements WalletProvider {
     )[0];
   }
 
-  async publishStory(cid: string, factoryAddress: string) {
-    const { factoryKey, program } = await this.getProgram(factoryAddress);
+  async publishStory(cid: string) {
+    const { factoryKey, program } = await this.getProgram();
 
     const factoryAccountData = await program.account.storyFactory.fetch(
       factoryKey,
@@ -197,8 +200,8 @@ export class PhantomWalletProvider implements WalletProvider {
     return storyId.toString();
   }
 
-  async updateStory(id: string, cid: string, factoryAddress: string) {
-    const { program } = await this.getProgram(factoryAddress);
+  async updateStory(id: string, cid: string) {
+    const { program } = await this.getProgram();
 
     const storyId = new BN(id);
     const storyKey = await this.getKey(program, storyId, 'story-');
@@ -251,8 +254,8 @@ export class PhantomWalletProvider implements WalletProvider {
     return account;
   }
 
-  async getMintDecimals(findsMintAddress: string) {
-    const findsMint = new PublicKey(findsMintAddress);
+  async getMintDecimals() {
+    const findsMint = new PublicKey(this.findsMintAddress);
     return (await getMint(this.connection, findsMint)).decimals;
   }
 
@@ -263,13 +266,11 @@ export class PhantomWalletProvider implements WalletProvider {
     reserved: number,
     title: string,
     uriPrefix: string,
-    factoryAddress: string,
-    findsMintAddress: string,
   ) {
-    const { program } = await this.getProgram(factoryAddress);
+    const { program } = await this.getProgram();
 
-    const findsMint = new PublicKey(findsMintAddress);
-    const decimals = await this.getMintDecimals(findsMintAddress);
+    const findsMint = new PublicKey(this.findsMintAddress);
+    const decimals = await this.getMintDecimals();
     const _price = new BN(price).mul(new BN(10).pow(new BN(decimals)));
     const _total = new BN(total);
     const _reserved = new BN(reserved);
@@ -328,17 +329,15 @@ export class PhantomWalletProvider implements WalletProvider {
   async mintStoryNft(
     id: number,
     author: string,
-    factoryAddress: string,
-    findsMintAddress: string,
     price: number,
     onInsufficientFinds?: (account: string, amount: string) => void,
   ) {
-    const { program } = await this.getProgram(factoryAddress);
+    const { program } = await this.getProgram();
     const storyId = new BN(id);
     const storyKey = await this.getKey(program, storyId, 'story-');
     const mintStateKey = await this.getKey(program, storyId, 'story-mint-');
     const minter = await this.provider.connect();
-    const findsMint = new PublicKey(findsMintAddress);
+    const findsMint = new PublicKey(this.findsMintAddress);
 
     const findsSendAccount = await this.getOrCreateAssociatedTokenAccount(
       this.connection,
@@ -352,7 +351,7 @@ export class PhantomWalletProvider implements WalletProvider {
     ).value.amount;
     const enoughToken = new BN(tokenAmount).gte(new BN(price));
     if (!enoughToken) {
-      const mintDecimals = await this.getMintDecimals(findsMintAddress);
+      const mintDecimals = await this.getMintDecimals();
       onInsufficientFinds?.(
         findsSendAccount.address.toString(),
         new BN(price)

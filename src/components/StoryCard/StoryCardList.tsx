@@ -1,11 +1,18 @@
 import StoryCard from '@/components/StoryCard/StoryCard';
+import { ChainType } from '@/wallets';
 import { useIntl } from '@@/plugin-locale';
 import { PlusOutlined } from '@ant-design/icons';
 import { Col, Row, Skeleton } from 'antd';
 import styles from './StoryCard.less';
 
 interface StoryCardListProps {
-  stories?: { id: string; cover: string; chain: string; loading?: boolean }[];
+  stories?: {
+    id: string;
+    cover: string;
+    chain: string;
+    chainType?: ChainType;
+    loading?: boolean;
+  }[];
   loading: boolean;
   createStory?: boolean;
   onCreateStory?: () => void;
@@ -49,7 +56,8 @@ export default function StoryCardList({
                 img={`/fcc-story/ipfs/file/${encodeURIComponent(
                   e.cover || '',
                 )}`}
-                chain={e.chain}
+                chainName={e.chain}
+                chainType={e.chainType}
                 loading={e.loading}
               />
             </Col>

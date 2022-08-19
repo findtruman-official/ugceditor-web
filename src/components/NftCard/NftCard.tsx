@@ -39,12 +39,12 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
 
   const { data: mintDecimals } = useRequest(
     async () => {
-      if (wallet && chains?.[0]) {
-        return await wallet.provider.getMintDecimals(chains[0].findsAddress);
+      if (wallet) {
+        return await wallet.provider.getMintDecimals();
       }
     },
     {
-      refreshDeps: [wallet, chains],
+      refreshDeps: [wallet],
     },
   );
 
@@ -54,25 +54,23 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
     refresh: refreshBalance,
   } = useRequest(
     async () => {
-      if (!chains?.[0] || !wallet || !account || !currentStory?.nft) return 0;
+      if (!wallet || !account || !currentStory?.nft) return 0;
 
       return await wallet.provider.balanceOfStoryNft(
         account,
         currentStory.nft.name,
       );
     },
-    { refreshDeps: [account, chains, currentStory] },
+    { refreshDeps: [account, currentStory] },
   );
   const { loading: minting, run: runMint } = useRequest(
     async () => {
-      if (!chains?.[0] || !wallet) return;
+      if (!wallet) return;
 
       try {
         await wallet.provider.mintStoryNft(
           currentStory.chainStoryId,
           currentStory.author,
-          chains[0].factoryAddress,
-          chains[0].findsAddress,
           currentStory.nft.price,
           (account: string, amount: string) => {
             Modal.error({

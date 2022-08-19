@@ -18,7 +18,7 @@ export default function RightContent() {
         }}
         className={styles.wallet}
       >
-        {Object.values(connectedWallets).length > 0 ? (
+        {Object.values(connectedWallets).filter((e) => !!e).length > 0 ? (
           <Avatar.Group>
             {Object.values(connectedWallets).map((wallet) =>
               wallet ? (

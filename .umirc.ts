@@ -27,19 +27,19 @@ export default defineConfig({
       redirect: '/stories',
     },
     {
-      path: '/story/:storyId',
+      path: '/story/:chainType/:storyId',
       component: './stories/story',
     },
     {
-      path: '/story/:storyId/chapter/:chapterId',
+      path: '/story/:chainType/:storyId/chapter/:chapterId',
       component: './stories/story/chapter',
     },
     {
-      path: '/story/:storyId/chapter',
-      redirect: '/story/:storyId',
+      path: '/story/:chainType/:storyId/chapter',
+      redirect: '/story/:chainType/:storyId',
     },
     {
-      path: '/story/:storyId/chapter/:chapterId/edit',
+      path: '/story/:chainType/:storyId/chapter/:chapterId/edit',
       component: './stories/story/chapter/edit',
     },
     {

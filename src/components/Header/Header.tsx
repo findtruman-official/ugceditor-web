@@ -9,15 +9,14 @@ export default function Header() {
   const location = useLocation();
   const { pathname } = location;
 
-  const { storyId, chapterId, currentStory, currentChapter } = useModel(
-    'storyModel',
-    (model) => ({
+  const { chainType, storyId, chapterId, currentStory, currentChapter } =
+    useModel('storyModel', (model) => ({
+      chainType: model.chainType,
       storyId: model.storyId,
       chapterId: model.chapterId,
       currentStory: model.currentStory,
       currentChapter: model.currentChapter,
-    }),
-  );
+    }));
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -66,7 +65,7 @@ export default function Header() {
               ].join(' ')}
               onClick={() => {
                 if (chapterPage) {
-                  history.push(`/story/${storyId}`);
+                  history.push(`/story/${chainType}/${storyId}`);
                 }
               }}
             >

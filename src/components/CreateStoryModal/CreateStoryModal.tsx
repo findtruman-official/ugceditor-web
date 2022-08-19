@@ -8,7 +8,7 @@ import { useIntl } from '@@/plugin-locale';
 import { InfoCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Col, Form, Input, message, Modal, Row } from 'antd';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import styles from './CreateStoryModal.less';
 
 interface CreateStoryModalProps {
@@ -48,7 +48,8 @@ export default function CreateStoryModal({
   visible,
   onClose,
 }: CreateStoryModalProps) {
-  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
+  const { openWalletModal, confirmLogin } =
+    useContext<WalletContextType>(WalletContext);
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
 
@@ -69,7 +70,16 @@ export default function CreateStoryModal({
     }));
   const [chain, setChain] = useState<ChainType>();
 
-  const token = getToken();
+  useEffect(() => {
+    if (!visible) {
+      setChain(undefined);
+    }
+  }, [visible]);
+
+  const token = useMemo(() => {
+    if (!chain) return '';
+    return getToken(chain);
+  }, [chain]);
 
   const { data: initialData } = useRequest(
     async () => {
@@ -118,21 +128,18 @@ export default function CreateStoryModal({
         );
 
         if (update) {
-          await wallet.provider.updateStory(
-            id!!,
-            cid,
-            chains[0].factoryAddress,
-          );
+          await wallet.provider.updateStory(id!!, cid);
           addUpdateStoryPolling(id!!, cid);
         } else {
-          const newStoryId = await wallet.provider.publishStory(
-            cid,
-            chains[0].factoryAddress,
-          );
+          const newStoryId = await wallet.provider.publishStory(cid);
+          const chainName = chains.find(
+            (c: API.Chain) => c.type === chain,
+          ).name;
           addCreateStoryPolling({
             id: newStoryId,
             cover: values.cover,
-            chain: chains[0].name,
+            chain: chainName,
+            chainType: chain,
           });
         }
 
@@ -194,7 +201,16 @@ export default function CreateStoryModal({
                   <ChainItem
                     key={_chain}
                     selected={_chain === chain}
-                    onClick={() => setChain(_chain as ChainType)}
+                    onClick={() => {
+                      const token = getToken(_chain);
+                      if (!token) {
+                        confirmLogin(_chain as ChainType, {
+                          onConfirm: () => setChain(_chain as ChainType),
+                        });
+                      } else {
+                        setChain(_chain as ChainType);
+                      }
+                    }}
                   >
                     <img
                       src={chainWallet.icon}
@@ -209,102 +225,104 @@ export default function CreateStoryModal({
           </div>
         </div>
       )}
-      <Form
-        form={form}
-        layout={'vertical'}
-        onFinish={publishStory}
-        disabled={publishing}
-      >
-        <Row gutter={24}>
-          <Col span={9}>
-            <Form.Item
-              name={'cover'}
-              rules={[
+      {!!token && (
+        <>
+          <Form
+            form={form}
+            layout={'vertical'}
+            onFinish={publishStory}
+            disabled={publishing}
+          >
+            <Row gutter={24}>
+              <Col span={9}>
+                <Form.Item
+                  name={'cover'}
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: 'create-story-modal.upload-cover.require',
+                      }),
+                    },
+                  ]}
+                >
+                  <ImageUploader
+                    aspect={2 / 3}
+                    label={formatMessage({
+                      id: 'create-story-modal.upload-cover',
+                    })}
+                    token={token}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={15}>
+                <Form.Item
+                  name={'title'}
+                  label={formatMessage({
+                    id: 'create-story-modal.story-name',
+                  })}
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: 'create-story-modal.story-name.require',
+                      }),
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name={'description'}
+                  label={formatMessage({
+                    id: 'create-story-modal.story-description',
+                  })}
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage({
+                        id: 'create-story-modal.story-description.require',
+                      }),
+                    },
+                  ]}
+                >
+                  <Input.TextArea showCount={true} maxLength={300} rows={5} />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+          <div className={styles.deployTip}>
+            <InfoCircleOutlined />
+            <span>
+              {formatMessage(
                 {
-                  required: true,
-                  message: formatMessage({
-                    id: 'create-story-modal.upload-cover.require',
-                  }),
+                  id: update
+                    ? 'create-story-modal.deployed-tip'
+                    : 'create-story-modal.deploy-tip',
                 },
-              ]}
-            >
-              <ImageUploader
-                aspect={2 / 3}
-                label={formatMessage({
-                  id: 'create-story-modal.upload-cover',
-                })}
-                token={token}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={15}>
-            <Form.Item
-              name={'title'}
-              label={formatMessage({
-                id: 'create-story-modal.story-name',
-              })}
-              rules={[
                 {
-                  required: true,
-                  message: formatMessage({
-                    id: 'create-story-modal.story-name.require',
-                  }),
+                  chain:
+                    chains.find((c: API.Chain) => c.type === chain).name || '',
                 },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name={'description'}
-              label={formatMessage({
-                id: 'create-story-modal.story-description',
-              })}
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage({
-                    id: 'create-story-modal.story-description.require',
-                  }),
-                },
-              ]}
-            >
-              <Input.TextArea showCount={true} maxLength={300} rows={5} />
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-      {!!chain && (
-        <div className={styles.deployTip}>
-          <InfoCircleOutlined />
-          <span>
-            {formatMessage(
-              {
-                id: update
-                  ? 'create-story-modal.deployed-tip'
-                  : 'create-story-modal.deploy-tip',
-              },
-              {
-                chain:
-                  chains.find((c: API.Chain) => c.type === chain).name || '',
-              },
-            )}
-          </span>
-        </div>
+              )}
+            </span>
+          </div>
+          <Button
+            disabled={!chain}
+            type={'primary'}
+            block={true}
+            onClick={form.submit}
+            size={'large'}
+            loading={publishing}
+          >
+            {formatMessage({
+              id: update
+                ? 'create-story-modal.update'
+                : 'create-story-modal.create',
+            })}
+          </Button>
+        </>
       )}
-      <Button
-        disabled={!chain}
-        type={'primary'}
-        block={true}
-        onClick={form.submit}
-        size={'large'}
-        loading={publishing}
-      >
-        {formatMessage({
-          id: update
-            ? 'create-story-modal.update'
-            : 'create-story-modal.create',
-        })}
-      </Button>
     </Modal>
   );
 }

@@ -1,3 +1,4 @@
+import { ChainType } from '@/wallets';
 import { useIntl } from '@@/plugin-locale';
 import { Skeleton, Spin, Tag, Tooltip } from 'antd';
 import { useState } from 'react';
@@ -7,14 +8,16 @@ import styles from './StoryCard.less';
 interface StoryCardProps {
   id?: string;
   img: string;
-  chain: string;
+  chainType?: ChainType;
+  chainName: string;
   loading?: boolean;
 }
 
 export default function StoryCard({
   id,
   img,
-  chain,
+  chainType,
+  chainName,
   loading = false,
 }: StoryCardProps) {
   const { formatMessage } = useIntl();
@@ -30,7 +33,7 @@ export default function StoryCard({
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-            history.push(`/story/${id}`);
+            chainType && history.push(`/story/${chainType}/${id}`);
           }}
           className={styles.cover}
           src={img}
@@ -38,10 +41,13 @@ export default function StoryCard({
         />
         {loaded && (
           <Tooltip
-            title={formatMessage({ id: 'stories.published-on' }, { chain })}
+            title={formatMessage(
+              { id: 'stories.published-on' },
+              { chain: chainName },
+            )}
           >
             <Tag className={styles.publishTag} color={'#3e38d9'}>
-              {chain}
+              {chainName}
             </Tag>
           </Tooltip>
         )}

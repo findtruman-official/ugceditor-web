@@ -53,6 +53,7 @@ export default {
   'story.insufficient-finds-desc':
     'Please transfer {amount} Finds Token to the following account: {account}',
   'story.waiting-for-sync': 'Waiting for Sync...',
+  'story.story-not-found': 'STORY NOT FOUND!',
   'chapter.title.placeholder': 'Give it a title',
   'chapter.content.placeholder': 'Your story here...',
   'chapter.save-draft': 'Save Locally',

@@ -94,9 +94,13 @@ export default () => {
   /**
    * 列出所有支持的链，链所支持的钱包，用于 WalletModal 的显示与调用
    */
-  const chainWallets: ChainWallet[] = useMemo(
-    () => [
-      {
+  const chainWallets: ChainWallet[] = useMemo(() => {
+    if (!chains || chains.length === 0) return [];
+
+    const _chainWallets: ChainWallet[] = [];
+    const solanaChainInfo = chains.find((c) => c.type === ChainType.Solana);
+    solanaChainInfo &&
+      _chainWallets.push({
         chainType: ChainType.Solana,
         icon: SolanaLogo,
         wallets: [
@@ -106,11 +110,16 @@ export default () => {
             walletType: WalletType.Phantom,
             provider: new PhantomWalletProvider(
               getWalletEvents(WalletType.Phantom),
+              solanaChainInfo.factoryAddress,
+              solanaChainInfo.findsAddress,
             ),
           },
         ],
-      },
-      {
+      });
+
+    const klaytnChainInfo = chains.find((c) => c.type === ChainType.Klaytn);
+    klaytnChainInfo &&
+      _chainWallets.push({
         chainType: ChainType.Klaytn,
         icon: KlaytnLogo,
         wallets: [
@@ -120,13 +129,15 @@ export default () => {
             walletType: WalletType.Kaikas,
             provider: new KaikasWalletProvider(
               getWalletEvents(WalletType.Kaikas),
+              klaytnChainInfo.factoryAddress,
+              klaytnChainInfo.findsAddress,
             ),
           },
         ],
-      },
-    ],
-    [],
-  );
+      });
+
+    return _chainWallets;
+  }, [chains]);
 
   const getChainType = useCallback(
     (walletType: WalletType) => {

@@ -1,3 +1,4 @@
+import { ChainType } from '@/wallets';
 import { useIntl } from '@@/plugin-locale';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Modal, Spin, Tag } from 'antd';
@@ -7,12 +8,14 @@ import styles from './StoryTab.less';
 interface StoryTabProps {
   loading: boolean;
   storyId: string;
+  chainType: ChainType;
 }
 
 const ChapterItem = ({
   type = 'default',
   isAuthor,
   chapter,
+  chainType,
   storyId,
   deleted = false,
   onDelete,
@@ -21,6 +24,7 @@ const ChapterItem = ({
   type: 'new' | 'modified' | 'default';
   isAuthor: boolean;
   chapter: { id: number; name: string };
+  chainType: ChainType;
   storyId: string;
   deleted?: boolean;
   onDelete: () => void;
@@ -34,7 +38,7 @@ const ChapterItem = ({
       }
       onClick={() => {
         if (!isAuthor || (!deleted && type !== 'new')) {
-          history.push(`/story/${storyId}/chapter/${chapter.id}`);
+          history.push(`/story/${chainType}/${storyId}/chapter/${chapter.id}`);
         }
       }}
     >
@@ -68,7 +72,9 @@ const ChapterItem = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                history.push(`/story/${storyId}/chapter/${chapter.id}/edit`);
+                history.push(
+                  `/story/${chainType}/${storyId}/chapter/${chapter.id}/edit`,
+                );
               }}
             >
               {formatMessage({ id: 'story.edit' })}
@@ -89,7 +95,11 @@ const ChapterItem = ({
   );
 };
 
-export default function StoryTab({ loading, storyId }: StoryTabProps) {
+export default function StoryTab({
+  loading,
+  storyId,
+  chainType,
+}: StoryTabProps) {
   const { formatMessage } = useIntl();
 
   const { isAuthor, chapters, chapterCaches, deleteChapterCache, setChapters } =
@@ -164,6 +174,7 @@ export default function StoryTab({ loading, storyId }: StoryTabProps) {
                   isAuthor={isAuthor}
                   chapter={cache || chapter}
                   storyId={storyId}
+                  chainType={chainType}
                   deleted={chapter.delete}
                   onDelete={() => handleDelete(chapter.id, chapter.name)}
                   onUndoDelete={() => handleUndoDelete(chapter.id)}
@@ -185,6 +196,7 @@ export default function StoryTab({ loading, storyId }: StoryTabProps) {
                     isAuthor={isAuthor}
                     chapter={chapter}
                     storyId={storyId}
+                    chainType={chainType}
                     deleted={false}
                     onDelete={() =>
                       handleDelete(chapter.id, chapter.name, true)

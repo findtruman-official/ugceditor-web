@@ -7,7 +7,7 @@ import { uploadJson } from '@/services/api';
 import { shortenAccount } from '@/utils/format';
 import { useMatch } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
-import { EditOutlined } from '@ant-design/icons';
+import { EditOutlined, LeftOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useRequest } from 'ahooks';
 import {
@@ -30,7 +30,7 @@ import styles from './index.less';
 const Story: React.FC = () => {
   const { confirmLogin } = useContext<WalletContextType>(WalletContext);
   const { formatMessage } = useIntl();
-  const match = useMatch('/story/:storyId');
+  const match = useMatch('/story/:chainType/:storyId');
 
   const { accounts, chains, getToken, getTokenAsync, connectedWallets } =
     useModel('walletModel', (model) => ({
@@ -43,6 +43,8 @@ const Story: React.FC = () => {
   const {
     isAuthor,
     currentStory,
+    chainType,
+    setChainType,
     setStoryId,
     storyId,
     gettingCurrentStory,
@@ -55,6 +57,8 @@ const Story: React.FC = () => {
   } = useModel('storyModel', (model) => ({
     isAuthor: model.isAuthor,
     currentStory: model.currentStory,
+    chainType: model.chainType,
+    setChainType: model.setChainType,
     storyId: model.storyId,
     setStoryId: model.setStoryId,
     gettingCurrentStory: model.gettingCurrentStory,
@@ -80,8 +84,9 @@ const Story: React.FC = () => {
   }, [account]);
 
   useEffect(() => {
-    if (match?.params.storyId) {
-      setStoryId(match?.params.storyId);
+    if (match?.params.storyId && match?.params.chainType) {
+      setChainType(match.params.chainType);
+      setStoryId(match.params.storyId);
     }
   }, [match]);
 
@@ -133,11 +138,7 @@ const Story: React.FC = () => {
           },
           token,
         );
-        await wallet.provider.updateStory(
-          storyId,
-          cid,
-          chains[0].factoryAddress,
-        );
+        await wallet.provider.updateStory(storyId, cid);
 
         addUpdateStoryPolling(storyId, cid);
 
@@ -161,177 +162,194 @@ const Story: React.FC = () => {
   return (
     <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
       <Helmet title={currentStory?.info?.title} />
-      <div className={['story-detail', styles.container].join(' ')}>
-        <Row
-          style={{ marginBottom: 24 }}
-          gutter={[24, 48]}
-          justify={'space-between'}
-          wrap={true}
-        >
-          <Col>
-            <Row gutter={48}>
-              <Col>
-                <Spin
-                  spinning={updateStoryPolling}
-                  tip={formatMessage({ id: 'story.waiting-for-sync' })}
-                >
-                  {gettingCurrentStory || !currentStory ? (
-                    <Skeleton.Image active={true} />
-                  ) : (
-                    <img
-                      className={styles.cover}
-                      src={`/fcc-story/ipfs/file/${encodeURIComponent(
-                        currentStory.info?.cover,
-                      )}`}
-                    />
-                  )}
-                </Spin>
-              </Col>
-              <Col style={{ width: 400 }}>
-                <Spin
-                  spinning={updateStoryPolling}
-                  tip={formatMessage({ id: 'story.waiting-for-sync' })}
-                >
-                  <Skeleton loading={gettingCurrentStory} active={true}>
-                    <div className={styles.name}>
-                      <div>{currentStory?.info?.title}</div>
-                      {isAuthor && (
-                        <Button
-                          disabled={saving}
-                          icon={<EditOutlined />}
-                          onClick={() => {
-                            const chain = currentStory.chainInfo.type;
-                            const token = getToken(chain);
-                            if (!token) {
-                              confirmLogin(chain, {
-                                onConfirm: () => setStoryModalVisible(true),
-                              });
-                            } else {
-                              setStoryModalVisible(true);
-                            }
-                          }}
-                        />
-                      )}
-                    </div>
-                    <div className={styles.infoGroup}>
-                      <div className={styles.infoTitle}>
-                        {formatMessage({ id: 'story.author' })}
-                      </div>
-                      <div className={styles.infoDescription}>
-                        {shortenAccount(currentStory?.author)}
-                      </div>
-                    </div>
-                    <div className={styles.infoGroup}>
-                      <div className={styles.infoTitle}>
-                        {formatMessage({ id: 'story.outline' })}
-                      </div>
-                      <Typography.Paragraph
-                        ellipsis={{
-                          rows: 6,
-                          expandable: true,
-                          symbol: (
-                            <span
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setDescModalVisible(true);
-                              }}
-                            >
-                              {formatMessage({ id: 'story.more' })}
-                            </span>
-                          ),
-                        }}
-                        className={styles.infoDescription}
-                      >
-                        {currentStory?.info?.description}
-                      </Typography.Paragraph>
-                    </div>
-                    <div className={styles.infoGroup}>
-                      <div className={styles.infoTitle}>
-                        {formatMessage({ id: 'story.publish-at' })}
-                      </div>
-                      <div className={styles.infoDescription}>
-                        {new Date(
-                          currentStory?.info?.createAt,
-                        ).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </Skeleton>
-                </Spin>
-              </Col>
-            </Row>
-          </Col>
-          <Col>
-            <NftCard
-              syncing={nftSalePolling}
-              loading={saving}
-              onPublish={() => {
-                const chain = currentStory.chainInfo.type;
-                const token = getToken(chain);
-                if (!token) {
-                  confirmLogin(chain, {
-                    onConfirm: () => setNftModalVisible(true),
-                  });
-                } else {
-                  setNftModalVisible(true);
-                }
-              }}
-            />
-          </Col>
-        </Row>
-
-        <Tabs
-          defaultActiveKey={'story'}
-          size={'large'}
-          tabBarStyle={{
-            fontSize: 18,
-          }}
-          tabBarExtraContent={
-            isAuthor && (
-              <div>
-                <Badge dot={chapters.length === 0}>
-                  <Button
-                    onClick={() =>
-                      history.push(`/story/${storyId}/chapter/0/edit`)
-                    }
-                    disabled={saving || updateStoryPolling}
-                  >
-                    {formatMessage({ id: 'story.add-chapter' })}
-                  </Button>
-                </Badge>
-                <Button
-                  type={'primary'}
-                  style={{ marginLeft: 12 }}
-                  onClick={() => {
-                    const chain = currentStory.chainInfo.type;
-                    const token = getToken(chain);
-                    if (!token) {
-                      confirmLogin(chain, {
-                        onConfirm: () => runSave(),
-                      });
-                    } else {
-                      runSave();
-                    }
-                  }}
-                  loading={saving || updateStoryPolling}
-                >
-                  {formatMessage({ id: 'story.save' })}
-                </Button>
-              </div>
-            )
-          }
-        >
-          <Tabs.TabPane
-            tab={formatMessage({ id: 'story.tab.story' })}
-            key={'story'}
+      {gettingCurrentStory || currentStory ? (
+        <div className={['story-detail', styles.container].join(' ')}>
+          <Row
+            style={{ marginBottom: 24 }}
+            gutter={[24, 48]}
+            justify={'space-between'}
+            wrap={true}
           >
-            <StoryTab
-              loading={saving || updateStoryPolling}
-              storyId={storyId}
-            />
-          </Tabs.TabPane>
-        </Tabs>
-      </div>
+            <Col>
+              <Row gutter={48}>
+                <Col>
+                  <Spin
+                    spinning={updateStoryPolling}
+                    tip={formatMessage({ id: 'story.waiting-for-sync' })}
+                  >
+                    {gettingCurrentStory || !currentStory ? (
+                      <Skeleton.Image active={true} />
+                    ) : (
+                      <img
+                        className={styles.cover}
+                        src={`/fcc-story/ipfs/file/${encodeURIComponent(
+                          currentStory.info?.cover,
+                        )}`}
+                      />
+                    )}
+                  </Spin>
+                </Col>
+                <Col style={{ width: 400 }}>
+                  <Spin
+                    spinning={updateStoryPolling}
+                    tip={formatMessage({ id: 'story.waiting-for-sync' })}
+                  >
+                    <Skeleton loading={gettingCurrentStory} active={true}>
+                      <div className={styles.name}>
+                        <div>{currentStory?.info?.title}</div>
+                        {isAuthor && (
+                          <Button
+                            disabled={saving}
+                            icon={<EditOutlined />}
+                            onClick={() => {
+                              const chain = currentStory.chainInfo.type;
+                              const token = getToken(chain);
+                              if (!token) {
+                                confirmLogin(chain, {
+                                  onConfirm: () => setStoryModalVisible(true),
+                                });
+                              } else {
+                                setStoryModalVisible(true);
+                              }
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className={styles.infoGroup}>
+                        <div className={styles.infoTitle}>
+                          {formatMessage({ id: 'story.author' })}
+                        </div>
+                        <div className={styles.infoDescription}>
+                          {shortenAccount(currentStory?.author)}
+                        </div>
+                      </div>
+                      <div className={styles.infoGroup}>
+                        <div className={styles.infoTitle}>
+                          {formatMessage({ id: 'story.outline' })}
+                        </div>
+                        <Typography.Paragraph
+                          ellipsis={{
+                            rows: 6,
+                            expandable: true,
+                            symbol: (
+                              <span
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  setDescModalVisible(true);
+                                }}
+                              >
+                                {formatMessage({ id: 'story.more' })}
+                              </span>
+                            ),
+                          }}
+                          className={styles.infoDescription}
+                        >
+                          {currentStory?.info?.description}
+                        </Typography.Paragraph>
+                      </div>
+                      <div className={styles.infoGroup}>
+                        <div className={styles.infoTitle}>
+                          {formatMessage({ id: 'story.publish-at' })}
+                        </div>
+                        <div className={styles.infoDescription}>
+                          {new Date(
+                            currentStory?.info?.createAt,
+                          ).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </Skeleton>
+                  </Spin>
+                </Col>
+              </Row>
+            </Col>
+            <Col>
+              <NftCard
+                syncing={nftSalePolling}
+                loading={saving}
+                onPublish={() => {
+                  const chain = currentStory.chainInfo.type;
+                  const token = getToken(chain);
+                  if (!token) {
+                    confirmLogin(chain, {
+                      onConfirm: () => setNftModalVisible(true),
+                    });
+                  } else {
+                    setNftModalVisible(true);
+                  }
+                }}
+              />
+            </Col>
+          </Row>
+
+          <Tabs
+            defaultActiveKey={'story'}
+            size={'large'}
+            tabBarStyle={{
+              fontSize: 18,
+            }}
+            tabBarExtraContent={
+              isAuthor && (
+                <div>
+                  <Badge dot={chapters.length === 0}>
+                    <Button
+                      onClick={() =>
+                        history.push(
+                          `/story/${chainType}/${storyId}/chapter/0/edit`,
+                        )
+                      }
+                      disabled={saving || updateStoryPolling}
+                    >
+                      {formatMessage({ id: 'story.add-chapter' })}
+                    </Button>
+                  </Badge>
+                  <Button
+                    type={'primary'}
+                    style={{ marginLeft: 12 }}
+                    onClick={() => {
+                      const chain = currentStory.chainInfo.type;
+                      const token = getToken(chain);
+                      if (!token) {
+                        confirmLogin(chain, {
+                          onConfirm: () => runSave(),
+                        });
+                      } else {
+                        runSave();
+                      }
+                    }}
+                    loading={saving || updateStoryPolling}
+                  >
+                    {formatMessage({ id: 'story.save' })}
+                  </Button>
+                </div>
+              )
+            }
+          >
+            <Tabs.TabPane
+              tab={formatMessage({ id: 'story.tab.story' })}
+              key={'story'}
+            >
+              <StoryTab
+                loading={saving || updateStoryPolling}
+                storyId={storyId}
+                chainType={chainType}
+              />
+            </Tabs.TabPane>
+          </Tabs>
+        </div>
+      ) : (
+        <div className={styles.notFoundTip}>
+          <div>{formatMessage({ id: 'story.story-not-found' })}</div>
+          <Button
+            shape={'circle'}
+            size={'large'}
+            icon={<LeftOutlined />}
+            onClick={() => {
+              history.push(`/stories`);
+            }}
+          />
+        </div>
+      )}
 
       <PublishNftModal
         visible={nftModalVisible}

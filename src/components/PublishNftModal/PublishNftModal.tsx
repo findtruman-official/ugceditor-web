@@ -27,14 +27,10 @@ export default function PublishNftModal({
 }: PublishNftModalProps) {
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
-  const { getToken, chains, connectedWallets } = useModel(
-    'walletModel',
-    (model) => ({
-      getToken: model.getToken,
-      chains: model.chains,
-      connectedWallets: model.connectedWallets,
-    }),
-  );
+  const { getToken, connectedWallets } = useModel('walletModel', (model) => ({
+    getToken: model.getToken,
+    connectedWallets: model.connectedWallets,
+  }));
   const { currentStory, addNftSalePolling } = useModel(
     'storyModel',
     (model) => ({
@@ -49,7 +45,7 @@ export default function PublishNftModal({
 
   const { loading: publishingNft, run: runPublishNft } = useRequest(
     async (values) => {
-      if (!chains?.[0] || !wallet) return;
+      if (!chain || !wallet) return;
 
       try {
         const name = `${currentStory.info?.title} NFT`;
@@ -63,13 +59,7 @@ export default function PublishNftModal({
         }
 
         const { url: uriPrefix } = (
-          await getMetadataUriPrefix(
-            totalSupply,
-            chains[0].type,
-            desc,
-            img,
-            name,
-          )
+          await getMetadataUriPrefix(totalSupply, chain, desc, img, name)
         ).metadataUriPrefix;
 
         await wallet.provider.publishStoryNft(
@@ -79,8 +69,6 @@ export default function PublishNftModal({
           reservedAmount,
           name,
           uriPrefix,
-          chains[0].factoryAddress,
-          chains[0].findsAddress,
         );
 
         message.success(formatMessage({ id: 'publish-nft-modal.published' }));
