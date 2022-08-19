@@ -122,7 +122,7 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
           <div className={styles.nftMeta}>
             <div className={styles.nftName}>{currentStory.nft.name}</div>
             <Row gutter={[8, 8]} style={{ marginBottom: 12 }}>
-              <Col span={10}>
+              <Col span={12}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.total' })}
                 </div>
@@ -130,7 +130,7 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
                   {currentStory.nft.total}
                 </div>
               </Col>
-              <Col span={14}>
+              <Col span={12}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.price' })}
                 </div>
@@ -140,13 +140,13 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
                     .toString()}
                 </div>
               </Col>
-              <Col span={10}>
+              <Col span={12}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.rest' })}
                 </div>
                 <div className={styles.nftMetaValue}>{rest}</div>
               </Col>
-              <Col span={14}>
+              <Col span={12}>
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.own' })}
                 </div>
