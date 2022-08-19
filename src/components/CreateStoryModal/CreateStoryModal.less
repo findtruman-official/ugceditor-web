@@ -21,3 +21,39 @@
   font-weight: bold;
   margin: 6px 0;
 }
+
+.chainSelector {
+  margin-bottom: 24px;
+}
+.chainSelectorTitle {
+  font-size: 18px;
+  margin-bottom: 8px;
+  //font-weight: bold;
+}
+.chainItemRow {
+  display: flex;
+  gap: 8px;
+  white-space: pre-wrap;
+}
+
+.chainItem {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+  background: @card-background;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease;
+}
+.chainItem:hover {
+  border-color: transparent;
+  background: @theme-color-6;
+}
+.chainItemSelected {
+  border-color: transparent;
+  background: @theme-color-6;
+}
+.chainItemIcon {
+  height: 14px;
+}

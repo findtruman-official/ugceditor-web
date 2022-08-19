@@ -68,6 +68,8 @@ export default {
   'chapter.chapter-not-author': 'YOU ARE NOT THE AUTHOR!',
   'publish-nft-modal.title': 'Publish Story NFT',
   'publish-nft-modal.publish': 'Publish',
+  'publish-nft-modal.select-chain': 'Select a chain to publish you story:',
+  'publish-nft-modal.select-chain-others': 'Others',
   'publish-nft-modal.nft-description': 'NFT Description',
   'publish-nft-modal.nft-description.require': 'Please enter!',
   'publish-nft-modal.nft-price': 'NFT Price',

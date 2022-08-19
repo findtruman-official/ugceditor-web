@@ -68,6 +68,8 @@ export default {
   'chapter.chapter-not-author': '您不是作者！',
   'publish-nft-modal.title': '发行故事 NFT',
   'publish-nft-modal.publish': '发行',
+  'publish-nft-modal.select-chain': '选择一条链发布您的故事：',
+  'publish-nft-modal.select-chain-others': '其它',
   'publish-nft-modal.nft-description': 'NFT描述',
   'publish-nft-modal.nft-description.require': '请输入NFT描述！',
   'publish-nft-modal.nft-price': 'NFT价格',

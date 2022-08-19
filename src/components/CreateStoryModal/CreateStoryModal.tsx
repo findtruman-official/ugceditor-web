@@ -1,11 +1,14 @@
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
+import { WalletContext, WalletContextType } from '@/layouts';
+import { ChainWallet } from '@/models/walletModel';
 import { getJson, uploadJson } from '@/services/api';
+import { ChainType } from '@/wallets';
 import { useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { InfoCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { Button, Col, Form, Input, message, Modal, Row } from 'antd';
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './CreateStoryModal.less';
 
 interface CreateStoryModalProps {
@@ -16,6 +19,28 @@ interface CreateStoryModalProps {
   onClose: () => void;
 }
 
+const ChainItem = ({
+  children,
+  selected,
+  onClick,
+}: {
+  children: any;
+  selected: boolean;
+  onClick: () => void;
+}) => {
+  return (
+    <div
+      className={[
+        styles.chainItem,
+        selected ? styles.chainItemSelected : '',
+      ].join(' ')}
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+};
+
 export default function CreateStoryModal({
   id,
   update = false,
@@ -23,17 +48,28 @@ export default function CreateStoryModal({
   visible,
   onClose,
 }: CreateStoryModalProps) {
+  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
 
-  const { token, wallet, chains } = useModel('walletModel');
-  const { addCreateStoryPolling, addUpdateStoryPolling } = useModel(
-    'storyModel',
+  const { getToken, connectedWallets, chainWallets, chains } = useModel(
+    'walletModel',
     (model) => ({
-      addCreateStoryPolling: model.addCreateStoryPolling,
-      addUpdateStoryPolling: model.addUpdateStoryPolling,
+      getToken: model.getToken,
+      connectedWallets: model.connectedWallets,
+      chainWallets: model.chainWallets,
+      chains: model.chains,
     }),
   );
+  const { addCreateStoryPolling, addUpdateStoryPolling, currentStory } =
+    useModel('storyModel', (model) => ({
+      currentStory: model.currentStory,
+      addCreateStoryPolling: model.addCreateStoryPolling,
+      addUpdateStoryPolling: model.addUpdateStoryPolling,
+    }));
+  const [chain, setChain] = useState<ChainType>();
+
+  const token = getToken();
 
   const { data: initialData } = useRequest(
     async () => {
@@ -47,6 +83,12 @@ export default function CreateStoryModal({
   );
 
   useEffect(() => {
+    if (!!contentHash) {
+      setChain(currentStory.chainInfo.type);
+    }
+  }, [contentHash]);
+
+  useEffect(() => {
     if (!!initialData) {
       form.setFieldsValue({
         cover: initialData.cover,
@@ -58,7 +100,8 @@ export default function CreateStoryModal({
 
   const { loading: publishing, run: publishStory } = useRequest(
     async (values: any) => {
-      if (!wallet || !chains?.[0]) return;
+      const wallet = connectedWallets[chain!!];
+      if (!wallet) return;
       try {
         const currentTime = new Date().valueOf();
         const { cid } = await uploadJson<API.StoryDetail>(
@@ -98,15 +141,6 @@ export default function CreateStoryModal({
             id: update ? 'story.story-updated' : 'story.story-published',
           }),
         );
-
-        // refreshMyStories();
-        // if (update) {
-        //   refreshCurrentStory();
-        // } else {
-        //   refreshHottestStories();
-        //   refreshLatestStories();
-        // }
-
         form.resetFields();
         onClose();
       } catch (e) {
@@ -144,6 +178,37 @@ export default function CreateStoryModal({
           })}
         </div>
       </div>
+      {!update && (
+        <div className={styles.chainSelector}>
+          <div className={styles.chainSelectorTitle}>
+            {formatMessage({ id: 'publish-nft-modal.select-chain' })}
+          </div>
+          <div className={styles.chainItemRow}>
+            {Object.keys(connectedWallets)
+              .filter((chain) => !!connectedWallets[chain])
+              .map((_chain) => {
+                const chainWallet = chainWallets.find(
+                  (c: ChainWallet) => c.chainType === _chain,
+                );
+                return (
+                  <ChainItem
+                    key={_chain}
+                    selected={_chain === chain}
+                    onClick={() => setChain(_chain as ChainType)}
+                  >
+                    <img
+                      src={chainWallet.icon}
+                      className={styles.chainItemIcon}
+                    />
+                  </ChainItem>
+                );
+              })}
+            <ChainItem selected={false} onClick={openWalletModal}>
+              {formatMessage({ id: 'publish-nft-modal.select-chain-others' })}
+            </ChainItem>
+          </div>
+        </div>
+      )}
       <Form
         form={form}
         layout={'vertical'}
@@ -208,20 +273,26 @@ export default function CreateStoryModal({
           </Col>
         </Row>
       </Form>
-      <div className={styles.deployTip}>
-        <InfoCircleOutlined />
-        <span>
-          {formatMessage(
-            {
-              id: update
-                ? 'create-story-modal.deployed-tip'
-                : 'create-story-modal.deploy-tip',
-            },
-            { chain: chains?.[0].name || '' },
-          )}
-        </span>
-      </div>
+      {!!chain && (
+        <div className={styles.deployTip}>
+          <InfoCircleOutlined />
+          <span>
+            {formatMessage(
+              {
+                id: update
+                  ? 'create-story-modal.deployed-tip'
+                  : 'create-story-modal.deploy-tip',
+              },
+              {
+                chain:
+                  chains.find((c: API.Chain) => c.type === chain).name || '',
+              },
+            )}
+          </span>
+        </div>
+      )}
       <Button
+        disabled={!chain}
         type={'primary'}
         block={true}
         onClick={form.submit}

@@ -14,7 +14,7 @@ import { PhantomWalletProvider } from '@/wallets/Phantom';
 import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-interface ChainWallet {
+export interface ChainWallet {
   chainType: ChainType;
   icon: string;
   wallets: Wallet[];
