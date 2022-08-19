@@ -4,6 +4,7 @@ declare global {
   interface Window {
     phantom: any;
     solana: any;
+    klaytn: any;
   }
 
   namespace API {

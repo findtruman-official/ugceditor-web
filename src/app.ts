@@ -11,8 +11,6 @@ export const layout = () => {
     logo: 'https://findtruman.io/favicon.png',
     layout: 'top',
     fixedHeader: true,
-    // headerHeight: 48,
-
     headerRender: false,
     menuHeaderRender: false,
   };

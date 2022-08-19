@@ -1,4 +1,5 @@
 import {
+  ChainType,
   WalletAutoConnectType,
   WalletEvents,
   WalletProvider,
@@ -47,6 +48,7 @@ const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
 
 export class PhantomWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Phantom;
+  chainType: ChainType = ChainType.Solana;
   provider: any;
 
   constructor({

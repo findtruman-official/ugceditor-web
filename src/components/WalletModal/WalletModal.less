@@ -3,12 +3,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 8px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   position: relative;
 }
 .walletCard:hover {
-  box-shadow: 0 1px 2px -2px #00000029, 0 3px 6px #0000001f,
-    0 5px 12px 4px #00000017;
+  border-color: transparent;
+  box-shadow: 0 1px 2px -2px rgb(0 0 0 / 64%), 0 3px 6px 0 rgb(0 0 0 / 48%),
+    0 5px 12px 4px rgb(0 0 0 / 36%);
 }
 .walletCard:active {
   box-shadow: none;
@@ -17,14 +18,22 @@
   margin-bottom: 12px;
 }
 
+.chain:not(:last-child) {
+  padding-bottom: 12px;
+}
+
+.chainIcon {
+  height: 24px;
+}
+
 .walletIcon {
   position: absolute;
-  left: 10px;
-  height: 32px;
+  left: 8px;
+  height: 24px;
 }
 
 .walletName {
-  line-height: 32px;
+  line-height: 24px;
   width: 100%;
   text-align: center;
   font-size: 18px;
@@ -32,7 +41,7 @@
 }
 
 .rightIcon {
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 18px;
   position: absolute;
   right: 10px;
@@ -47,21 +56,22 @@
 }
 
 .currentWalletIcon {
-  height: 48px;
-  margin-bottom: 6px;
+  height: 36px;
+  margin-bottom: 12px;
 }
 
 .currentWalletAddress {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.75);
+  color: rgba(255, 255, 255, 0.75);
   margin-bottom: 6px;
+  cursor: pointer;
 }
 
 .disconnectIcon {
-  color: rgba(0, 0, 0, 0.75);
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
   cursor: pointer;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   transition: all 0.3s ease;
 }
 .disconnectIcon:hover {

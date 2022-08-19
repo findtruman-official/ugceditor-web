@@ -2,6 +2,7 @@ import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import NftCard from '@/components/NftCard/NftCard';
 import PublishNftModal from '@/components/PublishNftModal/PublishNftModal';
 import StoryTab from '@/components/StoryTab/StoryTab';
+import { WalletContext, WalletContextType } from '@/layouts';
 import { uploadJson } from '@/services/api';
 import { shortenAccount } from '@/utils/format';
 import { useMatch } from '@@/exports';
@@ -21,24 +22,24 @@ import {
   Tabs,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { history, useModel } from 'umi';
 import styles from './index.less';
 
 const Story: React.FC = () => {
+  const { confirmLogin } = useContext<WalletContextType>(WalletContext);
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:storyId');
 
-  const { account, chains, token, wallet } = useModel(
-    'walletModel',
-    (model) => ({
-      account: model.account,
+  const { accounts, chains, getToken, getTokenAsync, connectedWallets } =
+    useModel('walletModel', (model) => ({
+      accounts: model.accounts,
       chains: model.chains,
-      token: model.token,
-      wallet: model.wallet,
-    }),
-  );
+      getToken: model.getToken,
+      getTokenAsync: model.getTokenAsync,
+      connectedWallets: model.connectedWallets,
+    }));
   const {
     isAuthor,
     currentStory,
@@ -65,6 +66,10 @@ const Story: React.FC = () => {
     addUpdateStoryPolling: model.addUpdateStoryPolling,
   }));
 
+  const chain = currentStory?.chainInfo.type;
+  const account = accounts[chain];
+  const wallet = connectedWallets[chain];
+
   const [nftModalVisible, setNftModalVisible] = useState(false);
   const [storyModalVisible, setStoryModalVisible] = useState(false);
   const [descModalVisible, setDescModalVisible] = useState(false);
@@ -82,7 +87,10 @@ const Story: React.FC = () => {
 
   const { loading: saving, run: runSave } = useRequest(
     async () => {
-      if (!wallet || !chains?.[0] || !currentStory) return;
+      if (!chain || !wallet || !currentStory) return;
+
+      let token = await getTokenAsync(chain, true);
+
       try {
         const { info } = currentStory;
         const currentTime = new Date().valueOf();
@@ -191,7 +199,17 @@ const Story: React.FC = () => {
                         <Button
                           disabled={saving}
                           icon={<EditOutlined />}
-                          onClick={() => setStoryModalVisible(true)}
+                          onClick={() => {
+                            const chain = currentStory.chainInfo.type;
+                            const token = getToken(chain);
+                            if (!token) {
+                              confirmLogin(chain, {
+                                onConfirm: () => setStoryModalVisible(true),
+                              });
+                            } else {
+                              setStoryModalVisible(true);
+                            }
+                          }}
                         />
                       )}
                     </div>
@@ -209,7 +227,7 @@ const Story: React.FC = () => {
                       </div>
                       <Typography.Paragraph
                         ellipsis={{
-                          rows: 8,
+                          rows: 6,
                           expandable: true,
                           symbol: (
                             <span
@@ -247,7 +265,17 @@ const Story: React.FC = () => {
             <NftCard
               syncing={nftSalePolling}
               loading={saving}
-              onPublish={() => setNftModalVisible(true)}
+              onPublish={() => {
+                const chain = currentStory.chainInfo.type;
+                const token = getToken(chain);
+                if (!token) {
+                  confirmLogin(chain, {
+                    onConfirm: () => setNftModalVisible(true),
+                  });
+                } else {
+                  setNftModalVisible(true);
+                }
+              }}
             />
           </Col>
         </Row>
@@ -274,7 +302,17 @@ const Story: React.FC = () => {
                 <Button
                   type={'primary'}
                   style={{ marginLeft: 12 }}
-                  onClick={runSave}
+                  onClick={() => {
+                    const chain = currentStory.chainInfo.type;
+                    const token = getToken(chain);
+                    if (!token) {
+                      confirmLogin(chain, {
+                        onConfirm: () => runSave(),
+                      });
+                    } else {
+                      runSave();
+                    }
+                  }}
                   loading={saving || updateStoryPolling}
                 >
                   {formatMessage({ id: 'story.save' })}
@@ -316,7 +354,9 @@ const Story: React.FC = () => {
         centered={true}
         footer={false}
       >
-        <div style={{ fontSize: 16 }}>{currentStory?.info?.description}</div>
+        <div style={{ fontSize: 16, whiteSpace: 'pre-wrap' }}>
+          {currentStory?.info?.description}
+        </div>
       </Modal>
     </PageContainer>
   );

@@ -11,8 +11,8 @@ import { useModel } from 'umi';
 
 // @ts-ignore
 export default () => {
-  const { account, chains } = useModel('walletModel', (state) => ({
-    account: state.account,
+  const { accounts, chains } = useModel('walletModel', (state) => ({
+    accounts: state.accounts,
     chains: state.chains,
   }));
 
@@ -37,17 +37,7 @@ export default () => {
     },
     { refreshDeps: [storyId, chains] },
   );
-  // const {
-  //   data: currentChapter,
-  //   loading: gettingCurrentChapter,
-  // } = useRequest(
-  //   async () => {
-  //     if (!!chapterId) {
-  //       return (await getChapter(chapterId)).chapter;
-  //     }
-  //   },
-  //   { refreshDeps: [chapterId] },
-  // );
+
   const currentChapter = useMemo(() => {
     if (chapters) {
       return chapters.find((c) => c.id === chapterId);
@@ -122,12 +112,20 @@ export default () => {
   }, [storyId]);
 
   const isAuthor = useMemo(() => {
-    if (currentStory && !!account) {
-      return currentStory.author === account;
+    if (currentStory) {
+      return accounts[currentStory.chainInfo.type] === currentStory.author;
     } else {
       return false;
     }
-  }, [currentStory, account]);
+  }, [currentStory, accounts]);
+
+  const isChainConnected = useMemo(() => {
+    if (currentStory) {
+      return !!accounts[currentStory.chainInfo.type];
+    } else {
+      return false;
+    }
+  }, [currentStory, accounts]);
 
   const {
     data: hottestStories,
@@ -159,17 +157,19 @@ export default () => {
     refresh: refreshMyStories,
   } = useRequest(
     async () => {
-      if (!!account && !!chains?.[0]) {
-        return (
-          await getStories('Latest', [account], [chains[0].type])
-        ).stories.map((e) => ({
-          id: e.chainStoryId,
-          cover: e.info?.cover,
-          chain: e.chainInfo.name,
-        }));
+      const chains = Object.keys(accounts).filter((k) => !!accounts[k]);
+      const addresses = chains.map((k) => accounts[k]);
+      if (chains.length > 0) {
+        return (await getStories('Latest', addresses, chains)).stories.map(
+          (e) => ({
+            id: e.chainStoryId,
+            cover: e.info?.cover,
+            chain: e.chainInfo.name,
+          }),
+        );
       }
     },
-    { refreshDeps: [account, chains] },
+    { refreshDeps: [accounts] },
   );
 
   const [createStoryPollingList, setCreateStoryPollingList] = useState<
@@ -192,7 +192,7 @@ export default () => {
 
   const {} = useRequest(
     async () => {
-      if (!createStoryPollingList.length || !account || !chains?.[0]) return;
+      if (!createStoryPollingList.length || !chains?.[0]) return;
       const list = [...createStoryPollingList];
       let changed = false;
       for (let i = list.length - 1; i >= 0; i--) {
@@ -232,7 +232,7 @@ export default () => {
 
   const {} = useRequest(
     async () => {
-      if (!nftSalePollingList.length || !account || !chains?.[0]) return;
+      if (!nftSalePollingList.length || !chains?.[0]) return;
       const list = [...nftSalePollingList];
       for (let i = list.length - 1; i >= 0; i--) {
         await syncStoryNftSale(chains[0].type, list[i]);
@@ -282,7 +282,7 @@ export default () => {
 
   const {} = useRequest(
     async () => {
-      if (!updateStoryPollingList.length || !account || !chains?.[0]) return;
+      if (!updateStoryPollingList.length || !chains?.[0]) return;
       const list = [...updateStoryPollingList];
       for (let i = list.length - 1; i >= 0; i--) {
         await syncStoryContentHash(chains[0].type, list[i].id);
@@ -317,7 +317,6 @@ export default () => {
     gettingCurrentStory,
     refreshCurrentStory,
     currentChapter,
-    // gettingCurrentChapter,
     hottestStories,
     gettingHottestStories,
     latestStories,
@@ -328,6 +327,7 @@ export default () => {
     refreshLatestStories,
     refreshMyStories,
     isAuthor,
+    isChainConnected,
     createStoryPollingList,
     addCreateStoryPolling,
     nftSalePolling,

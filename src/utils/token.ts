@@ -32,7 +32,10 @@ export const refreshToken = async (
   return token;
 };
 
-export const getTokenFromStorage = async (account: string, chain: string) => {
+export const getTokenFromStorage = (
+  account: string,
+  chain: string,
+): string | undefined => {
   const storage = localStorage.getItem(`FCC_TOKEN_${chain}_${account}`);
   try {
     if (storage) {
@@ -44,6 +47,7 @@ export const getTokenFromStorage = async (account: string, chain: string) => {
   } catch (e) {
     localStorage.removeItem(`FCC_TOKEN_${chain}_${account}`);
   }
+  return undefined;
 };
 
 export const isTokenValid = async (token: string) => {};

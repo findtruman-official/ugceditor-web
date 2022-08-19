@@ -1,13 +1,15 @@
 import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
-  antd: {},
+  antd: {
+    dark: true,
+  },
   access: {},
   model: {},
   initialState: {},
   request: {},
   layout: {
-    title: 'fcc-story',
+    title: 'FCC Story',
     locale: true,
   },
   routes: [

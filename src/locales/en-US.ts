@@ -82,4 +82,10 @@ export default {
   'publish-nft-modal.published': 'Published！',
   'request-failed': 'Request Failed!',
   'mint-failed': 'Mint Failed!',
+  'connect-wallet-to': 'Connect to {chain}',
+  'confirm-login.tip.title': 'STATEMENT',
+  'confirm-login.tip.desc':
+    'Before continuing, you will be required to sign a piece of data to verify account ownership. There will be no on-chain transaction.',
+  'confirm-login.confirm': 'Confirm',
+  'confirm-login.reject': 'Reject',
 };

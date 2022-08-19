@@ -17,19 +17,25 @@ interface NftCardProps {
 export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
   const { formatMessage } = useIntl();
   const { openWalletModal } = useContext<WalletContextType>(WalletContext);
-  const { wallet, chains, account } = useModel('walletModel', (model) => ({
-    wallet: model.wallet,
-    chains: model.chains,
-    account: model.account,
-  }));
-  const { currentStory, isAuthor, refreshCurrentStory } = useModel(
-    'storyModel',
+  const { connectedWallets, chains, accounts } = useModel(
+    'walletModel',
     (model) => ({
-      currentStory: model.currentStory,
-      isAuthor: model.isAuthor,
-      refreshCurrentStory: model.refreshCurrentStory,
+      connectedWallets: model.connectedWallets,
+      chains: model.chains,
+      accounts: model.accounts,
     }),
   );
+  const { currentStory, isAuthor, isChainConnected, refreshCurrentStory } =
+    useModel('storyModel', (model) => ({
+      currentStory: model.currentStory,
+      isAuthor: model.isAuthor,
+      isChainConnected: model.isChainConnected,
+      refreshCurrentStory: model.refreshCurrentStory,
+    }));
+
+  const chain = currentStory?.chainInfo.type;
+  const account = accounts[chain];
+  const wallet = connectedWallets[chain];
 
   const { data: mintDecimals } = useRequest(
     async () => {
@@ -156,7 +162,7 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
                 </div>
               </Col>
             </Row>
-            {!!account ? (
+            {isChainConnected ? (
               <Button
                 type={'primary'}
                 loading={minting}
@@ -167,7 +173,10 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
               </Button>
             ) : (
               <Button type={'primary'} onClick={openWalletModal} block={true}>
-                {formatMessage({ id: 'header.connect-wallet' })}
+                {formatMessage(
+                  { id: 'connect-wallet-to' },
+                  { chain: currentStory.chainInfo.name },
+                )}
               </Button>
             )}
           </div>

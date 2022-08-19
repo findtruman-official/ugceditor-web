@@ -1,5 +1,11 @@
+export enum ChainType {
+  Solana = 'solana-dev',
+  Klaytn = 'klaytn-baobab',
+}
+
 export enum WalletType {
   Phantom,
+  Kaikas,
 }
 
 export enum WalletAutoConnectType {
@@ -17,6 +23,7 @@ export interface WalletEvents {
 export interface WalletProvider {
   providerType: WalletType;
   provider?: any;
+  chainType: ChainType;
 
   isAvailable(): boolean;
 

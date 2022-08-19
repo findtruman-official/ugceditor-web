@@ -27,11 +27,14 @@ export default function PublishNftModal({
 }: PublishNftModalProps) {
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
-  const { token, chains, wallet } = useModel('walletModel', (model) => ({
-    token: model.token,
-    chains: model.chains,
-    wallet: model.wallet,
-  }));
+  const { getToken, chains, connectedWallets } = useModel(
+    'walletModel',
+    (model) => ({
+      getToken: model.getToken,
+      chains: model.chains,
+      connectedWallets: model.connectedWallets,
+    }),
+  );
   const { currentStory, addNftSalePolling } = useModel(
     'storyModel',
     (model) => ({
@@ -39,6 +42,10 @@ export default function PublishNftModal({
       addNftSalePolling: model.addNftSalePolling,
     }),
   );
+
+  const chain = currentStory?.chainInfo.type;
+  const token = getToken(chain);
+  const wallet = connectedWallets[chain];
 
   const { loading: publishingNft, run: runPublishNft } = useRequest(
     async (values) => {
@@ -114,7 +121,7 @@ export default function PublishNftModal({
       <Form
         form={form}
         layout={'vertical'}
-        disabled={publishingNft}
+        disabled={publishingNft || !token}
         onFinish={runPublishNft}
       >
         <Row gutter={24}>

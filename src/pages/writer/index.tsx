@@ -20,8 +20,8 @@ const Writer: React.FC = () => {
       createStoryPollingList: model.createStoryPollingList,
     }),
   );
-  const { account } = useModel('walletModel', (model) => ({
-    account: model.account,
+  const { connectedWallets } = useModel('walletModel', (model) => ({
+    connectedWallets: model.connectedWallets,
   }));
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -32,7 +32,14 @@ const Writer: React.FC = () => {
         <div className={styles.title}>
           {formatMessage({ id: 'writer.title.my-stories' })}
         </div>
-        {!account ? (
+        {Object.values(connectedWallets).some((w) => !!w) ? (
+          <StoryCardList
+            stories={createStoryPollingList.concat(myStories)}
+            loading={gettingMyStories}
+            createStory={true}
+            onCreateStory={() => setCreateModalVisible(true)}
+          />
+        ) : (
           <div style={{ textAlign: 'center' }}>
             <Button
               style={{ margin: '24px auto' }}
@@ -44,13 +51,6 @@ const Writer: React.FC = () => {
               {formatMessage({ id: 'header.connect-wallet' })}
             </Button>
           </div>
-        ) : (
-          <StoryCardList
-            stories={createStoryPollingList.concat(myStories)}
-            loading={gettingMyStories}
-            createStory={true}
-            onCreateStory={() => setCreateModalVisible(true)}
-          />
         )}
       </div>
       <CreateStoryModal

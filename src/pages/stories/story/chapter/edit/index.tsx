@@ -2,13 +2,12 @@ import ContentEditable, {
   useRefCallback,
 } from '@/components/ContentEditable/ContentEditable';
 import { IconFont } from '@/components/IconFont/IconFont';
-import { WalletContext, WalletContextType } from '@/layouts';
 import { useMatch, useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { ExclamationCircleOutlined, LeftOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Button, Col, Input, message, Modal, Row, Tooltip } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { history } from 'umi';
 import styles from './index.less';
@@ -38,11 +37,7 @@ const CmdButton = ({
 
 const Edit: React.FC = () => {
   const { formatMessage } = useIntl();
-  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
   const match = useMatch('/story/:storyId/chapter/:chapterId/edit');
-  const { account } = useModel('walletModel', (model) => ({
-    account: model.account,
-  }));
   const {
     isAuthor,
     storyId,
@@ -84,12 +79,6 @@ const Edit: React.FC = () => {
     return () => {
       setChapterId(0);
     };
-  }, []);
-
-  useEffect(() => {
-    if (!account) {
-      backToStory();
-    }
   }, []);
 
   useEffect(() => {
@@ -228,18 +217,6 @@ const Edit: React.FC = () => {
             />
           </div>
         </>
-      ) : !account ? (
-        <div className={styles.notAuthorTip}>
-          <Button
-            style={{ margin: '24px auto' }}
-            shape={'round'}
-            type={'primary'}
-            size={'large'}
-            onClick={openWalletModal}
-          >
-            {formatMessage({ id: 'header.connect-wallet' })}
-          </Button>
-        </div>
       ) : (
         <div className={styles.notAuthorTip}>
           <div>{formatMessage({ id: 'chapter.chapter-not-author' })}</div>
