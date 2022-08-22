@@ -1,8 +1,5 @@
-import KaikasLogo from '@/assets/kaikas-logo.png';
-import KlaytnLogo from '@/assets/klaytn-logo.png';
-import PhantomLogo from '@/assets/phantom-logo.png';
-import SolanaLogo from '@/assets/solana-logo.svg';
 import { getChains } from '@/services/api';
+import { ChainLogos, WalletLogos } from '@/utils/logos';
 import {
   getTokenFromStorage,
   getTokenMessage,
@@ -102,11 +99,11 @@ export default () => {
     solanaChainInfo &&
       _chainWallets.push({
         chainType: ChainType.Solana,
-        icon: SolanaLogo,
+        icon: ChainLogos[ChainType.Solana],
         wallets: [
           {
             name: 'Phantom',
-            icon: PhantomLogo,
+            icon: WalletLogos[WalletType.Phantom],
             walletType: WalletType.Phantom,
             provider: new PhantomWalletProvider(
               getWalletEvents(WalletType.Phantom),
@@ -121,11 +118,11 @@ export default () => {
     klaytnChainInfo &&
       _chainWallets.push({
         chainType: ChainType.Klaytn,
-        icon: KlaytnLogo,
+        icon: ChainLogos[ChainType.Klaytn],
         wallets: [
           {
             name: 'Kaikas',
-            icon: KaikasLogo,
+            icon: WalletLogos[WalletType.Kaikas],
             walletType: WalletType.Kaikas,
             provider: new KaikasWalletProvider(
               getWalletEvents(WalletType.Kaikas),

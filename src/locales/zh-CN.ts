@@ -32,6 +32,7 @@ export default {
   'story.outline': '故事简介',
   'story.more': '更多',
   'story.publish-at': '发行于',
+  'story.publish-on': '发行在',
   'story.tab.story': '故事',
   'story.tab.works': '工作',
   'story.delete-confirm-title': '确认删除章节 {name}？',

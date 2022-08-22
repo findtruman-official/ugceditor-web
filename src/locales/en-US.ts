@@ -32,6 +32,7 @@ export default {
   'story.outline': 'Story Outline',
   'story.more': 'More',
   'story.publish-at': 'Published At',
+  'story.publish-on': 'Published On',
   'story.tab.story': 'Story',
   'story.tab.works': 'Works',
   'story.delete-confirm-title': 'Are you sure to delete chapter {name}?',

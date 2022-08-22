@@ -5,6 +5,8 @@ import StoryTab from '@/components/StoryTab/StoryTab';
 import { WalletContext, WalletContextType } from '@/layouts';
 import { uploadJson } from '@/services/api';
 import { shortenAccount } from '@/utils/format';
+import { ChainLogos } from '@/utils/logos';
+import { ChainType } from '@/wallets';
 import { useMatch } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { EditOutlined, LeftOutlined } from '@ant-design/icons';
@@ -257,6 +259,21 @@ const Story: React.FC = () => {
                             currentStory?.info?.createAt,
                           ).toLocaleDateString()}
                         </div>
+                      </div>
+                      <div className={styles.infoGroup}>
+                        <div className={styles.infoTitle}>
+                          {formatMessage({ id: 'story.publish-on' })}
+                        </div>
+                        {currentStory?.chainInfo && (
+                          <img
+                            className={styles.infoDescriptionImg}
+                            src={
+                              ChainLogos[
+                                currentStory.chainInfo.type as ChainType
+                              ]
+                            }
+                          />
+                        )}
                       </div>
                     </Skeleton>
                   </Spin>
