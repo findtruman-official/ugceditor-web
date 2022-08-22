@@ -260,7 +260,7 @@ export class PhantomWalletProvider implements WalletProvider {
   }
 
   async publishStoryNft(
-    id: number,
+    id: string,
     price: number,
     total: number,
     reserved: number,

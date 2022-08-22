@@ -156,7 +156,7 @@ export interface WalletProvider {
    * @param uriPrefix
    */
   publishStoryNft(
-    id: number,
+    id: string,
     price: number,
     total: number,
     reserved: number,

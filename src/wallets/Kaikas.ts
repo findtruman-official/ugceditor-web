@@ -7,6 +7,7 @@ import {
   WalletProvider,
   WalletType,
 } from '@/wallets/index';
+import { BN } from '@project-serum/anchor';
 import { message } from 'antd';
 import Caver, { Contract } from 'caver-js';
 
@@ -159,19 +160,35 @@ export class KaikasWalletProvider implements WalletProvider {
   }
 
   async publishStoryNft(
-    id: number,
+    id: string,
     price: number,
     total: number,
     reserved: number,
     title: string,
     uriPrefix: string,
   ) {
-    // TODO: publishStoryNft
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const author = this.provider.selectedAddress;
+    const decimals = await this.getMintDecimals();
+    const _price = new BN(price).mul(new BN(10).pow(new BN(decimals)));
+    const method = this.contract.methods.publishStoryNft(
+      id,
+      title,
+      'Story',
+      uriPrefix,
+      this.findsMintAddress,
+      _price,
+      total,
+      reserved,
+    );
+    await method.send({
+      from: author,
+      gas: await method.estimateGas({ from: author }),
+    });
   }
 
   async updateStory(id: string, cid: string) {
     if (!this.contract) throw new Error('Contract Unavailable');
-    // TODO: updateStory
     const author = this.provider.selectedAddress;
     const method = this.contract.methods.updateStory(id, cid);
     await method.send({
