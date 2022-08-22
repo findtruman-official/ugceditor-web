@@ -126,9 +126,9 @@ const Edit: React.FC = () => {
       ghost
     >
       <Helmet
-        title={
+        title={`${
           currentChapter?.name || formatMessage({ id: 'chapter.new-chapter' })
-        }
+        } - FCC Story`}
       />
       {isAuthor ? (
         <>
