@@ -3,7 +3,7 @@ import { useIntl } from '@@/plugin-locale';
 import { LoadingOutlined } from '@ant-design/icons';
 import { BN } from '@project-serum/anchor';
 import { useRequest } from 'ahooks';
-import { Button, Col, message, Modal, Row, Spin } from 'antd';
+import { Button, Col, message, Modal, Row, Spin, Tooltip } from 'antd';
 import { useContext, useMemo } from 'react';
 import { useModel } from 'umi';
 import styles from './NftCard.less';
@@ -59,6 +59,7 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
       return await wallet.provider.balanceOfStoryNft(
         account,
         currentStory.nft.name,
+        currentStory.chainStoryId,
       );
     },
     { refreshDeps: [account, currentStory] },
@@ -72,6 +73,7 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
           currentStory.chainStoryId,
           currentStory.author,
           currentStory.nft.price,
+          currentStory.nft.nftSaleAddr,
           (account: string, amount: string) => {
             Modal.error({
               title: formatMessage({ id: 'story.insufficient-finds-title' }),
@@ -120,7 +122,9 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
             )}`}
           />
           <div className={styles.nftMeta}>
-            <div className={styles.nftName}>{currentStory.nft.name}</div>
+            <Tooltip placement={'topLeft'} title={currentStory.nft.name}>
+              <div className={styles.nftName}>{currentStory.nft.name}</div>
+            </Tooltip>
             <Row gutter={[8, 8]} style={{ marginBottom: 12 }}>
               <Col span={12}>
                 <div className={styles.nftMetaLabel}>
@@ -151,24 +155,31 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
                   {formatMessage({ id: 'story.own' })}
                 </div>
                 <div className={styles.nftMetaValue}>
-                  {gettingBalance ? (
+                  {!isChainConnected ? (
+                    '-'
+                  ) : gettingBalance ? (
                     <LoadingOutlined style={{ marginRight: 6 }} />
                   ) : (
-                    balance || 0
-                  )}{' '}
-                  NFT
+                    `${balance || 0} NFT(s)`
+                  )}
                 </div>
               </Col>
             </Row>
             {isChainConnected ? (
-              <Button
-                type={'primary'}
-                loading={minting}
-                onClick={runMint}
-                block={true}
-              >
-                {formatMessage({ id: 'story.claim' })}
-              </Button>
+              rest > 0 ? (
+                <Button
+                  type={'primary'}
+                  loading={minting}
+                  onClick={runMint}
+                  block={true}
+                >
+                  {formatMessage({ id: 'story.claim' })}
+                </Button>
+              ) : (
+                <Button type={'primary'} disabled={true} block={true}>
+                  {formatMessage({ id: 'story.sold-out' })}
+                </Button>
+              )
             ) : (
               <Button type={'primary'} onClick={openWalletModal} block={true}>
                 {formatMessage(

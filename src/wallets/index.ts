@@ -170,20 +170,27 @@ export interface WalletProvider {
    * @param id
    * @param author
    * @param price
+   * @param nftSaleAddr
    * @param onInsufficientFinds 当 Finds 余额不足时返回账户和还需要的Finds数量，用于页面弹窗提示
    */
   mintStoryNft(
-    id: number,
+    id: string,
     author: string,
     price: string,
+    nftSaleAddr: string,
     onInsufficientFinds?: (account: string, amount: string) => void,
   ): Promise<void>;
 
   /**
    * 查询账户对某个故事NFT的持有量
    * @param account
-   * @param name
+   * @param nftName
+   * @param storyId
    * @return NFT持有量
    */
-  balanceOfStoryNft(account: number, name: string): Promise<number>;
+  balanceOfStoryNft(
+    account: number,
+    nftName: string,
+    storyId: string,
+  ): Promise<number>;
 }

@@ -129,6 +129,7 @@ export const getStory = async (chain: string, chainStoryId: string) => {
             authorReserved
             authorClaimed
             image
+            nftSaleAddr
           }
           createTime
         }

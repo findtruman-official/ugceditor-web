@@ -22,6 +22,7 @@ export default {
   'story.publish-story-nft': '发行故事 NFT',
   'story.publish': '发行',
   'story.claim': '购买',
+  'story.sold-out': '售罄',
   'story.amount': '数量',
   'story.total': '总量',
   'story.price': '售价($Finds)',

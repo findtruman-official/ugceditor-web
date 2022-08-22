@@ -327,9 +327,10 @@ export class PhantomWalletProvider implements WalletProvider {
   }
 
   async mintStoryNft(
-    id: number,
+    id: string,
     author: string,
     price: string,
+    nftSaleAddr: string,
     onInsufficientFinds?: (account: string, amount: string) => void,
   ) {
     const { program } = await this.getProgram();
@@ -399,7 +400,7 @@ export class PhantomWalletProvider implements WalletProvider {
       .rpc({});
   }
 
-  async balanceOfStoryNft(account: number, name: string) {
+  async balanceOfStoryNft(account: number, nftName: string, storyId: string) {
     const metaplex = Metaplex.make(this.connection).use(
       keypairIdentity(await this.provider.connect()),
     );

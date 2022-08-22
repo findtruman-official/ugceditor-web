@@ -22,6 +22,7 @@ export default {
   'story.publish-story-nft': 'Publish Story NFT',
   'story.publish': 'Publish',
   'story.claim': 'Claim',
+  'story.sold-out': 'Sold Out',
   'story.amount': 'Amount',
   'story.total': 'Total',
   'story.price': 'Price($Finds)',

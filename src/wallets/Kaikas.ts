@@ -1,5 +1,6 @@
 import ABI from '@/assets/klaytn_abi.json';
 import FINDS_ABI from '@/assets/klaytn_finds_abi.json';
+import NFT_ABI from '@/assets/klaytn_nft_abi.json';
 import {
   ChainType,
   WalletAutoConnectType,
@@ -106,9 +107,15 @@ export class KaikasWalletProvider implements WalletProvider {
     return await this.caver.klay.sign(message, account);
   }
 
-  async balanceOfStoryNft(account: number, name: string) {
-    // TODO:
-    return 0;
+  async balanceOfStoryNft(account: number, nftName: string, storyId: string) {
+    const { nft: nftAddress } = await this.contract!.methods.sales(
+      storyId,
+    ).call();
+    const nftSaleContract = new this.caver!.klay.Contract(
+      NFT_ABI as any,
+      nftAddress,
+    );
+    return await nftSaleContract.methods.balanceOf(account).call();
   }
 
   async getMintDecimals() {
@@ -116,16 +123,56 @@ export class KaikasWalletProvider implements WalletProvider {
   }
 
   async mintStoryNft(
-    id: number,
+    id: string,
     author: string,
     price: string,
+    nftSaleAddr: string,
     onInsufficientFinds?: (account: string, amount: string) => void,
   ) {
-    // TODO: mintStoryNft
-    // TODO: balance of finds
-    const balance = await this.findsContract!.methods.balanceOf(
+    const account = this.provider.selectedAddress;
+    const priceBN = new BN(price);
+
+    const tokenAmount = await this.findsContract!.methods.balanceOf(
       this.provider.selectedAddress,
     ).call();
+    const enoughToken = new BN(tokenAmount).gte(priceBN);
+    if (!enoughToken) {
+      const mintDecimals = await this.getMintDecimals();
+      onInsufficientFinds?.(
+        account,
+        new BN(price)
+          .sub(new BN(tokenAmount))
+          .div(new BN(10).pow(new BN(mintDecimals)))
+          .toString(),
+      );
+      throw new Error('Insufficient Finds Token');
+    }
+
+    const allowance = await this.findsContract!.methods.allowance(
+      account,
+      nftSaleAddr,
+    ).call();
+    const enoughAllowance = new BN(allowance).gte(priceBN);
+    if (!enoughAllowance) {
+      let toApprove = '1500000000000000000000';
+      if (priceBN.gte(new BN(toApprove))) {
+        toApprove = price;
+      }
+      const approveMethod = this.findsContract!.methods.approve(
+        nftSaleAddr,
+        toApprove,
+      );
+      await approveMethod.send({
+        from: account,
+        gas: await approveMethod.estimateGas({ from: author }),
+      });
+    }
+
+    const method = this.contract!.methods.mintStoryNft(id);
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
   }
 
   async publishStory(cid: string) {
@@ -195,6 +242,5 @@ export class KaikasWalletProvider implements WalletProvider {
       from: author,
       gas: await method.estimateGas({ from: author }),
     });
-    // TODO: fix error newLogFilter is not a function
   }
 }
