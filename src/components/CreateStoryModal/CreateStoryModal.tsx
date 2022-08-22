@@ -129,7 +129,7 @@ export default function CreateStoryModal({
 
         if (update) {
           await wallet.provider.updateStory(id!!, cid);
-          addUpdateStoryPolling(id!!, cid);
+          addUpdateStoryPolling(id!!, cid, chain);
         } else {
           const newStoryId = await wallet.provider.publishStory(cid);
           const chainName = chains.find(

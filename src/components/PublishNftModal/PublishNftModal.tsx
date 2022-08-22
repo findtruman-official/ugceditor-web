@@ -73,7 +73,7 @@ export default function PublishNftModal({
 
         message.success(formatMessage({ id: 'publish-nft-modal.published' }));
 
-        addNftSalePolling(currentStory.chainStoryId);
+        addNftSalePolling(currentStory.chainStoryId, chain);
         onClose();
       } catch (e) {
         console.log(e);

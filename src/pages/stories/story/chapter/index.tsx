@@ -125,7 +125,7 @@ const Chapter: React.FC = () => {
             }}
           />
           <Dropdown
-            placement={'topCenter'}
+            placement={'top'}
             overlay={
               <Menu
                 items={chapters

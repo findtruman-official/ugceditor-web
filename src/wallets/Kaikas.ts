@@ -131,12 +131,12 @@ export class KaikasWalletProvider implements WalletProvider {
     if (!this.contract) throw new Error('Contract Unavailable');
     const author = this.provider.selectedAddress;
     const method = this.contract.methods.publishStory(cid);
-    // TODO: fix error newLogFilter is not a function
     const storyId = await this.contract.methods.nextId().call();
     await method.send({
       from: author,
       gas: await method.estimateGas({ from: author }),
     });
+    // TODO: fix error newLogFilter is not a function
     // const storyId = await new Promise<string>(async (resolve, reject) => {
     //   this.contract!.once(
     //     'StoryUpdated',
@@ -170,6 +170,14 @@ export class KaikasWalletProvider implements WalletProvider {
   }
 
   async updateStory(id: string, cid: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
     // TODO: updateStory
+    const author = this.provider.selectedAddress;
+    const method = this.contract.methods.updateStory(id, cid);
+    await method.send({
+      from: author,
+      gas: await method.estimateGas({ from: author }),
+    });
+    // TODO: fix error newLogFilter is not a function
   }
 }
