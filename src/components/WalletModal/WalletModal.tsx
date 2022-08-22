@@ -36,6 +36,7 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
       }}
       footer={null}
       width={400}
+      zIndex={99999}
     >
       <Spin spinning={connecting}>
         <Row justify={'space-evenly'} gutter={[12, 12]}>

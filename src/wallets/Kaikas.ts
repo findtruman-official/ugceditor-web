@@ -87,6 +87,7 @@ export class KaikasWalletProvider implements WalletProvider {
 
   async disconnect() {
     this.setAutoConnect(WalletAutoConnectType.False);
+    this.onDisconnect?.();
   }
 
   async silentConnect() {

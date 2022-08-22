@@ -84,8 +84,8 @@ export default {
   'request-failed': '请求失败！',
   'mint-failed': '铸造失败！',
   'connect-wallet-to': '连接到{chain}',
-  'confirm-login-tip-title': '声明',
-  'confirm-login-tip-desc':
+  'confirm-login.tip.title': '声明',
+  'confirm-login.tip.desc':
     '在继续之前，您需要签名一段数据以验证帐户所有权。该操作不会产生链上交易。',
   'confirm-login.confirm': '签名',
   'confirm-login.reject': '拒绝',
