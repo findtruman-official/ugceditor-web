@@ -329,7 +329,7 @@ export class PhantomWalletProvider implements WalletProvider {
   async mintStoryNft(
     id: number,
     author: string,
-    price: number,
+    price: string,
     onInsufficientFinds?: (account: string, amount: string) => void,
   ) {
     const { program } = await this.getProgram();

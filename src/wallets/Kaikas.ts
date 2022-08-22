@@ -106,6 +106,7 @@ export class KaikasWalletProvider implements WalletProvider {
   }
 
   async balanceOfStoryNft(account: number, name: string) {
+    // TODO:
     return 0;
   }
 
@@ -116,9 +117,15 @@ export class KaikasWalletProvider implements WalletProvider {
   async mintStoryNft(
     id: number,
     author: string,
-    price: number,
+    price: string,
     onInsufficientFinds?: (account: string, amount: string) => void,
-  ) {}
+  ) {
+    // TODO: mintStoryNft
+    // TODO: balance of finds
+    const balance = await this.findsContract!.methods.balanceOf(
+      this.provider.selectedAddress,
+    ).call();
+  }
 
   async publishStory(cid: string) {
     if (!this.contract) throw new Error('Contract Unavailable');
@@ -158,7 +165,11 @@ export class KaikasWalletProvider implements WalletProvider {
     reserved: number,
     title: string,
     uriPrefix: string,
-  ) {}
+  ) {
+    // TODO: publishStoryNft
+  }
 
-  async updateStory(id: string, cid: string) {}
+  async updateStory(id: string, cid: string) {
+    // TODO: updateStory
+  }
 }
