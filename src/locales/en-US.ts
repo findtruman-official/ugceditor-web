@@ -52,8 +52,7 @@ export default {
   'story.new': 'New',
   'story.claimed': 'Claimed!',
   'story.insufficient-finds-title': 'Insufficient Finds Token',
-  'story.insufficient-finds-desc':
-    'Please transfer {amount} Finds Token to the following account: {account}',
+  'story.insufficient-finds-desc': 'Another {amount} Finds Token is required.',
   'story.waiting-for-sync': 'Waiting for Sync...',
   'story.story-not-found': 'STORY NOT FOUND!',
   'chapter.title.placeholder': 'Give it a title',

@@ -52,8 +52,7 @@ export default {
   'story.new': '新章节',
   'story.claimed': '铸造完成！',
   'story.insufficient-finds-title': 'Finds Token 不足',
-  'story.insufficient-finds-desc':
-    '请向以下账户转入 {amount} Finds Token：{account}',
+  'story.insufficient-finds-desc': '还需 {amount} Finds Token。',
   'story.waiting-for-sync': '等待同步...',
   'story.story-not-found': '故事不存在',
   'chapter.title.placeholder': '起一个标题',
