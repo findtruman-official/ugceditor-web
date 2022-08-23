@@ -136,9 +136,12 @@ export default () => {
     loading: gettingHottestStories,
     refresh: refreshHottestStories,
   } = useRequest(async () => {
-    return (await getStories('Hotest')).stories.map((e) => ({
+    return (await getStories('Hotest')).stories.slice(0, 10).map((e) => ({
       id: e.chainStoryId,
       cover: e.info?.cover,
+      name: e.info?.title,
+      description: e.info?.description,
+      nftPublished: !!e.nft,
       chain: e.chainInfo.name,
       chainType: e.chainInfo.type,
     }));
@@ -152,6 +155,9 @@ export default () => {
     return (await getStories('Latest')).stories.map((e) => ({
       id: e.chainStoryId,
       cover: e.info?.cover,
+      name: e.info?.title,
+      description: e.info?.description,
+      nftPublished: !!e.nft,
       chain: e.chainInfo.name,
       chainType: e.chainInfo.type,
     }));
@@ -172,6 +178,9 @@ export default () => {
           (e) => ({
             id: e.chainStoryId,
             cover: e.info?.cover,
+            name: e.info?.title,
+            description: e.info?.description,
+            nftPublished: !!e.nft,
             chain: e.chainInfo.name,
             chainType: e.chainInfo.type,
           }),
@@ -185,6 +194,9 @@ export default () => {
     {
       id: string;
       cover: string;
+      name: string;
+      description: string;
+      nftPublished: boolean;
       chain: string;
       chainType: string;
       loading: boolean;
@@ -195,11 +207,15 @@ export default () => {
     ({
       id,
       cover,
+      name,
+      description,
       chain,
       chainType,
     }: {
       id: string;
       cover: string;
+      name: string;
+      description: string;
       chain: string;
       chainType: ChainType;
     }) => {
@@ -208,6 +224,9 @@ export default () => {
         id,
         cover,
         chain,
+        name,
+        description,
+        nftPublished: false,
         chainType,
         loading: true,
       });

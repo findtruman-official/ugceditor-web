@@ -85,6 +85,8 @@ export const getStories = async (
           info {
             id
             cover
+            title
+            description
           }
         }
       }

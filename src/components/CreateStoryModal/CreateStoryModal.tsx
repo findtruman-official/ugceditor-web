@@ -138,6 +138,8 @@ export default function CreateStoryModal({
           addCreateStoryPolling({
             id: newStoryId,
             cover: values.cover,
+            name: values.title,
+            description: values.description,
             chain: chainName,
             chainType: chain,
           });

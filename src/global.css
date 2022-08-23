@@ -1,4 +1,14 @@
 @font-face {
+  font-family: ThemeFont;
+  src: url('/ChintzyCPUBRK.ttf');
+}
+
+@font-face {
+  font-family: TieJi;
+  src: url('/TieJiLiTi.ttf');
+}
+
+@font-face {
   font-family: Lato;
   src: url('/Lato-Regular.ttf');
 }
@@ -23,6 +33,10 @@
 * {
   font-family: 'PingFang SC', Lato, 'Microsoft YaHei', NotoSansSC, sans-serif;
   /*font-weight: normal;*/
+}
+
+body {
+  overflow-x: hidden;
 }
 
 .create-story-modal .ant-upload.ant-upload-select-picture-card {
@@ -74,8 +88,8 @@
 }
 
 .ant-skeleton-element .ant-skeleton-image {
-  width: 160px !important;
-  height: 240px !important;
+  width: 240px !important;
+  height: 360px !important;
   border-radius: 4px;
 }
 

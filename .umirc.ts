@@ -57,19 +57,19 @@ export default defineConfig({
   },
   npmClient: 'yarn',
   theme: {
-    'primary-color': '#3e38d9',
+    'primary-color': '#d71212',
   },
   mfsu: false,
   proxy: {
     '/fcc-story/graphql': {
-      target: 'http://10.243.248.69:3000/graphql/',
-      // target: 'https://findtruman.io/fcc-story/graphql',
+      // target: 'http://10.243.248.69:3000/graphql/',
+      target: 'https://findtruman.io/fcc-story/graphql',
       changeOrigin: true,
       pathRewrite: { '^/fcc-story/graphql': '' },
     },
     '/fcc-story/ipfs': {
-      target: 'http://10.243.248.69:3000/ipfs',
-      // target: 'https://findtruman.io/fcc-story/ipfs',
+      // target: 'http://10.243.248.69:3000/ipfs',
+      target: 'https://findtruman.io/fcc-story/ipfs',
       changeOrigin: true,
       pathRewrite: { '^/fcc-story/ipfs': '' },
     },

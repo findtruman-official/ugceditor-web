@@ -1,4 +1,5 @@
 import RightContent from '@/components/RightContent/RightContent';
+import { isChapterPage, isStoryPage } from '@/utils/regExp';
 import { useIntl } from '@@/plugin-locale';
 import { useEffect, useMemo } from 'react';
 import { history, useLocation, useModel } from 'umi';
@@ -23,11 +24,11 @@ export default function Header() {
   }, [pathname]);
 
   const storyPage = useMemo(() => {
-    return /^\/story\/[a-zA-Z\d]+/g.test(pathname);
+    return isStoryPage(pathname);
   }, [pathname]);
 
   const chapterPage = useMemo(() => {
-    return /^\/story\/[a-zA-Z\d]+\/chapter\/[a-zA-Z\d]+/g.test(pathname);
+    return isChapterPage(pathname);
   }, [pathname]);
 
   return (

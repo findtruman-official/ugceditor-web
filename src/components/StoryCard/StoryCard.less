@@ -2,8 +2,8 @@
 
 .storyCard {
   //width: 100%;
-  width: 160px;
-  height: 240px;
+  width: 240px;
+  //height: 300px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -18,9 +18,53 @@
   box-shadow: none;
 }
 .cover {
-  width: 160px;
-  height: 240px;
-  border-radius: 4px;
+  width: 240px;
+  height: 360px;
+  //border-radius: 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.meta {
+  padding: 8px 12px;
+  width: 240px;
+  background: @card-background;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.metaName {
+  font-weight: bold;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  white-space: nowrap;
+  min-height: 1.5715em;
+  color: rgba(255, 255, 255, 0.95);
+}
+.metaDesc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5715em;
+  min-height: 3.143em;
+}
+.metaChain {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 1.5715em;
+}
+.metaChainImg {
+  height: 12px;
+}
+.metaNft {
+  padding: 2px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 0 5px @colorful-1, 0 0 10px @colorful-2, 0 0 25px @colorful-3,
+    0 0 50px @colorful-2, 0 0 100px @colorful-2;
 }
 
 .createCard {
@@ -28,10 +72,10 @@
   //width: 100%;
   //height: 100%;
   //aspect-ratio: 2/3;
-  width: 160px;
-  height: 240px;
+  width: 240px;
+  height: 360px;
   border-radius: 4px;
-  border: 1px dashed @theme-color-4;
+  border: 1px dashed @theme-color-6;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -40,11 +84,11 @@
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
-  color: @theme-color-4;
+  color: @theme-color-6;
 }
 .createCard:hover {
-  border: 1px dashed @theme-color-6;
-  color: @theme-color-6;
+  border: 1px dashed @theme-color-7;
+  color: @theme-color-7;
 }
 
 .noStoryTip {
@@ -62,4 +106,24 @@
   top: 9px;
   right: 6px;
   cursor: pointer;
+}
+
+.scrollList {
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: move 60s linear infinite;
+  //overflow: hidden;
+}
+.scrollList:hover {
+  animation-play-state: paused;
+}
+
+@keyframes move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-50%, 0);
+  }
 }

@@ -168,6 +168,7 @@ export default function PublishNftModal({
           <InputNumber
             style={{ width: '100%' }}
             min={0}
+            max={10000000000}
             formatter={(value) =>
               `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             }
@@ -191,6 +192,7 @@ export default function PublishNftModal({
           <InputNumber
             style={{ width: '100%' }}
             min={1}
+            max={10000000000}
             formatter={(value) =>
               `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             }

@@ -140,9 +140,11 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
                   {formatMessage({ id: 'story.price' })}
                 </div>
                 <div className={styles.nftMetaValue}>
-                  {new BN(currentStory.nft.price)
-                    .div(new BN(10).pow(new BN(mintDecimals || 1)))
-                    .toString()}
+                  {mintDecimals
+                    ? new BN(currentStory.nft.price)
+                        .div(new BN(10).pow(new BN(mintDecimals)))
+                        .toString()
+                    : '-'}
                 </div>
               </Col>
               <Col span={12}>

@@ -232,7 +232,7 @@ const Story: React.FC = () => {
                         </div>
                         <Typography.Paragraph
                           ellipsis={{
-                            rows: 6,
+                            rows: 5,
                             expandable: true,
                             symbol: (
                               <span

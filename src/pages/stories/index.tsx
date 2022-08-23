@@ -27,6 +27,7 @@ const Stories: React.FC = () => {
         <StoryCardList
           stories={hottestStories}
           loading={gettingHottestStories}
+          carousel={true}
         />
       </div>
       <div className={styles.section}>
