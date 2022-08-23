@@ -136,7 +136,7 @@ export default () => {
     loading: gettingHottestStories,
     refresh: refreshHottestStories,
   } = useRequest(async () => {
-    return (await getStories('Hotest')).stories.map((e) => ({
+    return (await getStories('Hotest')).stories.slice(0, 10).map((e) => ({
       id: e.chainStoryId,
       cover: e.info?.cover,
       name: e.info?.title,

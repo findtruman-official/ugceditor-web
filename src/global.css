@@ -35,6 +35,10 @@
   /*font-weight: normal;*/
 }
 
+body {
+  overflow-x: hidden;
+}
+
 .create-story-modal .ant-upload.ant-upload-select-picture-card {
   width: 100% !important;
   height: 236px !important;
@@ -84,8 +88,8 @@
 }
 
 .ant-skeleton-element .ant-skeleton-image {
-  width: 200px !important;
-  height: 300px !important;
+  width: 240px !important;
+  height: 360px !important;
   border-radius: 4px;
 }
 

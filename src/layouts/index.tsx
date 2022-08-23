@@ -1,9 +1,11 @@
 import Header from '@/components/Header/Header';
 import LoginConfirmModal from '@/components/LoginConfirmModal/LoginConfirmModal';
 import WalletModal from '@/components/WalletModal/WalletModal';
+import { isChapterPage, isStoryPage } from '@/utils/regExp';
 import { ChainType } from '@/wallets';
-import { createContext, useState } from 'react';
-import { Outlet } from 'umi';
+import { useLocation } from '@@/exports';
+import { createContext, useEffect, useState } from 'react';
+import { Outlet, useModel } from 'umi';
 
 export interface WalletContextType {
   openWalletModal: () => void;
@@ -24,6 +26,9 @@ export const WalletContext = createContext<WalletContextType>({
 });
 
 export default function Layout() {
+  const location = useLocation();
+  const { pathname } = location;
+
   const [walletModalVisible, setWalletModalVisible] = useState(false);
   const [loginState, setLoginState] = useState<
     | {
@@ -33,6 +38,23 @@ export default function Layout() {
       }
     | undefined
   >();
+
+  const { setChainType, setStoryId, setChapterId } = useModel(
+    'storyModel',
+    (model) => ({
+      setChainType: model.setChainType,
+      setStoryId: model.setStoryId,
+      setChapterId: model.setChapterId,
+    }),
+  );
+
+  useEffect(() => {
+    if (!isStoryPage(pathname) && !isChapterPage(pathname)) {
+      setChainType(undefined);
+      setStoryId('');
+      setChapterId(0);
+    }
+  }, [pathname]);
 
   return (
     <WalletContext.Provider
