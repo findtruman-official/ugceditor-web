@@ -4,6 +4,7 @@ import PublishNftModal from '@/components/PublishNftModal/PublishNftModal';
 import StoryTab from '@/components/StoryTab/StoryTab';
 import { WalletContext, WalletContextType } from '@/layouts';
 import { uploadJson } from '@/services/api';
+import { PREFIX } from '@/utils/const';
 import { shortenAccount } from '@/utils/format';
 import { ChainLogos } from '@/utils/logos';
 import { ChainType } from '@/wallets';
@@ -184,7 +185,7 @@ const Story: React.FC = () => {
                     ) : (
                       <img
                         className={styles.cover}
-                        src={`/fcc-story/ipfs/file/${encodeURIComponent(
+                        src={`${PREFIX}/ipfs/file/${encodeURIComponent(
                           currentStory.info?.cover,
                         )}`}
                       />

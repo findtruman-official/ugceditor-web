@@ -1,4 +1,5 @@
 import { WalletContext, WalletContextType } from '@/layouts';
+import { PREFIX } from '@/utils/const';
 import { useIntl } from '@@/plugin-locale';
 import { LoadingOutlined } from '@ant-design/icons';
 import { BN } from '@project-serum/anchor';
@@ -117,7 +118,7 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
         <div className={styles.nftCard}>
           <img
             className={styles.nftCover}
-            src={`/fcc-story/ipfs/file/${encodeURIComponent(
+            src={`${PREFIX}/ipfs/file/${encodeURIComponent(
               currentStory.nft.image.split('://')[1],
             )}`}
           />

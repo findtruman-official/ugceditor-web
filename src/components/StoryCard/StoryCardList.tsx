@@ -1,4 +1,5 @@
 import StoryCard from '@/components/StoryCard/StoryCard';
+import { PREFIX } from '@/utils/const';
 import { ChainType } from '@/wallets';
 import { useIntl } from '@@/plugin-locale';
 import { PlusOutlined } from '@ant-design/icons';
@@ -53,9 +54,7 @@ export default function StoryCardList({
             <Col key={index} span={4}>
               <StoryCard
                 id={e.id}
-                img={`/fcc-story/ipfs/file/${encodeURIComponent(
-                  e.cover || '',
-                )}`}
+                img={`${PREFIX}/ipfs/file/${encodeURIComponent(e.cover || '')}`}
                 chainName={e.chain}
                 chainType={e.chainType}
                 loading={e.loading}

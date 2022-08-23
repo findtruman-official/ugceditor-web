@@ -1,3 +1,4 @@
+import { PREFIX } from '@/utils/const';
 import { PlusOutlined } from '@ant-design/icons';
 import { Upload, UploadFile } from 'antd';
 import ImgCrop from 'antd-img-crop';
@@ -27,7 +28,7 @@ export default function ImageUploader({
           uid: '-1',
           name: 'image.png',
           status: 'done',
-          url: `/fcc-story/ipfs/file/${encodeURIComponent(value)}`,
+          url: `${PREFIX}/ipfs/file/${encodeURIComponent(value)}`,
         },
       ]);
     }
@@ -37,7 +38,7 @@ export default function ImageUploader({
     <ImgCrop aspect={aspect} rotate>
       <Upload
         headers={{ 'x-token': token }}
-        action={'/fcc-story/ipfs/file'}
+        action={`${PREFIX}/ipfs/file`}
         name={'file'}
         accept={'image/*'}
         maxCount={1}

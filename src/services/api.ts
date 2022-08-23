@@ -1,4 +1,5 @@
 import { client } from '@/services/index';
+import { PREFIX } from '@/utils/const';
 import { request } from '@umijs/max';
 import { gql } from 'graphql-request';
 
@@ -188,7 +189,7 @@ export const getChapter = async (id: number) => {
 };
 
 export async function uploadJson<T>(data: T, token: string) {
-  return await request<API.IpfsData>(`/fcc-story/ipfs/json`, {
+  return await request<API.IpfsData>(`${PREFIX}/ipfs/json`, {
     method: 'POST',
     data,
     headers: {
@@ -198,7 +199,7 @@ export async function uploadJson<T>(data: T, token: string) {
 }
 
 export async function getJson<T>(cid: string) {
-  return await request<T>(`/fcc-story/ipfs/json/${encodeURIComponent(cid)}`, {
+  return await request<T>(`${PREFIX}/ipfs/json/${encodeURIComponent(cid)}`, {
     method: 'GET',
   });
 }
