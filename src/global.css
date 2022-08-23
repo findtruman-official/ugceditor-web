@@ -1,4 +1,14 @@
 @font-face {
+  font-family: ThemeFont;
+  src: url('/ChintzyCPUBRK.ttf');
+}
+
+@font-face {
+  font-family: TieJi;
+  src: url('/TieJiLiTi.ttf');
+}
+
+@font-face {
   font-family: Lato;
   src: url('/Lato-Regular.ttf');
 }

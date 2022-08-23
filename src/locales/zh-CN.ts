@@ -3,7 +3,7 @@ export default {
   'menu.writer': '我是作者',
   'header.connect-wallet': '连接钱包',
   'stories.title.hot-stories': '热门故事',
-  'stories.title.latest-stories': '最新故事',
+  'stories.title.latest-stories': 'LATEST STORIES',
   'stories.no-story-tip': '暂无故事',
   'stories.published-on': '故事发布在 {chain} 上',
   'writer.title.my-stories': '我的故事',
