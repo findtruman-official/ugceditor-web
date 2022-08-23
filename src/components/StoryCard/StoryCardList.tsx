@@ -10,6 +10,9 @@ interface StoryCardListProps {
   stories?: {
     id: string;
     cover: string;
+    name: string;
+    description: string;
+    nftPublished: boolean;
     chain: string;
     chainType?: ChainType;
     loading?: boolean;
@@ -28,9 +31,9 @@ export default function StoryCardList({
   const { formatMessage } = useIntl();
 
   return (
-    <Row gutter={[24, 24]} style={{ minWidth: 1000 }}>
+    <Row gutter={[24, 24]} style={{ minWidth: 1000 }} justify={'space-around'}>
       {createStory && (
-        <Col span={4}>
+        <Col>
           <div className={styles.createCard} onClick={() => onCreateStory?.()}>
             <PlusOutlined />
             <div>{formatMessage({ id: 'writer.new-story' })}</div>
@@ -51,11 +54,14 @@ export default function StoryCardList({
         stories
           ?.filter((e) => !!e)
           .map((e, index) => (
-            <Col key={index} span={4}>
+            <Col key={index}>
               <StoryCard
                 id={e.id}
                 img={`${PREFIX}/ipfs/file/${encodeURIComponent(e.cover || '')}`}
                 chainName={e.chain}
+                name={e.name}
+                description={e.description}
+                nftPublished={e.nftPublished}
                 chainType={e.chainType}
                 loading={e.loading}
               />

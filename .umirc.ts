@@ -57,7 +57,7 @@ export default defineConfig({
   },
   npmClient: 'yarn',
   theme: {
-    'primary-color': '#3e38d9',
+    'primary-color': '#d71212',
   },
   mfsu: false,
   proxy: {

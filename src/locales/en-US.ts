@@ -5,7 +5,7 @@ export default {
   'stories.title.hot-stories': 'Hot Stories',
   'stories.title.latest-stories': 'Latest Stories',
   'stories.no-story-tip': 'There is no story yet.',
-  'stories.published-on': 'The story was published on {chain}',
+  'stories.published-on': 'Published on {chain}',
   'writer.title.my-stories': 'My Stories',
   'writer.new-story': 'New Story',
   'writer.edit-story': 'Edit Story',

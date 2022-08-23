@@ -5,7 +5,7 @@ export default {
   'stories.title.hot-stories': '热门故事',
   'stories.title.latest-stories': 'LATEST STORIES',
   'stories.no-story-tip': '暂无故事',
-  'stories.published-on': '故事发布在 {chain} 上',
+  'stories.published-on': '发布在 {chain} 上',
   'writer.title.my-stories': '我的故事',
   'writer.new-story': '新故事',
   'writer.edit-story': '编辑故事',
