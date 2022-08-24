@@ -115,6 +115,7 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
 
   return (
     <ColorfulBorder
+      noHoverable={true}
       style={{
         width: 260,
       }}
