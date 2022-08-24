@@ -1,4 +1,6 @@
+import ColorfulText from '@/components/Colorful/ColorfulText';
 import RightContent from '@/components/RightContent/RightContent';
+import { LINK_ACHIEVEMENTS, LINK_STORY_GAMEPLAY } from '@/utils/const';
 import { isChapterPage, isStoryPage } from '@/utils/regExp';
 import { useIntl } from '@@/plugin-locale';
 import { useEffect, useMemo } from 'react';
@@ -63,6 +65,7 @@ export default function Header() {
               className={[
                 styles.menuItem,
                 chapterPage ? '' : styles.menuItemActive,
+                styles.menuItemEllipsis,
               ].join(' ')}
               onClick={() => {
                 if (chapterPage) {
@@ -74,14 +77,40 @@ export default function Header() {
             </div>
           )}
           {chapterPage && (
-            <div className={[styles.menuItem, styles.menuItemActive].join(' ')}>
+            <div
+              className={[
+                styles.menuItem,
+                styles.menuItemActive,
+                styles.menuItemEllipsis,
+              ].join(' ')}
+            >
               {chapterId === 0
                 ? formatMessage({ id: 'chapter.new-chapter' })
                 : currentChapter?.name}
             </div>
           )}
         </div>
-        <RightContent />
+        <div className={styles.right}>
+          <a
+            style={{ marginRight: 24 }}
+            href={LINK_STORY_GAMEPLAY}
+            target={'_blank'}
+          >
+            <ColorfulText className={styles.extraLink}>
+              {formatMessage({ id: 'menu.story-gameplay' })}
+            </ColorfulText>
+          </a>
+          <a
+            style={{ marginRight: 24 }}
+            href={LINK_ACHIEVEMENTS}
+            target={'_blank'}
+          >
+            <ColorfulText className={styles.extraLink}>
+              {formatMessage({ id: 'menu.achievements' })}
+            </ColorfulText>
+          </a>
+          <RightContent />
+        </div>
       </div>
     </>
   );

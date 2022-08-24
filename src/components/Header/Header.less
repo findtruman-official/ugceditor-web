@@ -23,6 +23,10 @@
   align-items: center;
   flex: 1;
 }
+.right {
+  display: flex;
+  align-items: center;
+}
 
 .menuItem {
   font-family: TieJi;
@@ -41,6 +45,21 @@
 .menuItemActive {
   color: @theme-color-6;
 }
+.menuItemEllipsis {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  white-space: nowrap;
+}
 
-.rightContent {
+.extraLink {
+  font-family: TieJi;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.extraLink:hover {
+  opacity: 0.65;
 }

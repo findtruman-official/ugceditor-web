@@ -1,3 +1,4 @@
+import ColorfulBorder from '@/components/Colorful/ColorfulBorder';
 import { WalletContext, WalletContextType } from '@/layouts';
 import { PREFIX } from '@/utils/const';
 import { useIntl } from '@@/plugin-locale';
@@ -113,7 +114,11 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
   }, [currentStory]);
 
   return (
-    <div className={styles.container}>
+    <ColorfulBorder
+      style={{
+        width: 260,
+      }}
+    >
       {currentStory?.nft ? (
         <div className={styles.nftCard}>
           <img
@@ -216,6 +221,6 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
           )}
         </div>
       )}
-    </div>
+    </ColorfulBorder>
   );
 }

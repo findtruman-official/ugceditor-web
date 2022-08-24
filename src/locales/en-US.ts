@@ -1,6 +1,8 @@
 export default {
   'menu.stories': 'Stories',
   'menu.writer': "I'm Writer",
+  'menu.story-gameplay': 'Story-gameplay',
+  'menu.achievements': 'Achievements',
   'header.connect-wallet': 'Connect Wallet',
   'stories.title.hot-stories': 'Hot Stories',
   'stories.title.latest-stories': 'Latest Stories',

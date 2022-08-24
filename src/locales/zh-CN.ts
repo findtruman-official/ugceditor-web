@@ -1,6 +1,8 @@
 export default {
   'menu.stories': '故事',
   'menu.writer': '我是作者',
+  'menu.story-gameplay': '游戏',
+  'menu.achievements': '成就',
   'header.connect-wallet': '连接钱包',
   'stories.title.hot-stories': '热门故事',
   'stories.title.latest-stories': 'LATEST STORIES',
