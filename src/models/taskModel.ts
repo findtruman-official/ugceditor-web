@@ -27,7 +27,7 @@ export default () => {
     refresh: refreshStoryTasks,
   } = useRequest(
     async () => {
-      if (!!storyId && chainType) return;
+      if (!storyId || !chainType) return;
       return (await getStoryTasks(chainType, storyId)).storyTasks;
     },
     {
@@ -36,19 +36,14 @@ export default () => {
   );
 
   const todoTasks = useMemo(() => {
-    return storyTasks
-      ? storyTasks.map((t) => t.status === API.StoryTaskStatus.Todo)
-      : [];
+    console.log(storyTasks);
+    return storyTasks ? storyTasks.map((t) => t.status === 'Todo') : [];
   }, [storyTasks]);
   const doneTasks = useMemo(() => {
-    return storyTasks
-      ? storyTasks.map((t) => t.status === API.StoryTaskStatus.Done)
-      : [];
+    return storyTasks ? storyTasks.map((t) => t.status === 'Done') : [];
   }, [storyTasks]);
   const cancelledTasks = useMemo(() => {
-    return storyTasks
-      ? storyTasks.map((t) => t.status === API.StoryTaskStatus.Cancelled)
-      : [];
+    return storyTasks ? storyTasks.map((t) => t.status === 'Cancelled') : [];
   }, [storyTasks]);
 
   const {
@@ -67,8 +62,8 @@ export default () => {
 
   const { run: runCreateStoryTask, loading: loadingCreateStoryTask } =
     useRequest(
-      async (title: string, description: string) => {
-        await createStoryTask(chainType, storyId, title, description);
+      async (title: string, description: string, token: string) => {
+        await createStoryTask(chainType, storyId, title, description, token);
         refreshStoryTasks();
       },
       {
@@ -78,8 +73,8 @@ export default () => {
 
   const { run: runCancelStoryTask, loading: loadingCancelStoryTask } =
     useRequest(
-      async () => {
-        await cancelStoryTask(taskId);
+      async (token: string) => {
+        await cancelStoryTask(taskId, token);
         refreshStoryTasks();
       },
       {
@@ -88,8 +83,8 @@ export default () => {
     );
 
   const { run: runDoneStoryTask, loading: loadingDoneStoryTask } = useRequest(
-    async (submitIds: number[]) => {
-      await doneStoryTask(taskId, submitIds);
+    async (submitIds: number[], token: string) => {
+      await doneStoryTask(taskId, submitIds, token);
       refreshStoryTasks();
     },
     {
@@ -99,8 +94,8 @@ export default () => {
 
   const { run: runUpdateStoryTask, loading: loadingUpdateStoryTask } =
     useRequest(
-      async (title: string, description: string) => {
-        await updateStoryTask(taskId, title, description);
+      async (title: string, description: string, token: string) => {
+        await updateStoryTask(taskId, title, description, token);
         refreshStoryTasks();
         refreshStoryTask();
       },
@@ -111,8 +106,8 @@ export default () => {
 
   const { run: runCreateTaskSubmit, loading: loadingCreateTaskSubmit } =
     useRequest(
-      async (content: string) => {
-        await createTaskSubmit(taskId, content);
+      async (content: string, token: string) => {
+        await createTaskSubmit(taskId, content, token);
         refreshStoryTasks();
         refreshStoryTask();
       },
@@ -123,8 +118,8 @@ export default () => {
 
   const { run: runRemoveTaskSubmit, loading: loadingRemoveTaskSubmit } =
     useRequest(
-      async (id: number) => {
-        await removeTaskSubmit(id);
+      async (id: number, token: string) => {
+        await removeTaskSubmit(id, token);
         refreshStoryTasks();
         refreshStoryTask();
       },

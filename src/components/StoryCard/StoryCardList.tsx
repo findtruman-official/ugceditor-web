@@ -68,7 +68,7 @@ export default function StoryCardList({
             ...stories
               ?.filter((e) => !!e)
               .map((e) => (
-                <Col key={`1_${e.id}`}>
+                <Col key={`1_${e.chainType}_${e.id}`}>
                   <StoryCard
                     id={e.id}
                     img={`${PREFIX}/ipfs/file/${encodeURIComponent(
@@ -87,7 +87,7 @@ export default function StoryCardList({
               ? stories
                   ?.filter((e) => !!e)
                   .map((e) => (
-                    <Col key={`2_${e.id}`}>
+                    <Col key={`2_${e.chainType}_${e.id}`}>
                       <StoryCard
                         id={e.id}
                         img={`${PREFIX}/ipfs/file/${encodeURIComponent(

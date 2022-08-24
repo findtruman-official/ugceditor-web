@@ -98,3 +98,10 @@ body {
   height: 480px !important;
   border-radius: 4px;
 }
+
+.w-md-editor {
+  background: transparent !important;
+}
+.wmde-markdown {
+  background-color: transparent !important;
+}

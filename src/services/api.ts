@@ -313,6 +313,7 @@ export async function createStoryTask(
   chainStoryId: string,
   title: string,
   description: string,
+  token: string,
 ) {
   return await client.request(
     gql`
@@ -333,10 +334,13 @@ export async function createStoryTask(
       }
     `,
     { chain, chainStoryId, description, title },
+    {
+      'x-token': token,
+    },
   );
 }
 
-export async function cancelStoryTask(id: number) {
+export async function cancelStoryTask(id: number, token: string) {
   return await client.request(
     gql`
       mutation cancelStoryTask($id: Float!) {
@@ -349,7 +353,11 @@ export async function cancelStoryTask(id: number) {
   );
 }
 
-export async function doneStoryTask(id: number, submitIds: number[]) {
+export async function doneStoryTask(
+  id: number,
+  submitIds: number[],
+  token: string,
+) {
   return await client.request(
     gql`
       mutation doneStoryTask($id: Float!, $submitIds: [Int!]!) {
@@ -359,6 +367,9 @@ export async function doneStoryTask(id: number, submitIds: number[]) {
       }
     `,
     { id, submitIds },
+    {
+      'x-token': token,
+    },
   );
 }
 
@@ -366,6 +377,7 @@ export async function updateStoryTask(
   id: number,
   title: string,
   description: string,
+  token: string,
 ) {
   return await client.request(
     gql`
@@ -380,10 +392,17 @@ export async function updateStoryTask(
       }
     `,
     { id, title, description },
+    {
+      'x-token': token,
+    },
   );
 }
 
-export async function createTaskSubmit(taskId: number, content: string) {
+export async function createTaskSubmit(
+  taskId: number,
+  content: string,
+  token: string,
+) {
   return await client.request(
     gql`
       mutation createTaskSubmit($content: String!, $taskId: Int!) {
@@ -393,10 +412,13 @@ export async function createTaskSubmit(taskId: number, content: string) {
       }
     `,
     { taskId, content },
+    {
+      'x-token': token,
+    },
   );
 }
 
-export async function removeTaskSubmit(id: number) {
+export async function removeTaskSubmit(id: number, token: string) {
   return await client.request(
     gql`
       mutation removeTaskSubmit($id: Int!) {
@@ -404,5 +426,8 @@ export async function removeTaskSubmit(id: number) {
       }
     `,
     { id },
+    {
+      'x-token': token,
+    },
   );
 }

@@ -94,4 +94,10 @@ export default {
     'Before continuing, you will be required to sign a piece of data to verify account ownership. There will be no on-chain transaction.',
   'confirm-login.confirm': 'Confirm',
   'confirm-login.reject': 'Reject',
+  'create-task.create': 'Create',
+  'create-task.task-name.placeholder': 'Task name here...',
+  'create-task.task-desc.placeholder':
+    'Add more details about your task here. Markdown syntax elements are available.',
+  'create-task.preview': 'Preview',
+  'create-task.created': 'Created!',
 };

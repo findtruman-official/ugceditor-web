@@ -36,7 +36,7 @@ export default {
   'story.publish-at': '发行于',
   'story.publish-on': '发行在',
   'story.tab.story': '故事',
-  'story.tab.works': '工作',
+  'story.tab.works': '共创',
   'story.delete-confirm-title': '确认删除章节 {name}？',
   'story.delete-confirm-desc': '在保存之前您可以撤销删除。',
   'story.delete-confirm.confirm': '删除',
@@ -92,4 +92,10 @@ export default {
     '在继续之前，您需要签名一段数据以验证帐户所有权。该操作不会产生链上交易。',
   'confirm-login.confirm': '签名',
   'confirm-login.reject': '拒绝',
+  'create-task.create': '创建',
+  'create-task.task-name.placeholder': '任务名...',
+  'create-task.task-desc.placeholder':
+    '在此输入您的任务详情。支持 Markdown 语法。',
+  'create-task.preview': '预览',
+  'create-task.created': '已创建！',
 };

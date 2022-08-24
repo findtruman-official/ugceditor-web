@@ -54,7 +54,6 @@ export default function LoginConfirmModal({
           <Button
             disabled={loading}
             danger={true}
-            type={'primary'}
             onClick={() => loginState?.onReject()}
           >
             {formatMessage({ id: 'confirm-login.reject' })}

@@ -2,6 +2,7 @@ import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import NftCard from '@/components/NftCard/NftCard';
 import PublishNftModal from '@/components/PublishNftModal/PublishNftModal';
 import StoryTab from '@/components/StoryTab/StoryTab';
+import WorkTab from '@/components/WorkTab/WorkTab';
 import { WalletContext, WalletContextType } from '@/layouts';
 import { uploadJson } from '@/services/api';
 import { PREFIX } from '@/utils/const';
@@ -80,6 +81,8 @@ const Story: React.FC = () => {
   const [nftModalVisible, setNftModalVisible] = useState(false);
   const [storyModalVisible, setStoryModalVisible] = useState(false);
   const [descModalVisible, setDescModalVisible] = useState(false);
+
+  const [currentTab, setCurrentTab] = useState<string>('story');
 
   useEffect(() => {
     setNftModalVisible(false);
@@ -301,6 +304,8 @@ const Story: React.FC = () => {
           </Row>
 
           <Tabs
+            onTabClick={(tab) => setCurrentTab(tab)}
+            activeKey={currentTab}
             defaultActiveKey={'story'}
             size={'large'}
             tabBarStyle={{
@@ -352,6 +357,12 @@ const Story: React.FC = () => {
                 storyId={storyId}
                 chainType={chainType}
               />
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              tab={formatMessage({ id: 'story.tab.works' })}
+              key={'work'}
+            >
+              <WorkTab />
             </Tabs.TabPane>
           </Tabs>
         </div>
