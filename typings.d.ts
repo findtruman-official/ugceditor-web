@@ -141,15 +141,15 @@ declare global {
     };
 
     enum StoryTaskStatus {
-      Cancelled,
-      Done,
-      Todo,
+      Cancelled = 'Cancelled',
+      Done = 'Done',
+      Todo = 'Todo',
     }
 
     enum StoryTaskSubmitStatus {
-      Approved,
-      Pending,
-      Rejected,
+      Approved = 'Approved',
+      Pending = 'Pending',
+      Rejected = 'Rejected',
     }
   }
 }
