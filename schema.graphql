@@ -27,12 +27,18 @@ type Jwt {
 }
 
 type Mutation {
+    cancelStoryTask(id: Float!): StoryTask!
+    createStoryTask(chain: String!, chainStoryId: String!, description: String!, title: String!): StoryTask!
+    createTaskSubmit(content: String!, taskId: Int!): StoryTaskSubmit!
+    doneStoryTask(id: Float!, submitIds: [Int!]!): StoryTask!
     login(account: String!, chain: String!, message: String!, signature: String!): Jwt!
     metadataUriPrefix(amount: Int!, chain: String!, description: String!, image: String!, name: String!): IpfsResult!
+    removeTaskSubmit(id: Int!): Boolean!
     "returns null if no story on chain."
     syncStoryContentHash(chain: String!, chainStoryId: String!): Story
     "returns null if no story nft sale on chain."
     syncStoryNftSale(chain: String!, chainStoryId: String!): Story
+    updateStoryTask(description: String, id: Int!, title: String): StoryTask!
 }
 
 type NftSale {
@@ -44,7 +50,7 @@ type NftSale {
     image: String!
     name: String!
     nftSaleAddr: String!
-    price: Int!
+    price: String!
     sold: Int!
     total: Int!
     type: Float!
@@ -60,6 +66,8 @@ type Query {
     currentUser: User
     stories(author: [String!], chain: [String!], sort: StorySort): [Story!]!
     story(chain: String!, chainStoryId: String!): Story
+    storyTask(id: Float!): StoryTask
+    storyTasks(chain: String!, chainStoryId: String!): [StoryTask!]!
 }
 
 type Story {
@@ -97,6 +105,25 @@ type StoryInfo {
     updateAt: DateTime!
 }
 
+type StoryTask {
+    chain: String!
+    chainStoryId: String!
+    description: String!
+    id: Int!
+    status: StoryTaskStatus!
+    submits: [StoryTaskSubmit!]!
+    title: String!
+}
+
+type StoryTaskSubmit {
+    account: String!
+    content: String!
+    createTime: DateTime!
+    id: Int!
+    status: StoryTaskSubmitStatus!
+    taskId: Int!
+}
+
 type User {
     account: String!
     chain: String!
@@ -105,6 +132,18 @@ type User {
 enum StorySort {
     Hotest
     Latest
+}
+
+enum StoryTaskStatus {
+    Cancelled
+    Done
+    Todo
+}
+
+enum StoryTaskSubmitStatus {
+    Approved
+    Pending
+    Rejected
 }
 
 "A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format."

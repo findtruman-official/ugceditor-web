@@ -266,3 +266,143 @@ export async function syncStoryNftSale(chain: string, chainStoryId: string) {
     { chain, chainStoryId },
   );
 }
+
+export async function getStoryTasks(chain: string, chainStoryId: string) {
+  return await client.request<{ storyTasks: API.StoryTask[] }>(
+    gql`
+      query storyTasks($chain: String!, $chainStoryId: String!) {
+        storyTasks(chain: $chain, chainStoryId: $chainStoryId) {
+          id
+          status
+          title
+          submits {
+            id
+          }
+        }
+      }
+    `,
+    { chain, chainStoryId },
+  );
+}
+
+export async function getStoryTask(taskId: number) {
+  return await client.request<{ storyTask: API.StoryTask }>(
+    gql`
+      query storyTask($id: Float!) {
+        storyTask(id: $id) {
+          id
+          status
+          title
+          description
+          submits {
+            id
+            status
+            content
+            account
+            createTime
+          }
+        }
+      }
+    `,
+    { id: taskId },
+  );
+}
+
+export async function createStoryTask(
+  chain: string,
+  chainStoryId: string,
+  title: string,
+  description: string,
+) {
+  return await client.request(
+    gql`
+      mutation createStoryTask(
+        $chain: String!
+        $chainStoryId: String!
+        $description: String!
+        $title: String!
+      ) {
+        createStoryTask(
+          chain: $chain
+          chainStoryId: $chainStoryId
+          description: $description
+          title: $title
+        ) {
+          id
+        }
+      }
+    `,
+    { chain, chainStoryId, description, title },
+  );
+}
+
+export async function cancelStoryTask(id: number) {
+  return await client.request(
+    gql`
+      mutation cancelStoryTask($id: Float!) {
+        cancelStoryTask(id: $id) {
+          id
+        }
+      }
+    `,
+    { id },
+  );
+}
+
+export async function doneStoryTask(id: number, submitIds: number[]) {
+  return await client.request(
+    gql`
+      mutation doneStoryTask($id: Float!, $submitIds: [Int!]!) {
+        doneStoryTask(id: $id, submitIds: $submitIds) {
+          id
+        }
+      }
+    `,
+    { id, submitIds },
+  );
+}
+
+export async function updateStoryTask(
+  id: number,
+  title: string,
+  description: string,
+) {
+  return await client.request(
+    gql`
+      mutation updateStoryTask(
+        $description: String
+        $id: Int!
+        $title: String
+      ) {
+        updateStoryTask(description: $description, id: $id, title: $title) {
+          id
+        }
+      }
+    `,
+    { id, title, description },
+  );
+}
+
+export async function createTaskSubmit(taskId: number, content: string) {
+  return await client.request(
+    gql`
+      mutation createTaskSubmit($content: String!, $taskId: Int!) {
+        createTaskSubmit(content: $content, taskId: $taskId) {
+          id
+        }
+      }
+    `,
+    { taskId, content },
+  );
+}
+
+export async function removeTaskSubmit(id: number) {
+  return await client.request(
+    gql`
+      mutation removeTaskSubmit($id: Int!) {
+        removeTaskSubmit(id: $id)
+      }
+    `,
+    { id },
+  );
+}

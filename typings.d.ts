@@ -120,5 +120,36 @@ declare global {
       timestamp: number;
       new: boolean;
     };
+
+    type StoryTask = {
+      id: number;
+      status: StoryTaskStatus;
+      title: string;
+      description: string;
+      submits: StoryTaskSubmit[];
+      chain: string;
+      chainStoryId: string;
+    };
+
+    type StoryTaskSubmit = {
+      id: number;
+      status: StoryTaskSubmitStatus;
+      taskId: number;
+      account: string;
+      content: string;
+      createTime: string;
+    };
+
+    enum StoryTaskStatus {
+      Cancelled,
+      Done,
+      Todo,
+    }
+
+    enum StoryTaskSubmitStatus {
+      Approved,
+      Pending,
+      Rejected,
+    }
   }
 }
