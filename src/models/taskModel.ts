@@ -36,13 +36,19 @@ export default () => {
   );
 
   const todoTasks = useMemo(() => {
-    return storyTasks ? storyTasks.map((t) => t.status === 'Todo') : [];
+    return storyTasks
+      ? storyTasks.filter((t: API.StoryTask) => t.status === 'Todo')
+      : [];
   }, [storyTasks]);
   const doneTasks = useMemo(() => {
-    return storyTasks ? storyTasks.map((t) => t.status === 'Done') : [];
+    return storyTasks
+      ? storyTasks.filter((t: API.StoryTask) => t.status === 'Done')
+      : [];
   }, [storyTasks]);
   const cancelledTasks = useMemo(() => {
-    return storyTasks ? storyTasks.map((t) => t.status === 'Cancelled') : [];
+    return storyTasks
+      ? storyTasks.filter((t: API.StoryTask) => t.status === 'Cancelled')
+      : [];
   }, [storyTasks]);
 
   const {
