@@ -45,6 +45,7 @@ export default function CreateTaskModal({
       }}
       footer={null}
       data-color-mode="dark"
+      width={720}
     >
       <Input
         maxLength={30}

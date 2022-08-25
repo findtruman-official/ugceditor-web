@@ -1,4 +1,5 @@
 import CreateTaskModal from '@/components/CreateTaskModal/CreateTaskModal';
+import TaskModal from '@/components/TaskModal/TaskModal';
 import { WalletContext, WalletContextType } from '@/layouts';
 import { useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
@@ -18,7 +19,18 @@ export default function WorkTab() {
     accounts: model.accounts,
   }));
 
+  const { todoTasks, doneTasks, cancelledTasks, setTaskId } = useModel(
+    'taskModel',
+    (model) => ({
+      todoTasks: model.todoTasks,
+      doneTasks: model.doneTasks,
+      cancelledTasks: model.cancelledTasks,
+      setTaskId: model.setTaskId,
+    }),
+  );
+
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [taskModalVisible, setTaskModalVisible] = useState(false);
 
   useEffect(() => {
     setCreateModalVisible(false);
@@ -40,10 +52,25 @@ export default function WorkTab() {
       >
         Create
       </Button>
+      <Button
+        onClick={() => {
+          setTaskModalVisible(true);
+          setTaskId(1);
+        }}
+      >
+        Task
+      </Button>
       <CreateTaskModal
         chainType={chainType}
         visible={createModalVisible}
         onClose={() => setCreateModalVisible(false)}
+      />
+      <TaskModal
+        visible={taskModalVisible}
+        onClose={() => {
+          setTaskModalVisible(false);
+          setTaskId(0);
+        }}
       />
     </div>
   );
