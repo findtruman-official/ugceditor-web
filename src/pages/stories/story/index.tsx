@@ -206,6 +206,8 @@ const Story: React.FC = () => {
                         {isAuthor && (
                           <Button
                             disabled={saving}
+                            size={'large'}
+                            type={'text'}
                             icon={<EditOutlined />}
                             onClick={() => {
                               const chain = currentStory.chainInfo.type;

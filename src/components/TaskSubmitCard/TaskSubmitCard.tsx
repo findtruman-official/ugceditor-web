@@ -7,27 +7,49 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
-import { Col, Modal, Row } from 'antd';
+import { Col, Modal, Row, Tag } from 'antd';
+import { useCallback } from 'react';
 import styles from './TaskSubmitCard.less';
 
 interface TaskSubmitCardProps {
   data: API.StoryTaskSubmit;
-  isOwner: boolean;
+  removable?: boolean;
   onViewMore: () => void;
-  onDelete: () => Promise<void>;
+  onDelete?: () => Promise<void>;
 }
 
 export default function TaskSubmitCard({
   data,
-  isOwner,
+  removable = false,
   onViewMore,
   onDelete,
 }: TaskSubmitCardProps) {
   const { formatMessage } = useIntl();
+
+  const renderStatusTag = useCallback((status: API.StoryTaskSubmitStatus) => {
+    switch (status) {
+      case 'Pending':
+        return undefined;
+      case 'Approved':
+        return (
+          <Tag color={'green'} style={{ marginRight: 12 }}>
+            {formatMessage({ id: 'task-modal.approved' })}
+          </Tag>
+        );
+      case 'Rejected':
+        return (
+          <Tag color={'red'} style={{ marginRight: 12 }}>
+            {formatMessage({ id: 'task-modal.rejected' })}
+          </Tag>
+        );
+    }
+  }, []);
+
   return (
     <div className={styles.card}>
       <Row justify={'space-between'} style={{ marginBottom: 12 }}>
         <Col>
+          {renderStatusTag(data.status)}
           <span className={styles.account}>
             <UserOutlined style={{ marginRight: 8 }} />
             {shortenAccount(data.account)}
@@ -38,7 +60,7 @@ export default function TaskSubmitCard({
           </span>
         </Col>
         <Col>
-          {isOwner && (
+          {removable && (
             <CloseOutlined
               className={styles.removeBtn}
               onClick={() => {

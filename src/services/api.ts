@@ -350,6 +350,9 @@ export async function cancelStoryTask(id: number, token: string) {
       }
     `,
     { id },
+    {
+      'x-token': token,
+    },
   );
 }
 

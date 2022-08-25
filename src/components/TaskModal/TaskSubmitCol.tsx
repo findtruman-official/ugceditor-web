@@ -47,6 +47,20 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
     setContent('');
   }, [visible]);
 
+  const approvedSubmits = useMemo(() => {
+    if (!storyTask?.submits) return [];
+    return storyTask.submits.filter(
+      (e: API.StoryTaskSubmit) => e.status === 'Approved',
+    );
+  }, [storyTask]);
+
+  const rejectedSubmits = useMemo(() => {
+    if (!storyTask?.submits) return [];
+    return storyTask.submits.filter(
+      (e: API.StoryTaskSubmit) => e.status === 'Rejected',
+    );
+  }, [storyTask]);
+
   const mySubmits = useMemo(() => {
     if (!account || !storyTask?.submits) return [];
     return storyTask.submits.filter(
@@ -67,9 +81,10 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
         size={'small'}
         defaultActiveKey={'all'}
         tabBarExtraContent={
-          isAuthor && (
+          isAuthor &&
+          storyTask?.status === 'Todo' && (
             <Tooltip title={formatMessage({ id: 'task-modal.review' })}>
-              <Button icon={<FileDoneOutlined />} />
+              <Button type={'text'} icon={<FileDoneOutlined />} />
             </Tooltip>
           )
         }
@@ -81,8 +96,9 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
                 <TaskSubmitCard
                   key={`all-task-${submit.id}`}
                   data={submit}
-                  isOwner={
-                    submit.account.toLowerCase() === account.toLowerCase()
+                  removable={
+                    submit.account.toLowerCase() === account.toLowerCase() &&
+                    storyTask?.status === 'Todo'
                   }
                   onViewMore={() => {
                     setViewMoreContent(submit.content);
@@ -100,6 +116,58 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
             )}
           </MacScrollbar>
         </Tabs.TabPane>
+
+        {storyTask?.status === 'Done' && (
+          <>
+            <Tabs.TabPane
+              tab={formatMessage({ id: 'task-modal.approved' })}
+              key={'approved'}
+            >
+              <MacScrollbar ref={myListRef} className={styles.submitList}>
+                {approvedSubmits.length > 0 ? (
+                  approvedSubmits.map((submit: API.StoryTaskSubmit) => (
+                    <TaskSubmitCard
+                      key={`approved-task-${submit.id}`}
+                      data={submit}
+                      onViewMore={() => {
+                        setViewMoreContent(submit.content);
+                        setViewModalVisible(true);
+                      }}
+                    />
+                  ))
+                ) : (
+                  <div className={styles.emptyTip}>
+                    {formatMessage({ id: 'task-modal.no-submit-tip' })}
+                  </div>
+                )}
+              </MacScrollbar>
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              tab={formatMessage({ id: 'task-modal.rejected' })}
+              key={'rejected'}
+            >
+              <MacScrollbar ref={myListRef} className={styles.submitList}>
+                {rejectedSubmits.length > 0 ? (
+                  rejectedSubmits.map((submit: API.StoryTaskSubmit) => (
+                    <TaskSubmitCard
+                      key={`rejected-task-${submit.id}`}
+                      data={submit}
+                      onViewMore={() => {
+                        setViewMoreContent(submit.content);
+                        setViewModalVisible(true);
+                      }}
+                    />
+                  ))
+                ) : (
+                  <div className={styles.emptyTip}>
+                    {formatMessage({ id: 'task-modal.no-submit-tip' })}
+                  </div>
+                )}
+              </MacScrollbar>
+            </Tabs.TabPane>
+          </>
+        )}
+
         <Tabs.TabPane tab={formatMessage({ id: 'task-modal.my' })} key={'my'}>
           <MacScrollbar ref={myListRef} className={styles.submitList}>
             {mySubmits.length > 0 ? (
@@ -107,7 +175,7 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
                 <TaskSubmitCard
                   key={`my-task-${submit.id}`}
                   data={submit}
-                  isOwner={true}
+                  removable={storyTask?.status === 'Todo'}
                   onViewMore={() => {
                     setViewMoreContent(submit.content);
                     setViewModalVisible(true);
@@ -125,39 +193,40 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
           </MacScrollbar>
         </Tabs.TabPane>
       </Tabs>
-      <Divider />
-      <div>
-        <MDEditorWithPreview
-          value={content}
-          onChange={(e) => setContent(e)}
-          placeholder={formatMessage({
-            id: 'task-modal.submit-content.placeholder',
-          })}
-        />
-      </div>
-
-      <Button
-        block={true}
-        type={'primary'}
-        loading={loadingCreateTaskSubmit}
-        onClick={async () => {
-          if (!content) return;
-          const token = await getTokenAsync(chainType, true);
-          await runCreateTaskSubmit(content, token);
-          setContent('');
-          message.success(formatMessage({ id: 'task-modal.submitted' }));
-          allListRef?.current?.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-          });
-          myListRef?.current?.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-          });
-        }}
-      >
-        Submit
-      </Button>
+      {storyTask?.status === 'Todo' && (
+        <>
+          <Divider />
+          <MDEditorWithPreview
+            value={content}
+            onChange={(e) => setContent(e)}
+            placeholder={formatMessage({
+              id: 'task-modal.submit-content.placeholder',
+            })}
+          />
+          <Button
+            block={true}
+            type={'primary'}
+            loading={loadingCreateTaskSubmit}
+            onClick={async () => {
+              if (!content) return;
+              const token = await getTokenAsync(chainType, true);
+              await runCreateTaskSubmit(content, token);
+              setContent('');
+              message.success(formatMessage({ id: 'task-modal.submitted' }));
+              allListRef?.current?.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+              });
+              myListRef?.current?.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+              });
+            }}
+          >
+            Submit
+          </Button>
+        </>
+      )}
       <Modal
         centered={true}
         footer={null}

@@ -34,7 +34,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
       {!!taskId && (
         <Skeleton loading={!storyTask && loadingStoryTask}>
           <Row align={'stretch'} wrap={false}>
-            <TaskCol visible={visible} />
+            <TaskCol visible={visible} onClose={onClose} />
             <TaskSubmitCol visible={visible} />
           </Row>
         </Skeleton>

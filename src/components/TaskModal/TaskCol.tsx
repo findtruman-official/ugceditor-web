@@ -6,21 +6,23 @@ import {
   CheckOutlined,
   CloseOutlined,
   EditOutlined,
+  IssuesCloseOutlined,
   LoadingOutlined,
   StopFilled,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
-import { Button, Col, Input, message, Row, Space } from 'antd';
+import { Button, Col, Input, message, Modal, Row, Space, Tooltip } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import styles from './TaskModal.less';
 
 interface TaskColProps {
   visible: boolean;
+  onClose: () => void;
 }
 
-export default function TaskCol({ visible }: TaskColProps) {
+export default function TaskCol({ visible, onClose }: TaskColProps) {
   const { formatMessage } = useIntl();
   const { getTokenAsync } = useModel('walletModel', (model) => ({
     getTokenAsync: model.getTokenAsync,
@@ -33,14 +35,17 @@ export default function TaskCol({ visible }: TaskColProps) {
       isAuthor: model.isAuthor,
     }),
   );
-  const { storyTask, runUpdateStoryTask, loadingUpdateStoryTask } = useModel(
-    'taskModel',
-    (model) => ({
-      storyTask: model.storyTask,
-      runUpdateStoryTask: model.runUpdateStoryTask,
-      loadingUpdateStoryTask: model.loadingUpdateStoryTask,
-    }),
-  );
+  const {
+    storyTask,
+    runUpdateStoryTask,
+    loadingUpdateStoryTask,
+    runCancelStoryTask,
+  } = useModel('taskModel', (model) => ({
+    storyTask: model.storyTask,
+    runUpdateStoryTask: model.runUpdateStoryTask,
+    loadingUpdateStoryTask: model.loadingUpdateStoryTask,
+    runCancelStoryTask: model.runCancelStoryTask,
+  }));
 
   const [edit, setEdit] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -62,19 +67,24 @@ export default function TaskCol({ visible }: TaskColProps) {
         );
       case 'Done':
         return (
-          <div>
-            <CheckCircleFilled style={{ marginRight: 8, color: '#49aa19' }} />{' '}
-            Done
+          <div style={{ color: '#49aa19' }}>
+            <CheckCircleFilled style={{ marginRight: 8 }} /> Done
           </div>
         );
       case 'Cancelled':
         return (
-          <div>
-            <StopFilled style={{ marginRight: 8, color: '#d32029' }} />{' '}
-            Cancelled
+          <div style={{ color: '#d32029' }}>
+            <StopFilled style={{ marginRight: 8 }} /> Cancelled
           </div>
         );
     }
+  }, []);
+
+  const handleClose = useCallback(async () => {
+    const token = await getTokenAsync(chainType);
+    await runCancelStoryTask(token);
+    message.success(formatMessage({ id: 'task-modal.closed' }));
+    onClose();
   }, []);
 
   return (
@@ -94,39 +104,68 @@ export default function TaskCol({ visible }: TaskColProps) {
             bordered={edit}
           />
         </Col>
-        {isAuthor && (
+        {isAuthor && storyTask?.status === 'Todo' && (
           <Col>
-            {edit ? (
-              <Space>
-                <Button
-                  disabled={loadingUpdateStoryTask}
-                  icon={<CloseOutlined />}
-                  onClick={() => setEdit(false)}
-                />
-                <Button
-                  loading={loadingUpdateStoryTask}
-                  type={'primary'}
-                  icon={<CheckOutlined />}
-                  onClick={async () => {
-                    const token = await getTokenAsync(chainType);
-                    await runUpdateStoryTask(newTitle, newDesc, token);
-                    setEdit(false);
-                    message.success(
-                      formatMessage({ id: 'task-modal.updated' }),
-                    );
-                  }}
-                />
-              </Space>
-            ) : (
-              <Button
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setNewTitle(storyTask.title);
-                  setNewDesc(storyTask.description);
-                  setEdit(true);
-                }}
-              />
-            )}
+            <Space>
+              {edit ? (
+                <>
+                  <Button
+                    size={'large'}
+                    type={'text'}
+                    disabled={loadingUpdateStoryTask}
+                    icon={<CloseOutlined />}
+                    onClick={() => setEdit(false)}
+                  />
+                  <Button
+                    size={'large'}
+                    loading={loadingUpdateStoryTask}
+                    type={'primary'}
+                    icon={<CheckOutlined />}
+                    onClick={async () => {
+                      const token = await getTokenAsync(chainType);
+                      await runUpdateStoryTask(newTitle, newDesc, token);
+                      setEdit(false);
+                      message.success(
+                        formatMessage({ id: 'task-modal.updated' }),
+                      );
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  <Tooltip title={formatMessage({ id: 'task-modal.close' })}>
+                    <Button
+                      size={'large'}
+                      type={'text'}
+                      icon={<IssuesCloseOutlined />}
+                      onClick={() => {
+                        Modal.confirm({
+                          centered: true,
+                          title: formatMessage({
+                            id: 'task-modal.close-confirm',
+                          }),
+                          onOk: async () => {
+                            await handleClose();
+                          },
+                        });
+                      }}
+                    />
+                  </Tooltip>
+                  <Tooltip title={formatMessage({ id: 'task-modal.edit' })}>
+                    <Button
+                      size={'large'}
+                      type={'text'}
+                      icon={<EditOutlined />}
+                      onClick={() => {
+                        setNewTitle(storyTask.title);
+                        setNewDesc(storyTask.description);
+                        setEdit(true);
+                      }}
+                    />
+                  </Tooltip>
+                </>
+              )}
+            </Space>
           </Col>
         )}
       </Row>
