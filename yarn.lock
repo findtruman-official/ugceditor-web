@@ -7462,6 +7462,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+mac-scrollbar@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.npmmirror.com/mac-scrollbar/-/mac-scrollbar-0.10.3.tgz#048b35e11500582cf0eedc253023da1b996fc9a5"
+  integrity sha512-+dCARf54JUqeAWhjZE+cMBA9kLLIx1V7LRm3Fh27hAVX9J8ZqpSgXkfioFV218tivVFmusv/xHB1+6SgX0HZgg==
+
 magic-string@0.26.2:
   version "0.26.2"
   resolved "https://registry.npmmirror.com/magic-string/-/magic-string-0.26.2.tgz#5331700e4158cd6befda738bb6b0c7b93c0d4432"

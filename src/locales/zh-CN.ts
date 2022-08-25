@@ -98,4 +98,18 @@ export default {
     '在此输入您的任务详情。支持 Markdown 语法。',
   'create-task.preview': '预览',
   'create-task.created': '已创建！',
+  'task-modal.status': '状态',
+  'task-modal.posted-by': '发布人',
+  'task-modal.submits': '提交',
+  'task-modal.review': '审查',
+  'task-modal.no-submit-tip': '暂无提交',
+  'task-modal.all': '全部',
+  'task-modal.my': '我的',
+  'task-modal.submitted': '已提交！',
+  'task-modal.updated': '已更新！',
+  'task-modal.removed': '已删除！',
+  'task-modal.delete-confirm': '确认删除该提交？',
+  'task-modal.submit-content.placeholder':
+    '在此输入您的提交。支持 Markdown 语法。',
+  'view-more': '查看更多...',
 };

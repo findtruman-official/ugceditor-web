@@ -140,16 +140,20 @@ declare global {
       createTime: string;
     };
 
-    enum StoryTaskStatus {
-      Cancelled = 'Cancelled',
-      Done = 'Done',
-      Todo = 'Todo',
-    }
+    type StoryTaskStatus = 'Cancelled' | 'Done' | 'Todo';
 
-    enum StoryTaskSubmitStatus {
-      Approved = 'Approved',
-      Pending = 'Pending',
-      Rejected = 'Rejected',
-    }
+    type StoryTaskSubmitStatus = 'Approved' | 'Pending' | 'Rejected';
+
+    // enum StoryTaskStatus {
+    //   Cancelled = 'Cancelled',
+    //   Done = 'Done',
+    //   Todo = 'Todo',
+    // }
+
+    // enum StoryTaskSubmitStatus {
+    //   Approved = 'Approved',
+    //   Pending = 'Pending',
+    //   Rejected = 'Rejected',
+    // }
   }
 }

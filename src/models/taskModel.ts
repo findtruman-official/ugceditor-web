@@ -36,7 +36,6 @@ export default () => {
   );
 
   const todoTasks = useMemo(() => {
-    console.log(storyTasks);
     return storyTasks ? storyTasks.map((t) => t.status === 'Todo') : [];
   }, [storyTasks]);
   const doneTasks = useMemo(() => {
@@ -50,6 +49,7 @@ export default () => {
     data: storyTask,
     loading: loadingStoryTask,
     refresh: refreshStoryTask,
+    refreshAsync: refreshAsyncStoryTask,
   } = useRequest(
     async () => {
       if (!taskId) return;
@@ -97,7 +97,7 @@ export default () => {
       async (title: string, description: string, token: string) => {
         await updateStoryTask(taskId, title, description, token);
         refreshStoryTasks();
-        refreshStoryTask();
+        await refreshAsyncStoryTask();
       },
       {
         manual: true,
@@ -109,7 +109,7 @@ export default () => {
       async (content: string, token: string) => {
         await createTaskSubmit(taskId, content, token);
         refreshStoryTasks();
-        refreshStoryTask();
+        await refreshAsyncStoryTask();
       },
       {
         manual: true,
@@ -121,7 +121,7 @@ export default () => {
       async (id: number, token: string) => {
         await removeTaskSubmit(id, token);
         refreshStoryTasks();
-        refreshStoryTask();
+        await refreshAsyncStoryTask();
       },
       {
         manual: true,

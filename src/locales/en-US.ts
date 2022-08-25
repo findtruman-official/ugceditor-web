@@ -100,4 +100,18 @@ export default {
     'Add more details about your task here. Markdown syntax elements are available.',
   'create-task.preview': 'Preview',
   'create-task.created': 'Created!',
+  'task-modal.status': 'Status',
+  'task-modal.posted-by': 'Posted by',
+  'task-modal.submits': 'Submits',
+  'task-modal.review': 'Review',
+  'task-modal.no-submit-tip': 'There is no submit yet.',
+  'task-modal.all': 'All',
+  'task-modal.my': 'My',
+  'task-modal.submitted': 'Submitted!',
+  'task-modal.removed': 'Removed!',
+  'task-modal.updated': 'Updated!',
+  'task-modal.delete-confirm': 'Are you sure to delete?',
+  'task-modal.submit-content.placeholder':
+    'Enter your idea here. Markdown syntax elements are available.',
+  'view-more': 'View more...',
 };

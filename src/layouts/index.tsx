@@ -4,6 +4,8 @@ import WalletModal from '@/components/WalletModal/WalletModal';
 import { isChapterPage, isStoryPage } from '@/utils/regExp';
 import { ChainType } from '@/wallets';
 import { useLocation } from '@@/exports';
+import { GlobalScrollbar } from 'mac-scrollbar';
+import 'mac-scrollbar/dist/mac-scrollbar.css';
 import { createContext, useEffect, useState } from 'react';
 import { Outlet, useModel } from 'umi';
 
@@ -87,6 +89,7 @@ export default function Layout() {
       <LoginConfirmModal loginState={loginState} />
       <div style={{ height: 32 }} />
       <Outlet />
+      <GlobalScrollbar />
     </WalletContext.Provider>
   );
 }
