@@ -121,4 +121,9 @@ export default {
   'task-modal.submit-content.placeholder':
     'Enter your idea here. Markdown syntax elements are available.',
   'view-more': 'View more...',
+  'task-status-type.todo': 'TODO',
+  'task-status-type.done': 'Done',
+  'task-status-type.cancelled': 'Cancelled',
+  'task.add-todo': 'Add TODO',
+  'task.nodata': 'There is no task yet.',
 };

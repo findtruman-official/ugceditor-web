@@ -119,4 +119,9 @@ export default {
   'task-modal.submit-content.placeholder':
     '在此输入您的提交。支持 Markdown 语法。',
   'view-more': '查看更多...',
+  'task-status-type.todo': '待办',
+  'task-status-type.done': '已完成',
+  'task-status-type.cancelled': '已取消',
+  'task.add-todo': '新建任务',
+  'task.nodata': '暂无任务',
 };

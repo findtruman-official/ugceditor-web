@@ -1,0 +1,38 @@
+.taskCard {
+  width: 300px;
+  height: 100%;
+  margin-bottom: 24px;
+
+  .title {
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+  }
+
+  .addBtn {
+    margin-bottom: 12px;
+  }
+
+  :global {
+    .ant-card-body {
+      padding: 0px !important;
+      height: 500px;
+      overflow-y: auto;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgb(0 0 0 / 50%);
+      border-radius: 20px;
+    }
+
+    ::-webkit-scrollbar-track {
+      border-radius: 20px;
+    }
+  }
+}

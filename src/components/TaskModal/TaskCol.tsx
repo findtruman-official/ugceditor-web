@@ -4,10 +4,10 @@ import { useIntl, useModel } from '@@/exports';
 import {
   CheckCircleFilled,
   CheckOutlined,
+  ClockCircleOutlined,
   CloseOutlined,
   EditOutlined,
   IssuesCloseOutlined,
-  LoadingOutlined,
   StopFilled,
   TeamOutlined,
   UserOutlined,
@@ -60,8 +60,8 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
     switch (status) {
       case 'Todo':
         return (
-          <div>
-            <LoadingOutlined style={{ marginRight: 8 }} />
+          <div style={{ color: '#d89614' }}>
+            <ClockCircleOutlined style={{ marginRight: 8 }} />
             Todo
           </div>
         );
