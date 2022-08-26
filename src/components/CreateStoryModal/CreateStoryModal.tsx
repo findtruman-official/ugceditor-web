@@ -73,8 +73,10 @@ export default function CreateStoryModal({
   useEffect(() => {
     if (!visible) {
       setChain(undefined);
+    } else if (!!contentHash) {
+      setChain(currentStory.chainInfo.type);
     }
-  }, [visible]);
+  }, [visible, contentHash]);
 
   const token = useMemo(() => {
     if (!chain) return '';
@@ -91,12 +93,6 @@ export default function CreateStoryModal({
       refreshDeps: [contentHash],
     },
   );
-
-  useEffect(() => {
-    if (!!contentHash) {
-      setChain(currentStory.chainInfo.type);
-    }
-  }, [contentHash]);
 
   useEffect(() => {
     if (!!initialData) {
@@ -159,7 +155,7 @@ export default function CreateStoryModal({
     },
     { manual: true },
   );
-
+  console.log(token);
   return (
     <Modal
       className={'create-story-modal'}
