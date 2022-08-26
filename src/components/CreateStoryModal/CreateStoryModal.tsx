@@ -155,7 +155,7 @@ export default function CreateStoryModal({
     },
     { manual: true },
   );
-  console.log(token);
+
   return (
     <Modal
       className={'create-story-modal'}
