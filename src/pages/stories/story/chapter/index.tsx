@@ -56,7 +56,7 @@ const Chapter: React.FC = () => {
       title={false}
       ghost
     >
-      <Helmet title={`${currentChapter?.name} - FCC Story`} />
+      <Helmet title={`${currentChapter?.name} - Ugceditor Web`} />
       {currentChapter && (
         <div className={styles.header}>
           <Button

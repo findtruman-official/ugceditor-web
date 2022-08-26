@@ -9,7 +9,7 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: 'FCC Story',
+    title: 'Ugceditor Web',
     locale: true,
   },
   routes: [

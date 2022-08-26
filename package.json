@@ -1,6 +1,6 @@
 {
   "private": true,
-  "author": "zhouwei <zhouwei@aengine.com.cn>",
+  "author": "z384647062 <z384647062@gmail.com>",
   "scripts": {
     "build": "max build",
     "dev": "max dev",

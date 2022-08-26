@@ -167,7 +167,7 @@ const Story: React.FC = () => {
 
   return (
     <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
-      <Helmet title={`${currentStory?.info?.title} - FCC Story`} />
+      <Helmet title={`${currentStory?.info?.title} - Ugceditor Web`} />
       {gettingCurrentStory || currentStory ? (
         <div className={['story-detail', styles.container].join(' ')}>
           <Row
