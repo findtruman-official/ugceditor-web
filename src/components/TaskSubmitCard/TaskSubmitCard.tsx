@@ -7,15 +7,18 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
-import { Col, Modal, Row, Tag } from 'antd';
-import { useCallback } from 'react';
+import { Checkbox, Col, Modal, Row, Tag } from 'antd';
+import { useCallback, useState } from 'react';
 import styles from './TaskSubmitCard.less';
 
 interface TaskSubmitCardProps {
   data: API.StoryTaskSubmit;
   removable?: boolean;
-  onViewMore: () => void;
+  onViewMore?: () => void;
   onDelete?: () => Promise<void>;
+  active?: boolean;
+  onClick?: () => void;
+  onSelectedChange?: (selected: boolean) => void;
 }
 
 export default function TaskSubmitCard({
@@ -23,8 +26,13 @@ export default function TaskSubmitCard({
   removable = false,
   onViewMore,
   onDelete,
+  active = false,
+  onClick,
+  onSelectedChange,
 }: TaskSubmitCardProps) {
   const { formatMessage } = useIntl();
+
+  const [selected, setSelected] = useState(false);
 
   const renderStatusTag = useCallback((status: API.StoryTaskSubmitStatus) => {
     switch (status) {
@@ -46,7 +54,14 @@ export default function TaskSubmitCard({
   }, []);
 
   return (
-    <div className={styles.card}>
+    <div
+      className={[
+        styles.card,
+        onClick && styles.cardClickable,
+        active && styles.cardActive,
+      ].join(' ')}
+      onClick={onClick}
+    >
       <Row justify={'space-between'} style={{ marginBottom: 12 }}>
         <Col>
           {renderStatusTag(data.status)}
@@ -60,6 +75,16 @@ export default function TaskSubmitCard({
           </span>
         </Col>
         <Col>
+          {onSelectedChange && (
+            <Checkbox
+              checked={selected}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setSelected(checked);
+                onSelectedChange(checked);
+              }}
+            />
+          )}
           {removable && (
             <CloseOutlined
               className={styles.removeBtn}
@@ -74,7 +99,11 @@ export default function TaskSubmitCard({
           )}
         </Col>
       </Row>
-      <ViewMoreContainer onViewMore={onViewMore} maxHeight={150}>
+      <ViewMoreContainer
+        onViewMore={onViewMore}
+        maxHeight={150}
+        showViewMoreBtn={!!onViewMore}
+      >
         <MDEditor.Markdown source={data.content} linkTarget={'_blank'} />
       </ViewMoreContainer>
     </div>

@@ -124,4 +124,10 @@ export default {
   'task-status-type.cancelled': '已取消',
   'task.add-todo': '新建任务',
   'task.nodata': '暂无任务',
+  'task-review.done': '已完成！',
+  'task-review.tip': '在左侧点击一项提交以预览',
+  'task-review.review': '设为完成 ({count})',
+  'task-review.review-confirm':
+    '您即将采纳{count}项提交，并将该任务设为完成状态！',
+  'task-review.select-submission-tip': '至少选择一个提交并批准！',
 };

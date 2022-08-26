@@ -6,9 +6,14 @@ import { Modal, Row, Skeleton } from 'antd';
 interface TaskModalProps {
   visible: boolean;
   onClose: () => void;
+  onReview: () => void;
 }
 
-export default function TaskModal({ visible, onClose }: TaskModalProps) {
+export default function TaskModal({
+  visible,
+  onClose,
+  onReview,
+}: TaskModalProps) {
   const { taskId, storyTask, loadingStoryTask } = useModel(
     'taskModel',
     (model) => ({
@@ -22,7 +27,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
     <Modal
       centered={true}
       footer={null}
-      width={1200}
+      width={1296}
       visible={visible}
       onCancel={() => {
         onClose();
@@ -35,7 +40,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
         <Skeleton loading={!storyTask && loadingStoryTask}>
           <Row align={'stretch'} wrap={false}>
             <TaskCol visible={visible} onClose={onClose} />
-            <TaskSubmitCol visible={visible} />
+            <TaskSubmitCol visible={visible} onReview={onReview} />
           </Row>
         </Skeleton>
       )}

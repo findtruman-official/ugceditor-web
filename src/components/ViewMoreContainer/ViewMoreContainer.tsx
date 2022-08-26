@@ -1,6 +1,5 @@
 import { useIntl } from '@@/exports';
 import { Button } from 'antd';
-import { useEffect, useRef, useState } from 'react';
 import styles from './ViewMoreContainer.less';
 
 interface ViewMoreContainerProps {
@@ -17,27 +16,29 @@ export default function ViewMoreContainer({
   onViewMore = () => {},
 }: ViewMoreContainerProps) {
   const { formatMessage } = useIntl();
-  const [shouldCollapse, setShouldCollapse] = useState(false);
-  const ref = useRef(null);
+  // const [shouldCollapse, setShouldCollapse] = useState(true);
+  // const ref = useRef(null);
+  //
+  // useEffect(() => {
+  //   if (!ref.current) return;
+  //   (ref.current as any).onload = () => {
+  //     const height = (ref.current as any)?.clientHeight;
+  //   };
+  //   const height = (ref.current as any)?.clientHeight;
+  //   setShouldCollapse(height > maxHeight);
+  // }, [ref]);
 
-  useEffect(() => {
-    if (!ref.current) return;
-    const height = (ref.current as any)?.clientHeight;
-    setShouldCollapse(height > maxHeight);
-  }, [ref]);
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <div
-        ref={ref}
-        className={[
-          styles.container,
-          shouldCollapse ? styles.viewMoreContainer : '',
-        ].join(' ')}
-        style={{ maxHeight: shouldCollapse ? maxHeight : 'unset' }}
+        // ref={ref}
+        className={[styles.container, styles.viewMoreContainer].join(' ')}
+        style={{ maxHeight: maxHeight }}
       >
         {children}
       </div>
-      {showViewMoreBtn && shouldCollapse && (
+      <div className={styles.prevent} style={{ height: '100%' }} />
+      {showViewMoreBtn && (
         <div style={{ textAlign: 'center' }}>
           <Button type="text" onClick={onViewMore}>
             {formatMessage({ id: 'view-more' })}

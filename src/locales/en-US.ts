@@ -126,4 +126,11 @@ export default {
   'task-status-type.cancelled': 'Cancelled',
   'task.add-todo': 'Add TODO',
   'task.nodata': 'There is no task yet.',
+  'task-review.done': 'Done!',
+  'task-review.tip': 'Click an item on the left side to preview.',
+  'task-review.review': 'Mark as done ({count})',
+  'task-review.review-confirm':
+    'You are going to accept {count} submission(s) and mark the task as done!',
+  'task-review.select-submission-tip':
+    'At least one submission should be approved!',
 };

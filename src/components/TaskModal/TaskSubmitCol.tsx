@@ -10,9 +10,13 @@ import styles from './TaskModal.less';
 
 interface TaskSubmitColProps {
   visible: boolean;
+  onReview: () => void;
 }
 
-export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
+export default function TaskSubmitCol({
+  visible,
+  onReview,
+}: TaskSubmitColProps) {
   const { formatMessage } = useIntl();
   const { accounts, getTokenAsync } = useModel('walletModel', (model) => ({
     accounts: model.accounts,
@@ -76,7 +80,7 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
   }, []);
 
   return (
-    <Col flex={'500px'} className={styles.taskSubmitCol}>
+    <Col flex={'550px'} className={styles.taskSubmitCol}>
       <Tabs
         size={'small'}
         defaultActiveKey={'all'}
@@ -84,7 +88,11 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
           isAuthor &&
           storyTask?.status === 'Todo' && (
             <Tooltip title={formatMessage({ id: 'task-modal.review' })}>
-              <Button type={'text'} icon={<FileDoneOutlined />} />
+              <Button
+                type={'text'}
+                icon={<FileDoneOutlined />}
+                onClick={onReview}
+              />
             </Tooltip>
           )
         }
@@ -231,6 +239,7 @@ export default function TaskSubmitCol({ visible }: TaskSubmitColProps) {
         centered={true}
         footer={null}
         closable={false}
+        width={1000}
         visible={viewModalVisible}
         onCancel={() => {
           setViewMoreContent('');

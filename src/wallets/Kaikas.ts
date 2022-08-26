@@ -164,7 +164,8 @@ export class KaikasWalletProvider implements WalletProvider {
       );
       await approveMethod.send({
         from: account,
-        gas: await approveMethod.estimateGas({ from: author }),
+        // gas: await approveMethod.estimateGas({ from: author }),
+        gas: '100000',
       });
     }
 

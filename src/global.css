@@ -39,6 +39,10 @@ body {
   overflow-x: hidden;
 }
 
+img {
+  max-width: 100%;
+}
+
 .create-story-modal .ant-upload.ant-upload-select-picture-card {
   width: 100% !important;
   height: 236px !important;

@@ -1,4 +1,5 @@
 import CreateTaskModal from '@/components/CreateTaskModal/CreateTaskModal';
+import ReviewModal from '@/components/ReviewModal/ReviewModal';
 import TaskList from '@/components/TaskList/TaskList';
 import TaskModal from '@/components/TaskModal/TaskModal';
 import { WalletContext, WalletContextType } from '@/layouts';
@@ -12,11 +13,13 @@ import {
 } from '@ant-design/icons';
 import { Badge, Button, Card, Col, Row } from 'antd';
 import { MacScrollbar } from 'mac-scrollbar';
+import 'mac-scrollbar/dist/mac-scrollbar.css';
 import { useContext, useEffect, useState } from 'react';
 import styles from './WorkTab.less';
 
 export default function WorkTab() {
-  const { confirmLogin } = useContext<WalletContextType>(WalletContext);
+  const { confirmLogin, openWalletModal } =
+    useContext<WalletContextType>(WalletContext);
   const { formatMessage } = useIntl();
 
   const { chainType, isAuthor } = useModel('storyModel', (model) => ({
@@ -40,12 +43,19 @@ export default function WorkTab() {
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [taskModalVisible, setTaskModalVisible] = useState(false);
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
 
   useEffect(() => {
     setCreateModalVisible(false);
+    setTaskModalVisible(false);
+    setReviewModalVisible(false);
   }, [accounts[chainType]]);
 
   const showTaskDetail = (taskId: number) => {
+    if (!accounts[chainType]) {
+      openWalletModal();
+      return;
+    }
     const token = getToken(chainType);
     if (!token) {
       confirmLogin(chainType, {
@@ -78,7 +88,9 @@ export default function WorkTab() {
               </div>
             }
           >
-            <MacScrollbar style={{ padding: 12 }}>
+            <MacScrollbar
+              style={{ padding: 12, overflowY: 'auto', height: 500 }}
+            >
               {isAuthor && (
                 <Button
                   className={styles.addBtn}
@@ -121,7 +133,9 @@ export default function WorkTab() {
               </div>
             }
           >
-            <MacScrollbar style={{ padding: 12 }}>
+            <MacScrollbar
+              style={{ padding: 12, overflowY: 'auto', height: 500 }}
+            >
               <TaskList
                 taskList={doneTasks || []}
                 clickTask={(taskId) => showTaskDetail(taskId)}
@@ -146,7 +160,9 @@ export default function WorkTab() {
               </div>
             }
           >
-            <MacScrollbar style={{ padding: 12 }}>
+            <MacScrollbar
+              style={{ padding: 12, overflowY: 'auto', height: 500 }}
+            >
               <TaskList
                 taskList={cancelledTasks || []}
                 clickTask={(taskId) => showTaskDetail(taskId)}
@@ -166,6 +182,11 @@ export default function WorkTab() {
           setTaskModalVisible(false);
           setTaskId(0);
         }}
+        onReview={() => setReviewModalVisible(true)}
+      />
+      <ReviewModal
+        visible={reviewModalVisible}
+        onClose={() => setReviewModalVisible(false)}
       />
     </div>
   );

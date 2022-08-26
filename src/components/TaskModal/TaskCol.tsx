@@ -4,7 +4,7 @@ import { useIntl, useModel } from '@@/exports';
 import {
   CheckCircleFilled,
   CheckOutlined,
-  ClockCircleOutlined,
+  ClockCircleFilled,
   CloseOutlined,
   EditOutlined,
   IssuesCloseOutlined,
@@ -61,7 +61,7 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
       case 'Todo':
         return (
           <div style={{ color: '#d89614' }}>
-            <ClockCircleOutlined style={{ marginRight: 8 }} />
+            <ClockCircleFilled style={{ marginRight: 8 }} />
             Todo
           </div>
         );
@@ -88,7 +88,7 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
   }, []);
 
   return (
-    <Col flex={'600px'} className={styles.taskCol}>
+    <Col flex={'650px'} className={styles.taskCol}>
       <Row
         style={{ marginBottom: 12 }}
         align={'middle'}

@@ -92,6 +92,7 @@ export default () => {
     async (submitIds: number[], token: string) => {
       await doneStoryTask(taskId, submitIds, token);
       refreshStoryTasks();
+      await refreshAsyncStoryTask();
     },
     {
       manual: true,
