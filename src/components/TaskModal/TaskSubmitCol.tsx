@@ -96,9 +96,22 @@ export default function TaskSubmitCol({
             </Tooltip>
           )
         }
+        style={{
+          height: storyTask?.status === 'Todo' ? 460 : '100%',
+        }}
       >
         <Tabs.TabPane tab={formatMessage({ id: 'task-modal.all' })} key={'all'}>
-          <MacScrollbar ref={allListRef} className={styles.submitList}>
+          <MacScrollbar
+            ref={allListRef}
+            className={styles.submitList}
+            style={
+              storyTask?.status === 'Todo'
+                ? {
+                    height: 406,
+                  }
+                : {}
+            }
+          >
             {storyTask && storyTask.submits?.length > 0 ? (
               storyTask.submits.map((submit: API.StoryTaskSubmit) => (
                 <TaskSubmitCard

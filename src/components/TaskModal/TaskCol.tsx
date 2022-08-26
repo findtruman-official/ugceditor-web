@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
 import { Button, Col, Input, message, Modal, Row, Space, Tooltip } from 'antd';
+import { MacScrollbar } from 'mac-scrollbar';
 import { useCallback, useEffect, useState } from 'react';
 import styles from './TaskModal.less';
 
@@ -207,12 +208,12 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
             />
           </div>
         ) : (
-          <div className={styles.desc}>
+          <MacScrollbar className={styles.desc}>
             <MDEditor.Markdown
               source={storyTask?.description}
               linkTarget={'_blank'}
             />
-          </div>
+          </MacScrollbar>
         )}
       </div>
     </Col>
