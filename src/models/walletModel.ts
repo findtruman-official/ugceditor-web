@@ -168,7 +168,7 @@ export default () => {
     async (walletType: WalletType) => {
       const _wallet = wallets.find((w) => w.walletType === walletType);
       if (_wallet) {
-        if (_wallet.provider.isAvailable()) {
+        if (await _wallet.provider.isAvailable()) {
           try {
             setConnecting(true);
             await _wallet.provider.connect();

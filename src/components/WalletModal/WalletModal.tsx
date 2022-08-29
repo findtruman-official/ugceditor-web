@@ -6,6 +6,7 @@ import {
   DownloadOutlined,
   LinkOutlined,
 } from '@ant-design/icons';
+import { useRequest } from 'ahooks';
 import { Col, Divider, Modal, Row, Spin, Tooltip } from 'antd';
 import { useModel } from 'umi';
 import styles from './WalletModal.less';
@@ -24,6 +25,25 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
     connecting,
     disconnect,
   } = useModel('walletModel');
+
+  const { data: walletAvailable } = useRequest(
+    async () => {
+      if (!chainWallets) return [];
+      const available: boolean[][] = [];
+      for (const chains of chainWallets) {
+        const _available = [];
+        for (const wallet of chains.wallets) {
+          _available.push(await wallet.provider.isAvailable());
+        }
+        available.push(_available);
+      }
+      return available;
+    },
+    {
+      refreshDeps: [chainWallets],
+    },
+  );
+
   return (
     <Modal
       closable={false}
@@ -65,12 +85,12 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
           })}
         </Row>
 
-        {chainWallets.map(({ icon, wallets, chainType }) => (
+        {chainWallets.map(({ icon, wallets, chainType }, chainIdx) => (
           <div className={styles.chain} key={chainType}>
             <Divider>
               <img className={styles.chainIcon} src={icon} />
             </Divider>
-            {wallets.map((wallet) => (
+            {wallets.map((wallet, walletIdx) => (
               <div
                 key={wallet.name}
                 className={styles.walletCard}
@@ -80,7 +100,7 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
               >
                 <img className={styles.walletIcon} src={wallet.icon} />
                 <div className={styles.walletName}>{wallet.name}</div>
-                {!wallet.provider.isAvailable() ? (
+                {!walletAvailable?.[chainIdx]?.[walletIdx] ? (
                   <DownloadOutlined className={styles.rightIcon} />
                 ) : connectedWallets[chainType]?.walletType ===
                   wallet.walletType ? (

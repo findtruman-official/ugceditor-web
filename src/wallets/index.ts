@@ -60,7 +60,7 @@ export interface WalletProvider {
    * 钱包插件一般会在 window 下注入自己的全局API，通过判断 window.{插件API名} 是否为空判断插件的安装
    * @return 插件是否安装
    */
-  isAvailable(): boolean;
+  isAvailable(): boolean | Promise<boolean>;
 
   /**
    * 返回钱包插件的API
