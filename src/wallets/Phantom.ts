@@ -414,4 +414,33 @@ export class PhantomWalletProvider implements WalletProvider {
       return nfts.filter((e: any) => e.name === name).length;
     }
   }
+
+  async createTask(
+    storyId: string,
+    nftAddress: string,
+    cid: string,
+    rewards: number[],
+  ) {
+    return Promise.resolve(undefined);
+  }
+
+  async updateTask(storyId: string, taskId: string, cid: string) {
+    return Promise.resolve(undefined);
+  }
+
+  async cancelTask(storyId: string, taskId: number) {
+    return Promise.resolve(undefined);
+  }
+
+  async markTaskDone(storyId: string, taskId: number, submitId: number) {
+    return Promise.resolve(undefined);
+  }
+
+  async submitTaskResult(storyId: string, taskId: number, cid: string) {
+    return Promise.resolve(undefined);
+  }
+
+  async withdrawTaskResult(storyId: string, taskId: number, submitId: number) {
+    return Promise.resolve(undefined);
+  }
 }

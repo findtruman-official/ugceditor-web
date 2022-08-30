@@ -193,4 +193,65 @@ export interface WalletProvider {
     nftName: string,
     storyId: string,
   ): Promise<number>;
+
+  /**
+   * 创建任务
+   * @param storyId
+   * @param cid
+   * @param nftAddress
+   * @param rewards
+   */
+  createTask(
+    storyId: string,
+    cid: string,
+    nftAddress: string,
+    rewards: number[],
+  ): Promise<void>;
+
+  /**
+   * 创建任务
+   * @param storyId
+   * @param taskId
+   * @param cid
+   */
+  updateTask(storyId: string, taskId: string, cid: string): Promise<void>;
+
+  /**
+   * 取消任务
+   * @param storyId
+   * @param taskId
+   */
+  cancelTask(storyId: string, taskId: number): Promise<void>;
+
+  /**
+   * 提交作品
+   * @param storyId
+   * @param taskId
+   * @param cid
+   */
+  submitTaskResult(storyId: string, taskId: number, cid: string): Promise<void>;
+
+  /**
+   * 取消提交作品
+   * @param storyId
+   * @param taskId
+   * @param submitId
+   */
+  withdrawTaskResult(
+    storyId: string,
+    taskId: number,
+    submitId: number,
+  ): Promise<void>;
+
+  /**
+   * 完成任务
+   * @param storyId
+   * @param taskId
+   * @param submitId
+   */
+  markTaskDone(
+    storyId: string,
+    taskId: number,
+    submitId: number,
+  ): Promise<void>;
 }

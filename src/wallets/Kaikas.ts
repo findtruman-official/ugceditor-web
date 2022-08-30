@@ -244,4 +244,102 @@ export class KaikasWalletProvider implements WalletProvider {
       gas: await method.estimateGas({ from: author }),
     });
   }
+
+  async createTask(
+    storyId: string,
+    cid: string,
+    nftAddress: string,
+    rewards: number[],
+  ) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const account = this.provider.selectedAddress;
+
+    const nftSaleContract = new this.caver!.klay.Contract(
+      NFT_ABI as any,
+      nftAddress,
+    );
+    const isApprovedForAll = nftSaleContract.methods
+      .isApprovedForAll(account, this.factoryAddress)
+      .call();
+    console.log('isApprovedForAll', isApprovedForAll);
+    if (!isApprovedForAll) {
+      const approveMethod = nftSaleContract.methods.setApprovalForAll(
+        this.factoryAddress,
+        true,
+      );
+      await approveMethod.send({
+        from: account,
+        gas: await approveMethod.estimateGas({ from: account }),
+      });
+    }
+
+    const method = this.contract.methods.createTask(
+      storyId,
+      cid,
+      nftAddress,
+      rewards,
+    );
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
+  }
+
+  async updateTask(storyId: string, taskId: string, cid: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const account = this.provider.selectedAddress;
+    const method = this.contract.methods.updateTask(storyId, taskId, cid);
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
+  }
+
+  async cancelTask(storyId: string, taskId: number) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const account = this.provider.selectedAddress;
+    const method = this.contract.methods.cancelTask(storyId, taskId);
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
+  }
+
+  async markTaskDone(storyId: string, taskId: number, submitId: number) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const account = this.provider.selectedAddress;
+    const method = this.contract.methods.markTaskDone(
+      storyId,
+      taskId,
+      submitId,
+    );
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
+  }
+
+  async submitTaskResult(storyId: string, taskId: number, cid: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const account = this.provider.selectedAddress;
+    const method = this.contract.methods.submitTaskResult(storyId, taskId, cid);
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
+  }
+
+  async withdrawTaskResult(storyId: string, taskId: number, submitId: number) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const account = this.provider.selectedAddress;
+    const method = this.contract.methods.withdrawTaskResult(
+      storyId,
+      taskId,
+      submitId,
+    );
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
+  }
 }

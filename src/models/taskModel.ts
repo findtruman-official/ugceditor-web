@@ -14,12 +14,22 @@ import { useMemo, useState } from 'react';
 
 // @ts-ignore
 export default () => {
+  const { chains } = useModel('walletModel', (model) => ({
+    chains: model.chains,
+  }));
   const { chainType, storyId } = useModel('storyModel', (model) => ({
     chainType: model.chainType,
     storyId: model.storyId,
   }));
 
   const [taskId, setTaskId] = useState(0);
+
+  const taskModule = useMemo(() => {
+    if (!chainType || !chains || !chains.length) return 'basic';
+    return (
+      chains.find((e: API.Chain) => e.type === chainType)?.taskModule || 'basic'
+    );
+  }, [chains, chainType]);
 
   const {
     data: storyTasks,
@@ -159,5 +169,6 @@ export default () => {
     loadingCreateTaskSubmit,
     runRemoveTaskSubmit,
     loadingRemoveTaskSubmit,
+    taskModule,
   };
 };

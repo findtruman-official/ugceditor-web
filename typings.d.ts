@@ -13,6 +13,7 @@ declare global {
       type: string;
       factoryAddress: string;
       findsAddress: string;
+      taskModule: TaskModuleType;
     };
 
     type Jwt = {
@@ -143,6 +144,8 @@ declare global {
     type StoryTaskStatus = 'Cancelled' | 'Done' | 'Todo';
 
     type StoryTaskSubmitStatus = 'Approved' | 'Pending' | 'Rejected';
+
+    type TaskModuleType = 'basic' | 'chain';
 
     // enum StoryTaskStatus {
     //   Cancelled = 'Cancelled',
