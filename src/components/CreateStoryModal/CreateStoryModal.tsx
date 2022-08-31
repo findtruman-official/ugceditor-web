@@ -125,7 +125,11 @@ export default function CreateStoryModal({
 
         if (update) {
           await wallet.provider.updateStory(id!!, cid);
-          addUpdateStoryPolling(id!!, cid, chain);
+          addUpdateStoryPolling({
+            id: id!!,
+            contentHash: cid,
+            chainType: chain,
+          });
         } else {
           const newStoryId = await wallet.provider.publishStory(cid);
           const chainName = chains.find(
@@ -138,6 +142,8 @@ export default function CreateStoryModal({
             description: values.description,
             chain: chainName,
             chainType: chain,
+            nftPublished: false,
+            loading: true,
           });
         }
 

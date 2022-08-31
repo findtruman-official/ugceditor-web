@@ -1,3 +1,4 @@
+import usePollingUntil from '@/hooks/usePollingUntil';
 import {
   getNftInfo,
   getStories,
@@ -190,81 +191,48 @@ export default () => {
     { refreshDeps: [accounts] },
   );
 
-  const [createStoryPollingList, setCreateStoryPollingList] = useState<
-    {
-      id: string;
-      cover: string;
-      name: string;
-      description: string;
-      nftPublished: boolean;
-      chain: string;
-      chainType: string;
-      loading: boolean;
-    }[]
-  >([]);
-
-  const addCreateStoryPolling = useCallback(
-    ({
-      id,
-      cover,
-      name,
-      description,
-      chain,
-      chainType,
-    }: {
-      id: string;
-      cover: string;
-      name: string;
-      description: string;
-      chain: string;
-      chainType: ChainType;
-    }) => {
-      const list = [...createStoryPollingList];
-      list.push({
-        id,
-        cover,
-        chain,
-        name,
-        description,
-        nftPublished: false,
-        chainType,
-        loading: true,
-      });
-      setCreateStoryPollingList(list);
+  const {
+    pollingList: createStoryPollingList,
+    addPolling: addCreateStoryPolling,
+  } = usePollingUntil<{
+    id: string;
+    cover: string;
+    name: string;
+    description: string;
+    nftPublished: boolean;
+    chain: string;
+    chainType: string;
+    loading: boolean;
+  }>({
+    condition: async (item) => {
+      await syncStoryContentHash(item.chainType, item.id);
+      const { story } = await getStory(item.chainType, item.id);
+      return !!story;
     },
-    [createStoryPollingList],
-  );
+    onChange: async () => {
+      refreshMyStories();
+      refreshLatestStories();
+    },
+  });
 
-  const {} = useRequest(
-    async () => {
-      if (!createStoryPollingList.length) return;
-      const list = [...createStoryPollingList];
-      let changed = false;
-      for (let i = list.length - 1; i >= 0; i--) {
-        await syncStoryContentHash(list[i].chainType, list[i].id);
-        const { story } = await getStory(list[i].chainType, list[i].id);
-        if (story) {
-          list.splice(i, 1);
-          changed = true;
+  const { pollingList: nftSalePollingList, addPolling: addNftSalePolling } =
+    usePollingUntil<{
+      id: string;
+      chainType: ChainType;
+    }>({
+      condition: async (item) => {
+        await syncStoryNftSale(item.chainType, item.id);
+        const { story } = await getNftInfo(item.chainType, item.id);
+        if (
+          !!story &&
+          item.id === currentStory?.chainStoryId &&
+          item.chainType === currentStory.chainInfo.type
+        ) {
+          refreshCurrentStory();
         }
-      }
-      setCreateStoryPollingList(list);
-      if (changed) {
-        refreshMyStories();
-        refreshLatestStories();
-      }
-    },
-    {
-      pollingInterval: 5000,
-    },
-  );
-
-  const [nftSalePollingList, setNftSalePollingList] = useState<
-    {
-      id: string;
-      chainType: ChainType;
-    }[]
-  >([]);
+        return !!story.nft;
+      },
+    });
 
   const nftSalePolling = useMemo(() => {
     if (!currentStory) return false;
@@ -275,42 +243,28 @@ export default () => {
     );
   }, [nftSalePollingList, currentStory]);
 
-  const addNftSalePolling = useCallback(
-    (id: string, chainType: ChainType) => {
-      const list = [...nftSalePollingList];
-      list.push({ id, chainType });
-      setNftSalePollingList(list);
-    },
-    [nftSalePollingList],
-  );
-
-  const {} = useRequest(
-    async () => {
-      if (!nftSalePollingList.length) return;
-      const list = [...nftSalePollingList];
-      for (let i = list.length - 1; i >= 0; i--) {
-        await syncStoryNftSale(list[i].chainType, list[i].id);
-        const { story } = await getNftInfo(list[i].chainType, list[i].id);
-        if (story.nft) {
-          if (
-            list[i].id === currentStory?.chainStoryId &&
-            list[i].chainType === currentStory.chainInfo.type
-          ) {
-            refreshCurrentStory();
-          }
-          list.splice(i, 1);
-        }
+  const {
+    pollingList: updateStoryPollingList,
+    addPolling: _addUpdateStoryPolling,
+  } = usePollingUntil<{
+    id: string;
+    contentHash: string;
+    chainType: ChainType;
+  }>({
+    condition: async (item) => {
+      await syncStoryContentHash(item.chainType, item.id);
+      const { story } = await getStory(item.chainType, item.id);
+      const meet = story.contentHash === item.contentHash;
+      if (
+        meet &&
+        story.chainStoryId === currentStory?.chainStoryId &&
+        story.chainInfo.type === currentStory.chainInfo.type
+      ) {
+        refreshCurrentStory();
       }
-      setNftSalePollingList(list);
+      return meet;
     },
-    {
-      pollingInterval: 5000,
-    },
-  );
-
-  const [updateStoryPollingList, setUpdateStoryPollingList] = useState<
-    { id: string; contentHash: string; chainType: ChainType }[]
-  >([]);
+  });
 
   const updateStoryPolling = useMemo(() => {
     if (!currentStory) return false;
@@ -322,48 +276,14 @@ export default () => {
   }, [updateStoryPollingList, currentStory]);
 
   const addUpdateStoryPolling = useCallback(
-    (id: string, contentHash: string, chainType: ChainType) => {
-      const list = [...updateStoryPollingList];
-      const item = {
-        id,
-        contentHash,
-        chainType,
-      };
-      const idx = list.findIndex(
-        (e) => e.id === id && e.chainType === chainType,
-      );
-      if (idx !== -1) {
-        list[idx] = item;
-      } else {
-        list.push(item);
-      }
-      setUpdateStoryPollingList(list);
+    (item: { id: string; contentHash: string; chainType: ChainType }) => {
+      _addUpdateStoryPolling(item, (list) => {
+        return list.findIndex(
+          (e) => e.id === item.id && e.chainType === item.chainType,
+        );
+      });
     },
-    [updateStoryPollingList],
-  );
-
-  const {} = useRequest(
-    async () => {
-      if (!updateStoryPollingList.length) return;
-      const list = [...updateStoryPollingList];
-      for (let i = list.length - 1; i >= 0; i--) {
-        await syncStoryContentHash(list[i].chainType, list[i].id);
-        const { story } = await getStory(list[i].chainType, list[i].id);
-        if (story.contentHash === list[i].contentHash) {
-          list.splice(i, 1);
-          if (
-            story.chainStoryId === currentStory?.chainStoryId &&
-            story.chainInfo.type === currentStory.chainInfo.type
-          ) {
-            refreshCurrentStory();
-          }
-        }
-      }
-      setUpdateStoryPollingList(list);
-    },
-    {
-      pollingInterval: 5000,
-    },
+    [_addUpdateStoryPolling],
   );
 
   return {

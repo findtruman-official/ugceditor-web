@@ -146,7 +146,11 @@ const Story: React.FC = () => {
         );
         await wallet.provider.updateStory(storyId, cid);
 
-        addUpdateStoryPolling(storyId, cid, chain);
+        addUpdateStoryPolling({
+          id: storyId,
+          contentHash: cid,
+          chainType: chain,
+        });
 
         message.success(
           formatMessage({
