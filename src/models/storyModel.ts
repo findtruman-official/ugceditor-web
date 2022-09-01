@@ -13,9 +13,9 @@ import { useModel } from 'umi';
 
 // @ts-ignore
 export default () => {
-  const { accounts, chains } = useModel('walletModel', (state) => ({
+  const { accounts, connectedWallets } = useModel('walletModel', (state) => ({
     accounts: state.accounts,
-    chains: state.chains,
+    connectedWallets: state.connectedWallets,
   }));
 
   const [chainType, setChainType] = useState<ChainType>();
@@ -286,6 +286,99 @@ export default () => {
     [_addUpdateStoryPolling],
   );
 
+  const {
+    data: balanceOfStoryNft,
+    loading: gettingBalanceOfStoryNft,
+    refresh: refreshBalanceOfStoryNft,
+  } = useRequest(
+    async () => {
+      if (
+        !chainType ||
+        !connectedWallets[chainType] ||
+        !accounts[chainType] ||
+        !currentStory?.nft
+      )
+        return 0;
+
+      return await connectedWallets[chainType].provider.balanceOfStoryNft(
+        accounts[chainType],
+        currentStory.nft.name,
+        currentStory.chainStoryId,
+      );
+    },
+    { refreshDeps: [accounts, currentStory, chainType, connectedWallets] },
+  );
+
+  const { data: reservedNftRest, refreshAsync: refreshReservedNftRest } =
+    useRequest(
+      async () => {
+        if (
+          !isAuthor ||
+          !chainType ||
+          !storyId ||
+          !connectedWallets[chainType]
+        ) {
+          return true;
+        }
+        return (await connectedWallets[
+          chainType
+        ].provider.authorReservedNftRest(storyId)) as number;
+      },
+      {
+        refreshDeps: [isAuthor, storyId, chainType, connectedWallets],
+      },
+    );
+
+  const {
+    data: nfts,
+    loading: gettingNfts,
+    refreshAsync: refreshNfts,
+  } = useRequest(
+    async () => {
+      if (
+        !isAuthor ||
+        !chainType ||
+        !storyId ||
+        !currentStory?.nft ||
+        !connectedWallets[chainType] ||
+        !accounts[chainType]
+      ) {
+        return [];
+      }
+      return await connectedWallets[chainType].provider.tokenIdOfStoryNft(
+        accounts[chainType],
+        currentStory.nft.name,
+        storyId,
+      );
+    },
+    {
+      refreshDeps: [
+        isAuthor,
+        storyId,
+        chainType,
+        connectedWallets,
+        currentStory,
+        accounts,
+      ],
+    },
+  );
+
+  const { runAsync: claimReservedNft, loading: claimingReservedNft } =
+    useRequest(
+      async () => {
+        if (!isAuthor || !chainType || !storyId || !connectedWallets[chainType])
+          return;
+
+        await connectedWallets[chainType].provider.claimAuthorReservedNft(
+          storyId,
+        );
+        refreshBalanceOfStoryNft();
+        refreshNfts();
+        await refreshReservedNftRest();
+      },
+      { manual: true },
+    );
+
   return {
     storyId,
     chainType,
@@ -321,5 +414,15 @@ export default () => {
     addNftSalePolling,
     updateStoryPolling,
     addUpdateStoryPolling,
+    balanceOfStoryNft,
+    gettingBalanceOfStoryNft,
+    refreshBalanceOfStoryNft,
+    reservedNftRest,
+    refreshReservedNftRest,
+    nfts,
+    gettingNfts,
+    refreshNfts,
+    claimReservedNft,
+    claimingReservedNft,
   };
 };

@@ -12,6 +12,8 @@ type Chain {
     findsAddress: String!
     "chain readable name"
     name: String!
+    "task module type."
+    taskModule: TaskModuleType!
     "chain identifier"
     type: String!
 }
@@ -60,6 +62,8 @@ type NftSale {
 
 type Query {
     chain(chain: String!): Chain
+    chainTask(chain: String!, chainStoryId: String!, chainTaskId: String!): StoryChainTask
+    chainTasks(chain: String!, chainStoryId: String!): [StoryChainTask!]!
     chains: [Chain!]!
     chapter(id: Int!): StoryChapter!
     "return user info if x-token is valid."
@@ -80,6 +84,35 @@ type Story {
     info: StoryInfo
     nft: NftSale
     onChainAddr: String!
+    updateTime: DateTime!
+}
+
+type StoryChainTask {
+    chain: String!
+    chainStoryId: String!
+    chainTaskId: String!
+    cid: String!
+    createTime: DateTime!
+    creator: String!
+    description: String!
+    nft: String!
+    rewardNfts: [String!]!
+    status: StoryChainTaskStatus!
+    submits: [StoryChainTaskSubmit!]!
+    title: String!
+    updateTime: DateTime!
+}
+
+type StoryChainTaskSubmit {
+    chain: String!
+    chainStoryId: String!
+    chainSubmitId: String!
+    chainTaskId: String!
+    cid: String!
+    content: String!
+    createTime: DateTime!
+    creator: String!
+    status: StoryChainTaskSubmitStatus!
     updateTime: DateTime!
 }
 
@@ -129,6 +162,19 @@ type User {
     chain: String!
 }
 
+enum StoryChainTaskStatus {
+    Cancelled
+    Done
+    Todo
+}
+
+enum StoryChainTaskSubmitStatus {
+    APPROVED
+    PENDING
+    REJECTED
+    WITHDRAWED
+}
+
 enum StorySort {
     Hotest
     Latest
@@ -144,6 +190,11 @@ enum StoryTaskSubmitStatus {
     Approved
     Pending
     Rejected
+}
+
+enum TaskModuleType {
+    Basic
+    Chain
 }
 
 "A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format."

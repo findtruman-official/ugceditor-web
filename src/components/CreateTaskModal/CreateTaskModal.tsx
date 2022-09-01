@@ -1,36 +1,54 @@
 import MDEditorWithPreview from '@/components/MDEditorWithPreview/MDEditorWithPreview';
-import { ChainType } from '@/wallets';
 import { useIntl } from '@@/exports';
-import { Button, Input, message, Modal } from 'antd';
+import { Button, Input, message, Modal, Select } from 'antd';
 import { useState } from 'react';
 import { useModel } from 'umi';
+import styles from './CreateTaskModal.less';
 
 interface CreateTaskModalProps {
-  chainType: ChainType;
   visible: boolean;
   onClose: () => void;
 }
 
 export default function CreateTaskModal({
-  chainType,
   visible,
   onClose,
 }: CreateTaskModalProps) {
   const { formatMessage } = useIntl();
-  const { runCreateStoryTask, loadingCreateStoryTask } = useModel(
+  const { reservedNftRest } = useModel('storyModel', (model) => ({
+    reservedNftRest: model.reservedNftRest,
+  }));
+  const { runCreateStoryTask, loadingCreateStoryTask, taskModule } = useModel(
     'taskModel',
     (model) => ({
       runCreateStoryTask: model.runCreateStoryTask,
+      taskModule: model.taskModule,
     }),
   );
   const { getToken } = useModel('walletModel', (model) => ({
     getToken: model.getToken,
   }));
-
+  const {
+    currentStory,
+    claimReservedNft,
+    claimingReservedNft,
+    balanceOfStoryNft,
+    nfts,
+    gettingNfts,
+  } = useModel('storyModel', (model) => ({
+    currentStory: model.currentStory,
+    claimReservedNft: model.claimReservedNft,
+    claimingReservedNft: model.claimingReservedNft,
+    balanceOfStoryNft: model.balanceOfStoryNft,
+    nfts: model.nfts,
+    gettingNfts: model.gettingNfts,
+  }));
+  const chainType = currentStory?.chainInfo.type;
   const token = getToken(chainType);
 
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
+  const [rewards, setRewards] = useState<number[]>([]);
 
   return (
     <Modal
@@ -43,11 +61,54 @@ export default function CreateTaskModal({
       data-color-mode="dark"
       width={720}
     >
+      <Select
+        mode="multiple"
+        allowClear
+        style={{ width: '100%', marginTop: 24, padding: 0 }}
+        size={'large'}
+        bordered={false}
+        placeholder={formatMessage({ id: 'create-task.reward.placeholder' })}
+        loading={gettingNfts}
+        options={nfts?.map((nft: number) => ({
+          value: nft,
+          label: `# ${nft}`,
+        }))}
+        value={rewards}
+        notFoundContent={
+          <div className={styles.noNftTip}>
+            {!!reservedNftRest ? (
+              <>
+                <div style={{ marginBottom: 12 }}>
+                  {formatMessage({ id: 'create-task.nft-not-claimed' })}
+                </div>
+                <Button
+                  type={'text'}
+                  onClick={async () => {
+                    try {
+                      await claimReservedNft();
+                      message.success(formatMessage({ id: 'story.claimed' }));
+                    } catch (e) {
+                      console.log(e);
+                      message.error(formatMessage({ id: 'mint-failed' }));
+                    }
+                  }}
+                  loading={claimingReservedNft}
+                >
+                  {formatMessage({ id: 'create-task.claim-now' })}
+                </Button>
+              </>
+            ) : balanceOfStoryNft === 0 ? (
+              <div>{formatMessage({ id: 'create-task.reward.empty' })}</div>
+            ) : undefined}
+          </div>
+        }
+        onChange={setRewards}
+      />
       <Input
         maxLength={30}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        style={{ fontSize: 24, padding: 0, margin: '12px 0' }}
+        style={{ fontSize: 24, padding: 0, margin: '24px 0' }}
         bordered={false}
         placeholder={formatMessage({ id: 'create-task.task-name.placeholder' })}
       />
@@ -57,13 +118,14 @@ export default function CreateTaskModal({
         placeholder={formatMessage({
           id: 'create-task.task-desc.placeholder',
         })}
+        style={{ fontSize: 16 }}
       />
       <Button
         size={'large'}
         type={'primary'}
         block={true}
+        disabled={!title || !desc}
         onClick={() => {
-          if (!title || !desc) return;
           try {
             runCreateStoryTask(title, desc, token);
             onClose();

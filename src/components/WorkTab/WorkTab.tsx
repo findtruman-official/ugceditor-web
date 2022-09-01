@@ -17,7 +17,9 @@ import 'mac-scrollbar/dist/mac-scrollbar.css';
 import { useContext, useEffect, useState } from 'react';
 import styles from './WorkTab.less';
 
-export default function WorkTab() {
+interface WorkTabProps {}
+
+export default function WorkTab({}: WorkTabProps) {
   const { confirmLogin, openWalletModal } =
     useContext<WalletContextType>(WalletContext);
   const { formatMessage } = useIntl();
@@ -172,7 +174,6 @@ export default function WorkTab() {
         </Col>
       </Row>
       <CreateTaskModal
-        chainType={chainType}
         visible={createModalVisible}
         onClose={() => setCreateModalVisible(false)}
       />

@@ -189,7 +189,7 @@ export interface WalletProvider {
    * @return NFT持有量
    */
   balanceOfStoryNft(
-    account: number,
+    account: string,
     nftName: string,
     storyId: string,
   ): Promise<number>;
@@ -254,4 +254,28 @@ export interface WalletProvider {
     taskId: number,
     submitId: number,
   ): Promise<void>;
+
+  /**
+   * 作者保留的Nft还有多少未铸造
+   * @param storyId
+   */
+  authorReservedNftRest(storyId: string): Promise<number>;
+
+  /**
+   * 批量铸造作者保留Nft
+   * 数量应为 authorReserved - authorClaimed
+   */
+  claimAuthorReservedNft(storyId: string): Promise<void>;
+
+  /**
+   * 查询作者持有的故事NFT的tokenId
+   * @param account
+   * @param nftName
+   * @param storyId
+   */
+  tokenIdOfStoryNft(
+    account: string,
+    nftName: string,
+    storyId: string,
+  ): Promise<number[]>;
 }

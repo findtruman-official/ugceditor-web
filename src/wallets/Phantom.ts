@@ -400,7 +400,7 @@ export class PhantomWalletProvider implements WalletProvider {
       .rpc({});
   }
 
-  async balanceOfStoryNft(account: number, nftName: string, storyId: string) {
+  async balanceOfStoryNft(account: string, nftName: string, storyId: string) {
     const metaplex = Metaplex.make(this.connection).use(
       keypairIdentity(await this.provider.connect()),
     );
@@ -442,5 +442,15 @@ export class PhantomWalletProvider implements WalletProvider {
 
   async withdrawTaskResult(storyId: string, taskId: number, submitId: number) {
     return Promise.resolve(undefined);
+  }
+
+  async authorReservedNftRest(storyId: string) {
+    return 0;
+  }
+
+  async claimAuthorReservedNft(storyId: string) {}
+
+  async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
+    return [];
   }
 }

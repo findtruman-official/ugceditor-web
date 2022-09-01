@@ -24,6 +24,8 @@ export default {
   'story.publish-story-nft': 'Publish Story NFT',
   'story.publish': 'Publish',
   'story.claim': 'Claim',
+  'story.claim-reserved': 'Mint Reserved',
+  'story.claim-reserved-nft': 'Mint {count} NFT(s) reserved by the author',
   'story.sold-out': 'Sold Out',
   'story.amount': 'Amount',
   'story.total': 'Total',
@@ -95,6 +97,12 @@ export default {
   'confirm-login.confirm': 'Confirm',
   'confirm-login.reject': 'Reject',
   'create-task.create': 'Create',
+  'create-task.nft-not-claimed':
+    'NFTs reserved by the author have not been claimed yet.',
+  'create-task.claim-now': 'CLAIM NOW',
+  'create-task.reward.placeholder':
+    '[OPTIONAL] Select story NFT(s) you hold as a reward.',
+  'create-task.reward.empty': 'No story NFT is available.',
   'create-task.task-name.placeholder': 'Task name here...',
   'create-task.task-desc.placeholder':
     'Add more details about your task here. Markdown syntax elements are available.',

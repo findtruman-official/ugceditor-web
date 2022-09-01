@@ -11,6 +11,7 @@ import {
 import { BN } from '@project-serum/anchor';
 import { message } from 'antd';
 import Caver, { Contract } from 'caver-js';
+import * as _ from 'lodash';
 
 export class KaikasWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Kaikas;
@@ -107,15 +108,16 @@ export class KaikasWalletProvider implements WalletProvider {
     return await this.caver.klay.sign(message, account);
   }
 
-  async balanceOfStoryNft(account: number, nftName: string, storyId: string) {
+  async getNftSaleContract(storyId: string) {
     const { nft: nftAddress } = await this.contract!.methods.sales(
       storyId,
     ).call();
-    const nftSaleContract = new this.caver!.klay.Contract(
-      NFT_ABI as any,
-      nftAddress,
-    );
-    return await nftSaleContract.methods.balanceOf(account).call();
+    return new this.caver!.klay.Contract(NFT_ABI as any, nftAddress);
+  }
+
+  async balanceOfStoryNft(account: string, nftName: string, storyId: string) {
+    const nftSaleContract = await this.getNftSaleContract(storyId);
+    return parseInt(await nftSaleContract.methods.balanceOf(account).call());
   }
 
   async getMintDecimals() {
@@ -254,14 +256,10 @@ export class KaikasWalletProvider implements WalletProvider {
     if (!this.contract) throw new Error('Contract Unavailable');
     const account = this.provider.selectedAddress;
 
-    const nftSaleContract = new this.caver!.klay.Contract(
-      NFT_ABI as any,
-      nftAddress,
-    );
+    const nftSaleContract = await this.getNftSaleContract(storyId);
     const isApprovedForAll = nftSaleContract.methods
       .isApprovedForAll(account, this.factoryAddress)
       .call();
-    console.log('isApprovedForAll', isApprovedForAll);
     if (!isApprovedForAll) {
       const approveMethod = nftSaleContract.methods.setApprovalForAll(
         this.factoryAddress,
@@ -341,5 +339,41 @@ export class KaikasWalletProvider implements WalletProvider {
       from: account,
       gas: await method.estimateGas({ from: account }),
     });
+  }
+
+  async authorReservedNftRest(storyId: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const { authorReserved, authorClaimed } = await this.contract.methods
+      .sales(storyId)
+      .call();
+    return authorReserved - authorClaimed;
+  }
+
+  async claimAuthorReservedNft(storyId: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+
+    const rest = await this.authorReservedNftRest(storyId);
+    if (!rest) return;
+
+    const account = this.provider.selectedAddress;
+    const method = this.contract.methods.claimAuthorReservedNft(storyId, rest);
+    await method.send({
+      from: account,
+      gas: await method.estimateGas({ from: account }),
+    });
+  }
+
+  async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    const nftSaleContract = await this.getNftSaleContract(storyId);
+    const balance = await nftSaleContract.methods.balanceOf(account).call();
+    const indexList = _.range(balance);
+    const token = [];
+    for (const idx of indexList) {
+      token.push(
+        await nftSaleContract.methods.tokenOfOwnerByIndex(account, idx).call(),
+      );
+    }
+    return token;
   }
 }

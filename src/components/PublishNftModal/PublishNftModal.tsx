@@ -31,11 +31,12 @@ export default function PublishNftModal({
     getToken: model.getToken,
     connectedWallets: model.connectedWallets,
   }));
-  const { currentStory, addNftSalePolling } = useModel(
+  const { currentStory, addNftSalePolling, refreshReservedNftRest } = useModel(
     'storyModel',
     (model) => ({
       currentStory: model.currentStory,
       addNftSalePolling: model.addNftSalePolling,
+      refreshReservedNftRest: model.refreshReservedNftRest,
     }),
   );
 
@@ -73,6 +74,7 @@ export default function PublishNftModal({
 
         message.success(formatMessage({ id: 'publish-nft-modal.published' }));
 
+        refreshReservedNftRest();
         addNftSalePolling({
           id: currentStory.chainStoryId,
           chainType: chain,
@@ -195,6 +197,7 @@ export default function PublishNftModal({
           <InputNumber
             style={{ width: '100%' }}
             min={1}
+            step={1}
             max={10000000000}
             formatter={(value) =>
               `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -218,7 +221,8 @@ export default function PublishNftModal({
         >
           <InputNumber
             style={{ width: '100%' }}
-            min={1}
+            min={0}
+            step={1}
             formatter={(value) =>
               `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             }

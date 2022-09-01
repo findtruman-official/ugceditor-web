@@ -16,27 +16,39 @@ interface NftCardProps {
   onPublish: () => void;
 }
 
-export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
+const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
   const { formatMessage } = useIntl();
   const { openWalletModal } = useContext<WalletContextType>(WalletContext);
-  const { connectedWallets, chains, accounts } = useModel(
-    'walletModel',
-    (model) => ({
-      connectedWallets: model.connectedWallets,
-      chains: model.chains,
-      accounts: model.accounts,
-    }),
-  );
-  const { currentStory, isAuthor, isChainConnected, refreshCurrentStory } =
-    useModel('storyModel', (model) => ({
-      currentStory: model.currentStory,
-      isAuthor: model.isAuthor,
-      isChainConnected: model.isChainConnected,
-      refreshCurrentStory: model.refreshCurrentStory,
-    }));
+  const { connectedWallets } = useModel('walletModel', (model) => ({
+    connectedWallets: model.connectedWallets,
+  }));
+  const {
+    currentStory,
+    isAuthor,
+    isChainConnected,
+    refreshCurrentStory,
+    balanceOfStoryNft,
+    gettingBalanceOfStoryNft,
+    refreshBalanceOfStoryNft,
+    reservedNftRest,
+    claimReservedNft,
+    claimingReservedNft,
+    refreshNfts,
+  } = useModel('storyModel', (model) => ({
+    currentStory: model.currentStory,
+    isAuthor: model.isAuthor,
+    isChainConnected: model.isChainConnected,
+    refreshCurrentStory: model.refreshCurrentStory,
+    balanceOfStoryNft: model.balanceOfStoryNft,
+    gettingBalanceOfStoryNft: model.gettingBalanceOfStoryNft,
+    refreshBalanceOfStoryNft: model.refreshBalanceOfStoryNft,
+    reservedNftRest: model.reservedNftRest,
+    claimReservedNft: model.claimReservedNft,
+    claimingReservedNft: model.claimingReservedNft,
+    refreshNfts: model.refreshNfts,
+  }));
 
   const chain = currentStory?.chainInfo.type;
-  const account = accounts[chain];
   const wallet = connectedWallets[chain];
 
   const { data: mintDecimals } = useRequest(
@@ -50,22 +62,6 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
     },
   );
 
-  const {
-    data: balance,
-    loading: gettingBalance,
-    refresh: refreshBalance,
-  } = useRequest(
-    async () => {
-      if (!wallet || !account || !currentStory?.nft) return 0;
-
-      return await wallet.provider.balanceOfStoryNft(
-        account,
-        currentStory.nft.name,
-        currentStory.chainStoryId,
-      );
-    },
-    { refreshDeps: [account, currentStory] },
-  );
   const { loading: minting, run: runMint } = useRequest(
     async () => {
       if (!wallet) return;
@@ -87,9 +83,9 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
             });
           },
         );
-
         message.success(formatMessage({ id: 'story.claimed' }));
-        refreshBalance();
+        refreshBalanceOfStoryNft();
+        refreshNfts();
         refreshCurrentStory();
       } catch (e) {
         console.log(e);
@@ -166,29 +162,69 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
                 <div className={styles.nftMetaValue}>
                   {!isChainConnected ? (
                     '-'
-                  ) : gettingBalance ? (
+                  ) : gettingBalanceOfStoryNft ? (
                     <LoadingOutlined style={{ marginRight: 6 }} />
                   ) : (
-                    `${balance || 0} NFT(s)`
+                    `${balanceOfStoryNft || 0} NFT(s)`
                   )}
                 </div>
               </Col>
             </Row>
             {isChainConnected ? (
-              rest > 0 ? (
-                <Button
-                  type={'primary'}
-                  loading={minting}
-                  onClick={runMint}
-                  block={true}
-                >
-                  {formatMessage({ id: 'story.claim' })}
-                </Button>
-              ) : (
-                <Button type={'primary'} disabled={true} block={true}>
-                  {formatMessage({ id: 'story.sold-out' })}
-                </Button>
-              )
+              <Row style={{ width: '100%' }} wrap={false}>
+                {rest > 0 ? (
+                  <Col flex={1}>
+                    <Button
+                      type={'primary'}
+                      loading={minting}
+                      disabled={claimingReservedNft}
+                      onClick={runMint}
+                      block={true}
+                    >
+                      {formatMessage({ id: 'story.claim' })}
+                    </Button>
+                  </Col>
+                ) : (
+                  <Col flex={1}>
+                    <Button type={'primary'} disabled={true} block={true}>
+                      {formatMessage({ id: 'story.sold-out' })}
+                    </Button>
+                  </Col>
+                )}
+                {reservedNftRest > 0 && isAuthor && (
+                  <Col flex={1}>
+                    <Tooltip
+                      title={formatMessage(
+                        {
+                          id: 'story.claim-reserved-nft',
+                        },
+                        { count: reservedNftRest },
+                      )}
+                    >
+                      <Button
+                        style={{ marginLeft: 8 }}
+                        type={'primary'}
+                        disabled={minting}
+                        loading={claimingReservedNft}
+                        onClick={async () => {
+                          try {
+                            await claimReservedNft();
+                            message.success(
+                              formatMessage({ id: 'story.claimed' }),
+                            );
+                          } catch (e) {
+                            console.log(e);
+                            message.error(formatMessage({ id: 'mint-failed' }));
+                          }
+                        }}
+                        block={true}
+                      >
+                        {formatMessage({ id: 'story.claim-reserved' })}
+                      </Button>
+                    </Tooltip>
+                  </Col>
+                )}
+              </Row>
             ) : (
               <Button type={'primary'} onClick={openWalletModal} block={true}>
                 {formatMessage(
@@ -224,4 +260,6 @@ export default function NftCard({ loading, onPublish, syncing }: NftCardProps) {
       )}
     </ColorfulBorder>
   );
-}
+};
+
+export default NftCard;
