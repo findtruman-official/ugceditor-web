@@ -7,7 +7,16 @@ import TaskSubmitCard from '@/components/TaskSubmitCard/TaskSubmitCard';
 import { useIntl, useModel } from '@@/exports';
 import { FileDoneOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
-import { Button, Col, Divider, message, Modal, Tabs, Tooltip } from 'antd';
+import {
+  Button,
+  Col,
+  Divider,
+  message,
+  Modal,
+  Spin,
+  Tabs,
+  Tooltip,
+} from 'antd';
 import { MacScrollbar } from 'mac-scrollbar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './TaskModal.less';
@@ -35,11 +44,15 @@ export default function TaskSubmitCol({
     runCreateTaskSubmit,
     loadingCreateTaskSubmit,
     runRemoveTaskSubmit,
+    createSubmitPolling,
+    removeSubmitPolling,
   } = useModel('taskModel', (model) => ({
     storyTask: model.storyTask,
     runCreateTaskSubmit: model.runCreateTaskSubmit,
     loadingCreateTaskSubmit: model.loadingCreateTaskSubmit,
     runRemoveTaskSubmit: model.runRemoveTaskSubmit,
+    createSubmitPolling: model.createSubmitPolling,
+    removeSubmitPolling: model.removeSubmitPolling,
   }));
 
   const account = accounts[chainType];
@@ -106,97 +119,102 @@ export default function TaskSubmitCol({
           </RibbonContainer>
         </div>
       )}
-      <Tabs
-        size={'small'}
-        // defaultActiveKey={'all'}
-        tabBarExtraContent={
-          isAuthor &&
-          storyTask?.status === 'Todo' && (
-            <Tooltip title={formatMessage({ id: 'task-modal.review' })}>
-              <Button
-                type={'text'}
-                icon={<FileDoneOutlined />}
-                onClick={onReview}
-              />
-            </Tooltip>
-          )
-        }
-        style={{
-          height:
-            storyTask?.status === 'Todo'
-              ? 460
-              : storyTask?.status === 'Done'
-              ? 'calc(100% - 416px)'
-              : '100%',
-        }}
-      >
-        <Tabs.TabPane tab={formatMessage({ id: 'task-modal.all' })} key={'all'}>
-          <MacScrollbar
-            ref={allListRef}
-            className={styles.submitList}
-            style={
+      <Spin spinning={removeSubmitPolling || createSubmitPolling}>
+        <Tabs
+          size={'small'}
+          // defaultActiveKey={'all'}
+          tabBarExtraContent={
+            isAuthor &&
+            storyTask?.status === 'Todo' && (
+              <Tooltip title={formatMessage({ id: 'task-modal.review' })}>
+                <Button
+                  type={'text'}
+                  icon={<FileDoneOutlined />}
+                  onClick={onReview}
+                />
+              </Tooltip>
+            )
+          }
+          style={{
+            height:
               storyTask?.status === 'Todo'
-                ? {
-                    height: 406,
-                  }
-                : {}
-            }
+                ? 460
+                : storyTask?.status === 'Done'
+                ? 'calc(100% - 416px)'
+                : '100%',
+          }}
+        >
+          <Tabs.TabPane
+            tab={formatMessage({ id: 'task-modal.all' })}
+            key={'all'}
           >
-            {storyTask && storyTask.submits?.length > 0 ? (
-              storyTask.submits.map((submit: API.StoryChainTaskSubmit) => (
-                <TaskSubmitCard
-                  key={`all-task-${submit.id || submit.chainSubmitId}`}
-                  data={submit}
-                  removable={
-                    submit.account.toLowerCase() === account.toLowerCase() &&
-                    storyTask?.status === 'Todo'
-                  }
-                  onViewMore={() => {
-                    setViewMoreContent(submit.content);
-                    setViewModalVisible(true);
-                  }}
-                  onDelete={async () => {
-                    await handleDelete(submit.id || submit.chainSubmitId);
-                  }}
-                />
-              ))
-            ) : (
-              <div className={styles.emptyTip}>
-                {formatMessage({ id: 'task-modal.no-submit-tip' })}
-              </div>
-            )}
-          </MacScrollbar>
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={formatMessage({ id: 'task-modal.my' })} key={'my'}>
-          <MacScrollbar ref={myListRef} className={styles.submitList}>
-            {mySubmits.length > 0 ? (
-              mySubmits.map((submit: API.StoryChainTaskSubmit) => (
-                <TaskSubmitCard
-                  key={`my-task-${submit.id || submit.chainSubmitId}`}
-                  data={submit}
-                  removable={storyTask?.status === 'Todo'}
-                  onViewMore={() => {
-                    setViewMoreContent(submit.content);
-                    setViewModalVisible(true);
-                  }}
-                  onDelete={async () => {
-                    await handleDelete(submit.id);
-                  }}
-                />
-              ))
-            ) : (
-              <div className={styles.emptyTip}>
-                {formatMessage({ id: 'task-modal.no-submit-tip' })}
-              </div>
-            )}
-          </MacScrollbar>
-        </Tabs.TabPane>
-      </Tabs>
+            <MacScrollbar
+              ref={allListRef}
+              className={styles.submitList}
+              style={
+                storyTask?.status === 'Todo'
+                  ? {
+                      height: 406,
+                    }
+                  : {}
+              }
+            >
+              {storyTask && storyTask.submits?.length > 0 ? (
+                storyTask.submits.map((submit: API.StoryChainTaskSubmit) => (
+                  <TaskSubmitCard
+                    key={`all-task-${submit.id || submit.chainSubmitId}`}
+                    data={submit}
+                    removable={
+                      submit.account.toLowerCase() === account.toLowerCase() &&
+                      storyTask?.status === 'Todo'
+                    }
+                    onViewMore={() => {
+                      setViewMoreContent(submit.content);
+                      setViewModalVisible(true);
+                    }}
+                    onDelete={async () => {
+                      await handleDelete(submit.id || submit.chainSubmitId);
+                    }}
+                  />
+                ))
+              ) : (
+                <div className={styles.emptyTip}>
+                  {formatMessage({ id: 'task-modal.no-submit-tip' })}
+                </div>
+              )}
+            </MacScrollbar>
+          </Tabs.TabPane>
+          <Tabs.TabPane tab={formatMessage({ id: 'task-modal.my' })} key={'my'}>
+            <MacScrollbar ref={myListRef} className={styles.submitList}>
+              {mySubmits.length > 0 ? (
+                mySubmits.map((submit: API.StoryChainTaskSubmit) => (
+                  <TaskSubmitCard
+                    key={`my-task-${submit.id || submit.chainSubmitId}`}
+                    data={submit}
+                    removable={storyTask?.status === 'Todo'}
+                    onViewMore={() => {
+                      setViewMoreContent(submit.content);
+                      setViewModalVisible(true);
+                    }}
+                    onDelete={async () => {
+                      await handleDelete(submit.id);
+                    }}
+                  />
+                ))
+              ) : (
+                <div className={styles.emptyTip}>
+                  {formatMessage({ id: 'task-modal.no-submit-tip' })}
+                </div>
+              )}
+            </MacScrollbar>
+          </Tabs.TabPane>
+        </Tabs>
+      </Spin>
       {storyTask?.status === 'Todo' && (
         <>
           <Divider />
           <MDEditorWithPreview
-            disabled={loadingCreateTaskSubmit}
+            disabled={loadingCreateTaskSubmit || createSubmitPolling}
             value={content}
             onChange={(e) => setContent(e)}
             placeholder={formatMessage({
@@ -206,7 +224,7 @@ export default function TaskSubmitCol({
           <Button
             block={true}
             type={'primary'}
-            loading={loadingCreateTaskSubmit}
+            loading={loadingCreateTaskSubmit || createSubmitPolling}
             onClick={async () => {
               if (!content) return;
               const token = await getTokenAsync(chainType, true);

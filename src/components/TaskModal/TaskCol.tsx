@@ -53,11 +53,13 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
     runUpdateStoryTask,
     loadingUpdateStoryTask,
     runCancelStoryTask,
+    updateTaskPolling,
   } = useModel('taskModel', (model) => ({
     storyTask: model.storyTask,
     runUpdateStoryTask: model.runUpdateStoryTask,
     loadingUpdateStoryTask: model.loadingUpdateStoryTask,
     runCancelStoryTask: model.runCancelStoryTask,
+    updateTaskPolling: model.updateTaskPolling,
   }));
 
   const [edit, setEdit] = useState(false);
@@ -113,7 +115,7 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
             className={styles.title}
             value={edit ? newTitle : storyTask?.title}
             onChange={(e) => setNewTitle(e.target.value)}
-            disabled={!edit || loadingUpdateStoryTask}
+            disabled={!edit || loadingUpdateStoryTask || updateTaskPolling}
             bordered={edit}
           />
         </Col>
@@ -125,13 +127,13 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
                   <Button
                     size={'large'}
                     type={'text'}
-                    disabled={loadingUpdateStoryTask}
+                    disabled={loadingUpdateStoryTask || updateTaskPolling}
                     icon={<CloseOutlined />}
                     onClick={() => setEdit(false)}
                   />
                   <Button
                     size={'large'}
-                    loading={loadingUpdateStoryTask}
+                    loading={loadingUpdateStoryTask || updateTaskPolling}
                     type={'primary'}
                     icon={<CheckOutlined />}
                     onClick={async () => {
@@ -238,7 +240,7 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
       <div style={{ marginTop: 12, flex: 1 }}>
         {edit ? (
           <MDEditorWithPreview
-            disabled={loadingUpdateStoryTask}
+            disabled={loadingUpdateStoryTask || updateTaskPolling}
             value={newDesc}
             onChange={(e) => setNewDesc(e)}
             placeholder={formatMessage({

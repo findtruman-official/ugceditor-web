@@ -11,7 +11,7 @@ import {
   PlusOutlined,
   StopOutlined,
 } from '@ant-design/icons';
-import { Badge, Button, Card, Col, Row } from 'antd';
+import { Badge, Button, Card, Col, Row, Spin } from 'antd';
 import { MacScrollbar } from 'mac-scrollbar';
 import 'mac-scrollbar/dist/mac-scrollbar.css';
 import { useContext, useEffect, useState } from 'react';
@@ -34,14 +34,25 @@ export default function WorkTab({}: WorkTabProps) {
     accounts: model.accounts,
   }));
 
-  const { loadingStoryTasks, todoTasks, doneTasks, cancelledTasks, setTaskId } =
-    useModel('taskModel', (model) => ({
-      loadingStoryTasks: model.loadingStoryTasks,
-      todoTasks: model.todoTasks,
-      doneTasks: model.doneTasks,
-      cancelledTasks: model.cancelledTasks,
-      setTaskId: model.setTaskId,
-    }));
+  const {
+    loadingStoryTasks,
+    todoTasks,
+    doneTasks,
+    cancelledTasks,
+    setTaskId,
+    createTaskPolling,
+    cancelTaskPolling,
+    doneTaskPolling,
+  } = useModel('taskModel', (model) => ({
+    loadingStoryTasks: model.loadingStoryTasks,
+    todoTasks: model.todoTasks,
+    doneTasks: model.doneTasks,
+    cancelledTasks: model.cancelledTasks,
+    setTaskId: model.setTaskId,
+    createTaskPolling: model.createTaskPolling,
+    cancelTaskPolling: model.cancelTaskPolling,
+    doneTaskPolling: model.doneTaskPolling,
+  }));
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [taskModalVisible, setTaskModalVisible] = useState(false);
@@ -78,7 +89,6 @@ export default function WorkTab({}: WorkTabProps) {
         <Col>
           <Card
             className={styles.taskCard}
-            loading={loadingStoryTasks}
             title={
               <div className={styles.title}>
                 <ClockCircleOutlined style={{ color: 'gold' }} />
@@ -90,40 +100,48 @@ export default function WorkTab({}: WorkTabProps) {
               </div>
             }
           >
-            <MacScrollbar
-              style={{ padding: 12, overflowY: 'auto', height: 500 }}
+            <Spin
+              spinning={
+                loadingStoryTasks ||
+                createTaskPolling ||
+                cancelTaskPolling ||
+                doneTaskPolling
+              }
             >
-              {isAuthor && (
-                <Button
-                  className={styles.addBtn}
-                  type="dashed"
-                  block={true}
-                  onClick={() => {
-                    const token = getToken(chainType);
-                    if (!token) {
-                      confirmLogin(chainType, {
-                        onConfirm: () => setCreateModalVisible(true),
-                      });
-                    } else {
-                      setCreateModalVisible(true);
-                    }
-                  }}
-                >
-                  <PlusOutlined />
-                  {formatMessage({ id: 'task.add-todo' })}
-                </Button>
-              )}
-              <TaskList
-                taskList={todoTasks || []}
-                clickTask={(taskId) => showTaskDetail(taskId)}
-              />
-            </MacScrollbar>
+              <MacScrollbar
+                style={{ padding: 12, overflowY: 'auto', height: 500 }}
+              >
+                {isAuthor && (
+                  <Button
+                    className={styles.addBtn}
+                    type="dashed"
+                    block={true}
+                    onClick={() => {
+                      const token = getToken(chainType);
+                      if (!token) {
+                        confirmLogin(chainType, {
+                          onConfirm: () => setCreateModalVisible(true),
+                        });
+                      } else {
+                        setCreateModalVisible(true);
+                      }
+                    }}
+                  >
+                    <PlusOutlined />
+                    {formatMessage({ id: 'task.add-todo' })}
+                  </Button>
+                )}
+                <TaskList
+                  taskList={todoTasks || []}
+                  clickTask={(taskId) => showTaskDetail(taskId)}
+                />
+              </MacScrollbar>
+            </Spin>
           </Card>
         </Col>
         <Col>
           <Card
             className={styles.taskCard}
-            loading={loadingStoryTasks}
             title={
               <div className={styles.title}>
                 <CheckCircleOutlined style={{ color: 'rgb(91, 79, 255)' }} />
@@ -135,20 +153,21 @@ export default function WorkTab({}: WorkTabProps) {
               </div>
             }
           >
-            <MacScrollbar
-              style={{ padding: 12, overflowY: 'auto', height: 500 }}
-            >
-              <TaskList
-                taskList={doneTasks || []}
-                clickTask={(taskId) => showTaskDetail(taskId)}
-              />
-            </MacScrollbar>
+            <Spin spinning={loadingStoryTasks || doneTaskPolling}>
+              <MacScrollbar
+                style={{ padding: 12, overflowY: 'auto', height: 500 }}
+              >
+                <TaskList
+                  taskList={doneTasks || []}
+                  clickTask={(taskId) => showTaskDetail(taskId)}
+                />
+              </MacScrollbar>
+            </Spin>
           </Card>
         </Col>
         <Col>
           <Card
             className={styles.taskCard}
-            loading={loadingStoryTasks}
             title={
               <div className={styles.title}>
                 <StopOutlined style={{ color: 'rgb(251, 49, 32)' }} />
@@ -162,14 +181,16 @@ export default function WorkTab({}: WorkTabProps) {
               </div>
             }
           >
-            <MacScrollbar
-              style={{ padding: 12, overflowY: 'auto', height: 500 }}
-            >
-              <TaskList
-                taskList={cancelledTasks || []}
-                clickTask={(taskId) => showTaskDetail(taskId)}
-              />
-            </MacScrollbar>
+            <Spin spinning={loadingStoryTasks || cancelTaskPolling}>
+              <MacScrollbar
+                style={{ padding: 12, overflowY: 'auto', height: 500 }}
+              >
+                <TaskList
+                  taskList={cancelledTasks || []}
+                  clickTask={(taskId) => showTaskDetail(taskId)}
+                />
+              </MacScrollbar>
+            </Spin>
           </Card>
         </Col>
       </Row>

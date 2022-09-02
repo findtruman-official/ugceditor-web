@@ -1,7 +1,7 @@
 import TaskCol from '@/components/TaskModal/TaskCol';
 import TaskSubmitCol from '@/components/TaskModal/TaskSubmitCol';
 import { useModel } from '@@/exports';
-import { Modal, Row, Skeleton } from 'antd';
+import { Modal, Row, Skeleton, Spin } from 'antd';
 
 interface TaskModalProps {
   visible: boolean;
@@ -14,12 +14,13 @@ export default function TaskModal({
   onClose,
   onReview,
 }: TaskModalProps) {
-  const { taskId, storyTask, loadingStoryTask } = useModel(
+  const { taskId, storyTask, loadingStoryTask, doneTaskPolling } = useModel(
     'taskModel',
     (model) => ({
       taskId: model.taskId,
       storyTask: model.storyTask,
       loadingStoryTask: model.loadingStoryTask,
+      doneTaskPolling: model.doneTaskPolling,
     }),
   );
 
@@ -38,10 +39,12 @@ export default function TaskModal({
     >
       {!!taskId && (
         <Skeleton loading={!storyTask && loadingStoryTask}>
-          <Row align={'stretch'} wrap={false}>
-            <TaskCol visible={visible} onClose={onClose} />
-            <TaskSubmitCol visible={visible} onReview={onReview} />
-          </Row>
+          <Spin spinning={doneTaskPolling}>
+            <Row align={'stretch'} wrap={false}>
+              <TaskCol visible={visible} onClose={onClose} />
+              <TaskSubmitCol visible={visible} onReview={onReview} />
+            </Row>
+          </Spin>
         </Skeleton>
       )}
     </Modal>

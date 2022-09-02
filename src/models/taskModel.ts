@@ -1,3 +1,4 @@
+import usePollingUntil from '@/hooks/usePollingUntil';
 import {
   cancelStoryTask,
   createStoryTask,
@@ -98,6 +99,28 @@ export default () => {
     },
   );
 
+  const {
+    pollingList: createTaskPollingList,
+    addPolling: addCreateTaskPolling,
+  } = usePollingUntil<{
+    chain: string;
+    chainStoryId: string;
+    cid: string;
+  }>({
+    condition: async (item) => {
+      const { chainTasks } = await getChainTasks(item.chain, item.chainStoryId);
+      return !!chainTasks.find((e) => e.cid === item.cid);
+    },
+    onChange: async () => {
+      refreshStoryTasks();
+    },
+    interval: 2000,
+  });
+
+  const createTaskPolling = useMemo(() => {
+    return !!createTaskPollingList.find((e) => e.chainStoryId === storyId);
+  }, [createTaskPollingList, storyId]);
+
   const { runAsync: runCreateStoryTask, loading: loadingCreateStoryTask } =
     useRequest(
       async (
@@ -125,6 +148,11 @@ export default () => {
           const provider = connectedWallets[chainType].provider;
           const nftAddress = await provider.getNftAddress(storyId);
           await provider.createTask(storyId, cid, nftAddress, rewards);
+          addCreateTaskPolling({
+            chain: chainType,
+            chainStoryId: storyId,
+            cid,
+          });
         }
         refreshStoryTasks();
       },
@@ -132,6 +160,30 @@ export default () => {
         manual: true,
       },
     );
+
+  const {
+    pollingList: cancelTaskPollingList,
+    addPolling: addCancelTaskPolling,
+  } = usePollingUntil<{
+    chain: string;
+    chainStoryId: string;
+    chainTaskId: string;
+  }>({
+    condition: async (item) => {
+      const { chainTasks } = await getChainTasks(item.chain, item.chainStoryId);
+      return !!chainTasks.find(
+        (e) => e.chainTaskId === item.chainTaskId && e.status === 'Cancelled',
+      );
+    },
+    onChange: async () => {
+      refreshStoryTasks();
+    },
+    interval: 2000,
+  });
+
+  const cancelTaskPolling = useMemo(() => {
+    return !!cancelTaskPollingList.find((e) => e.chainStoryId === storyId);
+  }, [cancelTaskPollingList, storyId]);
 
   const { runAsync: runCancelStoryTask, loading: loadingCancelStoryTask } =
     useRequest(
@@ -146,6 +198,11 @@ export default () => {
             storyId,
             taskId as string,
           );
+          addCancelTaskPolling({
+            chain: chainType,
+            chainStoryId: storyId,
+            chainTaskId: taskId as string,
+          });
         }
 
         refreshStoryTasks();
@@ -154,6 +211,31 @@ export default () => {
         manual: true,
       },
     );
+
+  const { pollingList: doneTaskPollingList, addPolling: addDoneTaskPolling } =
+    usePollingUntil<{
+      chain: string;
+      chainStoryId: string;
+      chainTaskId: string;
+    }>({
+      condition: async (item) => {
+        const { chainTask } = await getChainTask(
+          item.chain,
+          item.chainStoryId,
+          item.chainTaskId,
+        );
+        return chainTask.status === 'Done';
+      },
+      onChange: async () => {
+        refreshStoryTasks();
+        refreshStoryTask();
+      },
+      interval: 2000,
+    });
+
+  const doneTaskPolling = useMemo(() => {
+    return !!doneTaskPollingList.find((e) => e.chainTaskId === taskId);
+  }, [doneTaskPollingList, taskId]);
 
   const { runAsync: runDoneStoryTask, loading: loadingDoneStoryTask } =
     useRequest(
@@ -169,6 +251,11 @@ export default () => {
             taskId,
             submitId,
           );
+          addDoneTaskPolling({
+            chain: chainType,
+            chainStoryId: storyId as string,
+            chainTaskId: taskId as string,
+          });
         }
 
         refreshStoryTasks();
@@ -178,6 +265,34 @@ export default () => {
         manual: true,
       },
     );
+
+  const {
+    pollingList: updateTaskPollingList,
+    addPolling: addUpdateTaskPolling,
+  } = usePollingUntil<{
+    chain: string;
+    chainStoryId: string;
+    chainTaskId: string;
+    cid: string;
+  }>({
+    condition: async (item) => {
+      const { chainTask } = await getChainTask(
+        item.chain,
+        item.chainStoryId,
+        item.chainTaskId,
+      );
+      return chainTask.cid === item.cid;
+    },
+    onChange: async () => {
+      refreshStoryTasks();
+      refreshStoryTask();
+    },
+    interval: 2000,
+  });
+
+  const updateTaskPolling = useMemo(() => {
+    return !!updateTaskPollingList.find((e) => e.chainTaskId === taskId);
+  }, [updateTaskPollingList, taskId]);
 
   const { runAsync: runUpdateStoryTask, loading: loadingUpdateStoryTask } =
     useRequest(
@@ -200,6 +315,12 @@ export default () => {
             taskId,
             cid,
           );
+          addUpdateTaskPolling({
+            chain: chainType,
+            chainStoryId: storyId,
+            chainTaskId: taskId as string,
+            cid,
+          });
         }
         refreshStoryTasks();
         await refreshAsyncStoryTask();
@@ -208,6 +329,36 @@ export default () => {
         manual: true,
       },
     );
+
+  const {
+    pollingList: createSubmitPollingList,
+    addPolling: addCreateSubmitPolling,
+  } = usePollingUntil<{
+    chain: string;
+    chainStoryId: string;
+    chainTaskId: string;
+    cid: string;
+  }>({
+    condition: async (item) => {
+      const { chainTask } = await getChainTask(
+        item.chain,
+        item.chainStoryId,
+        item.chainTaskId,
+      );
+      return !!chainTask.submits.find(
+        (e: API.StoryChainTaskSubmit) => e.cid === item.cid,
+      );
+    },
+    onChange: async () => {
+      refreshStoryTasks();
+      refreshStoryTask();
+    },
+    interval: 2000,
+  });
+
+  const createSubmitPolling = useMemo(() => {
+    return !!createSubmitPollingList.find((e) => e.chainTaskId === taskId);
+  }, [createSubmitPollingList, taskId]);
 
   const { runAsync: runCreateTaskSubmit, loading: loadingCreateTaskSubmit } =
     useRequest(
@@ -229,6 +380,12 @@ export default () => {
             taskId,
             cid,
           );
+          addCreateSubmitPolling({
+            chain: chainType,
+            chainStoryId: storyId,
+            chainTaskId: taskId as string,
+            cid,
+          });
         }
 
         refreshStoryTasks();
@@ -239,9 +396,39 @@ export default () => {
       },
     );
 
+  const {
+    pollingList: removeSubmitPollingList,
+    addPolling: addRemoveSubmitPolling,
+  } = usePollingUntil<{
+    chain: string;
+    chainStoryId: string;
+    chainTaskId: string;
+    chainSubmitId: string;
+  }>({
+    condition: async (item) => {
+      const { chainTask } = await getChainTask(
+        item.chain,
+        item.chainStoryId,
+        item.chainTaskId,
+      );
+      return !chainTask.submits.find(
+        (e: API.StoryChainTaskSubmit) => e.chainSubmitId === item.chainSubmitId,
+      );
+    },
+    onChange: async () => {
+      refreshStoryTasks();
+      refreshStoryTask();
+    },
+    interval: 2000,
+  });
+
+  const removeSubmitPolling = useMemo(() => {
+    return !!removeSubmitPollingList.find((e) => e.chainTaskId === taskId);
+  }, [removeSubmitPollingList, taskId]);
+
   const { runAsync: runRemoveTaskSubmit, loading: loadingRemoveTaskSubmit } =
     useRequest(
-      async (id: number, token: string) => {
+      async (id: number | string, token: string) => {
         if (taskModule === 'Basic') {
           await removeTaskSubmit(id, token);
         } else {
@@ -253,6 +440,12 @@ export default () => {
             taskId,
             id,
           );
+          addRemoveSubmitPolling({
+            chain: chainType,
+            chainStoryId: storyId,
+            chainTaskId: taskId as string,
+            chainSubmitId: id as string,
+          });
         }
 
         refreshStoryTasks();
@@ -288,5 +481,17 @@ export default () => {
     runRemoveTaskSubmit,
     loadingRemoveTaskSubmit,
     taskModule,
+    // addCreateTaskPolling,
+    createTaskPolling,
+    // addCancelTaskPolling,
+    cancelTaskPolling,
+    // addDoneTaskPolling,
+    doneTaskPolling,
+    // addUpdateTaskPolling,
+    updateTaskPolling,
+    // addCreateSubmitPolling,
+    createSubmitPolling,
+    // addRemoveSubmitPolling,
+    removeSubmitPolling,
   };
 };

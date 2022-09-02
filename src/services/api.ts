@@ -294,6 +294,7 @@ export async function getChainTasks(chain: string, chainStoryId: string) {
           chainTaskId
           status
           title
+          cid
           submits {
             chainSubmitId
           }
