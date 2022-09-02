@@ -191,20 +191,23 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                     </Button>
                   </Col>
                 )}
-                {reservedNftRest > 0 && isAuthor && (
+                {isAuthor && (
                   <Col flex={1}>
                     <Tooltip
                       title={formatMessage(
                         {
-                          id: 'story.claim-reserved-nft',
+                          id:
+                            reservedNftRest > 0
+                              ? 'story.claim-reserved-nft'
+                              : 'story.reserved-nft-claimed',
                         },
                         { count: reservedNftRest },
                       )}
                     >
                       <Button
-                        style={{ marginLeft: 8 }}
+                        style={{ marginLeft: 6 }}
                         type={'primary'}
-                        disabled={minting}
+                        disabled={minting || reservedNftRest === 0}
                         loading={claimingReservedNft}
                         onClick={async () => {
                           try {
@@ -219,7 +222,12 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                         }}
                         block={true}
                       >
-                        {formatMessage({ id: 'story.claim-reserved' })}
+                        {formatMessage({
+                          id:
+                            reservedNftRest > 0
+                              ? 'story.claim-reserved'
+                              : 'story.reserved-claimed',
+                        })}
                       </Button>
                     </Tooltip>
                   </Col>

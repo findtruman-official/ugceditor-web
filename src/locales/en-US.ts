@@ -25,7 +25,10 @@ export default {
   'story.publish': 'Publish',
   'story.claim': 'Claim',
   'story.claim-reserved': 'Mint Reserved',
+  'story.reserved-claimed': 'Reserved Minted',
   'story.claim-reserved-nft': 'Mint {count} NFT(s) reserved by the author',
+  'story.reserved-nft-claimed':
+    'All NFTs reserved by the author have been minted',
   'story.sold-out': 'Sold Out',
   'story.amount': 'Amount',
   'story.total': 'Total',

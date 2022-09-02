@@ -1,6 +1,6 @@
 import MDEditorWithPreview from '@/components/MDEditorWithPreview/MDEditorWithPreview';
 import { useIntl } from '@@/exports';
-import { Button, Input, message, Modal, Select } from 'antd';
+import { Button, Input, message, Modal, Select, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import styles from './CreateTaskModal.less';
@@ -78,36 +78,40 @@ export default function CreateTaskModal({
           loading={gettingNfts}
           options={nfts?.map((nft: number) => ({
             value: nft,
-            label: `# ${nft}`,
+            label: `${currentStory?.info.title} NFT #${nft}`,
           }))}
           value={rewards}
           notFoundContent={
-            <div className={styles.noNftTip}>
-              {!!reservedNftRest ? (
-                <>
-                  <div style={{ marginBottom: 12 }}>
-                    {formatMessage({ id: 'create-task.nft-not-claimed' })}
-                  </div>
-                  <Button
-                    type={'text'}
-                    onClick={async () => {
-                      try {
-                        await claimReservedNft();
-                        message.success(formatMessage({ id: 'story.claimed' }));
-                      } catch (e) {
-                        console.log(e);
-                        message.error(formatMessage({ id: 'mint-failed' }));
-                      }
-                    }}
-                    loading={claimingReservedNft}
-                  >
-                    {formatMessage({ id: 'create-task.claim-now' })}
-                  </Button>
-                </>
-              ) : balanceOfStoryNft === 0 ? (
-                <div>{formatMessage({ id: 'create-task.reward.empty' })}</div>
-              ) : undefined}
-            </div>
+            <Spin spinning={gettingNfts}>
+              <div className={styles.noNftTip}>
+                {!!reservedNftRest ? (
+                  <>
+                    <div style={{ marginBottom: 12 }}>
+                      {formatMessage({ id: 'create-task.nft-not-claimed' })}
+                    </div>
+                    <Button
+                      type={'text'}
+                      onClick={async () => {
+                        try {
+                          await claimReservedNft();
+                          message.success(
+                            formatMessage({ id: 'story.claimed' }),
+                          );
+                        } catch (e) {
+                          console.log(e);
+                          message.error(formatMessage({ id: 'mint-failed' }));
+                        }
+                      }}
+                      loading={claimingReservedNft}
+                    >
+                      {formatMessage({ id: 'create-task.claim-now' })}
+                    </Button>
+                  </>
+                ) : balanceOfStoryNft === 0 ? (
+                  <div>{formatMessage({ id: 'create-task.reward.empty' })}</div>
+                ) : undefined}
+              </div>
+            </Spin>
           }
           onChange={setRewards}
         />
