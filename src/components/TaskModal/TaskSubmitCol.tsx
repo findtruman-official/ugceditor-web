@@ -1,4 +1,8 @@
 import MDEditorWithPreview from '@/components/MDEditorWithPreview/MDEditorWithPreview';
+import {
+  LeftCornerLargeRibbon,
+  RibbonContainer,
+} from '@/components/Ribbon/Ribbon';
 import TaskSubmitCard from '@/components/TaskSubmitCard/TaskSubmitCard';
 import { useIntl, useModel } from '@@/exports';
 import { FileDoneOutlined } from '@ant-design/icons';
@@ -82,15 +86,25 @@ export default function TaskSubmitCol({
   return (
     <Col flex={'550px'} className={styles.taskSubmitCol}>
       {approvedSubmits.length > 0 && (
-        <TaskSubmitCard
-          data={approvedSubmits[0]}
-          onViewMore={() => {
-            setViewMoreContent(approvedSubmits[0].content);
-            setViewModalVisible(true);
-          }}
-          minHeight={300}
-          maxHeight={300}
-        />
+        <div style={{ marginBottom: 12 }}>
+          <RibbonContainer>
+            <LeftCornerLargeRibbon
+              backgroundColor={'#b70f0f'}
+              color={'#f0f0f0'}
+            >
+              {formatMessage({ id: 'task-modal.approved' })}
+            </LeftCornerLargeRibbon>
+            <TaskSubmitCard
+              data={approvedSubmits[0]}
+              onViewMore={() => {
+                setViewMoreContent(approvedSubmits[0].content);
+                setViewModalVisible(true);
+              }}
+              minHeight={300}
+              maxHeight={300}
+            />
+          </RibbonContainer>
+        </div>
       )}
       <Tabs
         size={'small'}

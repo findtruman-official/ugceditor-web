@@ -7,8 +7,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
-import { Col, Modal, Radio, Row, Tag } from 'antd';
-import { useCallback } from 'react';
+import { Col, Modal, Radio, Row } from 'antd';
 import styles from './TaskSubmitCard.less';
 
 export interface TaskSubmitCardProps {
@@ -38,24 +37,24 @@ export default function TaskSubmitCard({
 }: TaskSubmitCardProps) {
   const { formatMessage } = useIntl();
 
-  const renderStatusTag = useCallback((status: API.StoryTaskSubmitStatus) => {
-    switch (status) {
-      case 'Pending':
-        return undefined;
-      case 'Approved':
-        return (
-          <Tag color={'green'} style={{ marginRight: 12 }}>
-            {formatMessage({ id: 'task-modal.approved' })}
-          </Tag>
-        );
-      case 'Rejected':
-        return (
-          <Tag color={'red'} style={{ marginRight: 12 }}>
-            {formatMessage({ id: 'task-modal.rejected' })}
-          </Tag>
-        );
-    }
-  }, []);
+  // const renderStatusTag = useCallback((status: API.StoryTaskSubmitStatus) => {
+  //   switch (status) {
+  //     case 'Pending':
+  //       return undefined;
+  //     case 'Approved':
+  //       return (
+  //         <Tag color={'green'} style={{ marginRight: 12 }}>
+  //           {formatMessage({ id: 'task-modal.approved' })}
+  //         </Tag>
+  //       );
+  //     case 'Rejected':
+  //       return (
+  //         <Tag color={'red'} style={{ marginRight: 12 }}>
+  //           {formatMessage({ id: 'task-modal.rejected' })}
+  //         </Tag>
+  //       );
+  //   }
+  // }, []);
 
   return (
     <div
@@ -68,7 +67,6 @@ export default function TaskSubmitCard({
     >
       <Row justify={'space-between'} style={{ marginBottom: 12 }}>
         <Col>
-          {renderStatusTag(data.status)}
           <span className={styles.account}>
             <UserOutlined style={{ marginRight: 8 }} />
             {shortenAccount(data.account)}
