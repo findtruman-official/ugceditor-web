@@ -11,6 +11,9 @@ interface MDEditorWithPreviewProps {
   onChange: (value: string) => void;
   placeholder: string;
   style?: React.CSSProperties;
+  disabled?: boolean;
+  height?: number | string;
+  marginBottom?: boolean;
 }
 
 export default function MDEditorWithPreview({
@@ -18,6 +21,9 @@ export default function MDEditorWithPreview({
   onChange,
   placeholder,
   style = {},
+  disabled = false,
+  height = 200,
+  marginBottom = true,
 }: MDEditorWithPreviewProps) {
   const { formatMessage } = useIntl();
   const [preview, setPreview] = useState(false);
@@ -25,9 +31,11 @@ export default function MDEditorWithPreview({
   return (
     <>
       <MDEditor
+        height={height}
         style={style}
         textareaProps={{
           placeholder,
+          disabled,
         }}
         value={value}
         hideToolbar={true}
@@ -37,7 +45,11 @@ export default function MDEditorWithPreview({
           rehypePlugins: [[rehypeSanitize]],
         }}
       />
-      <div className={styles.previewBtn} onClick={() => setPreview(true)}>
+      <div
+        className={styles.previewBtn}
+        style={!marginBottom ? { marginBottom: 0 } : {}}
+        onClick={() => setPreview(true)}
+      >
         <SearchOutlined /> {formatMessage({ id: 'create-task.preview' })}
       </div>
       <Modal

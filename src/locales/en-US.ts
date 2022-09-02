@@ -110,6 +110,9 @@ export default {
   'create-task.created': 'Created!',
   'task-modal.status': 'Status',
   'task-modal.posted-by': 'Posted by',
+  'task-modal.rewards': 'Rewards',
+  'task-modal.rewards-desc':
+    'If your submission is accepted by the author, you will receive the following story NFT(s) as a reward.',
   'task-modal.submits': 'Submits',
   'task-modal.review': 'Review',
   'task-modal.close': 'Close the task',
@@ -119,13 +122,13 @@ export default {
   'task-modal.my': 'My',
   'task-modal.submitted': 'Submitted!',
   'task-modal.updated': 'Updated!',
-  'task-modal.removed': 'Removed!',
+  'task-modal.removed': 'Withdrawn!',
   'task-modal.closed': 'Closed!',
   'task-modal.pending': 'Pending',
   'task-modal.approved': 'Approved',
   'task-modal.rejected': 'Rejected',
   'task-modal.close-confirm': 'Are you sure to close the task?',
-  'task-modal.delete-confirm': 'Are you sure to delete?',
+  'task-modal.delete-confirm': 'Are you sure to withdraw?',
   'task-modal.submit-content.placeholder':
     'Enter your idea here. Markdown syntax elements are available.',
   'view-more': 'View more...',
@@ -136,9 +139,9 @@ export default {
   'task.nodata': 'There is no task yet.',
   'task-review.done': 'Done!',
   'task-review.tip': 'Click an item on the left side to preview.',
-  'task-review.review': 'Mark as done ({count})',
+  'task-review.review': 'Mark as done',
   'task-review.review-confirm':
-    'You are going to accept {count} submission(s) and mark the task as done!',
+    'You are going to accept the submission and mark the task as done!',
   'task-review.select-submission-tip':
-    'At least one submission should be approved!',
+    'One of these submissions should be approved!',
 };

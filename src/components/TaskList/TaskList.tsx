@@ -4,8 +4,8 @@ import React from 'react';
 import styles from './TaskList.less';
 
 interface props {
-  taskList: API.StoryTask[];
-  clickTask: (taskId: number) => void;
+  taskList: API.StoryChainTask[];
+  clickTask: (taskId: number | string) => void;
 }
 
 const TaskList: React.FC<props> = ({ taskList, clickTask }) => {
@@ -17,9 +17,9 @@ const TaskList: React.FC<props> = ({ taskList, clickTask }) => {
         taskList.map((task) => {
           return (
             <div
-              key={task.id}
+              key={task.id || task.chainTaskId}
               className={styles.taskItem}
-              onClick={() => clickTask(task.id)}
+              onClick={() => clickTask(task.id || task.chainTaskId)}
             >
               <div className={styles.taskTitle}>{task.title}</div>
               <div className={styles.submitsTag}>

@@ -125,3 +125,7 @@ img {
 .w-md-editor-text-input {
   font-size: 16px !important;
 }
+
+.ant-tabs-content {
+  height: 100% !important;
+}

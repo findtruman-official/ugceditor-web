@@ -436,11 +436,11 @@ export class PhantomWalletProvider implements WalletProvider {
     return Promise.resolve(undefined);
   }
 
-  async submitTaskResult(storyId: string, taskId: number, cid: string) {
+  async createTaskSubmit(storyId: string, taskId: number, cid: string) {
     return Promise.resolve(undefined);
   }
 
-  async withdrawTaskResult(storyId: string, taskId: number, submitId: number) {
+  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {
     return Promise.resolve(undefined);
   }
 

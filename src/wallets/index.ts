@@ -195,6 +195,12 @@ export interface WalletProvider {
   ): Promise<number>;
 
   /**
+   * 查询故事发行的nft的地址
+   * @param storyId
+   */
+  getNftAddress(storyId: string): Promise<string>;
+
+  /**
    * 创建任务
    * @param storyId
    * @param cid
@@ -229,7 +235,7 @@ export interface WalletProvider {
    * @param taskId
    * @param cid
    */
-  submitTaskResult(storyId: string, taskId: number, cid: string): Promise<void>;
+  createTaskSubmit(storyId: string, taskId: number, cid: string): Promise<void>;
 
   /**
    * 取消提交作品
@@ -237,7 +243,7 @@ export interface WalletProvider {
    * @param taskId
    * @param submitId
    */
-  withdrawTaskResult(
+  withdrawTaskSubmit(
     storyId: string,
     taskId: number,
     submitId: number,

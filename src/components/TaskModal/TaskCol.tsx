@@ -1,3 +1,4 @@
+import ColorfulText from '@/components/Colorful/ColorfulText';
 import MDEditorWithPreview from '@/components/MDEditorWithPreview/MDEditorWithPreview';
 import { shortenAccount } from '@/utils/format';
 import { useIntl, useModel } from '@@/exports';
@@ -7,13 +8,24 @@ import {
   ClockCircleFilled,
   CloseOutlined,
   EditOutlined,
+  GiftOutlined,
   IssuesCloseOutlined,
   StopFilled,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
-import { Button, Col, Input, message, Modal, Row, Space, Tooltip } from 'antd';
+import {
+  Button,
+  Col,
+  Input,
+  message,
+  Modal,
+  Row,
+  Space,
+  Tag,
+  Tooltip,
+} from 'antd';
 import { MacScrollbar } from 'mac-scrollbar';
 import { useCallback, useEffect, useState } from 'react';
 import styles from './TaskModal.less';
@@ -187,6 +199,33 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
           {shortenAccount(currentStory?.author)}
         </div>
       </div>
+      {storyTask?.rewardNfts && storyTask.rewardNfts.length > 0 && (
+        <Tooltip
+          placement={'topLeft'}
+          title={formatMessage({ id: 'task-modal.rewards-desc' })}
+        >
+          <div className={styles.infoRow}>
+            <div className={styles.infoTitle}>
+              {formatMessage({ id: 'task-modal.rewards' })}
+            </div>
+            <div className={styles.infoValue}>
+              <GiftOutlined
+                style={{ marginRight: 8, color: 'rgb(91, 79, 255)' }}
+              />
+              <ColorfulText
+                style={{
+                  display: 'inline-block',
+                  fontWeight: 'bold',
+                  marginRight: 8,
+                }}
+              >{`${currentStory.info.title} NFT`}</ColorfulText>
+              {storyTask.rewardNfts.map((e: string) => (
+                <Tag key={e}>{`# ${e}`}</Tag>
+              ))}
+            </div>
+          </div>
+        </Tooltip>
+      )}
       <div className={styles.infoRow}>
         <div className={styles.infoTitle}>
           {formatMessage({ id: 'task-modal.submits' })}
@@ -196,17 +235,21 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
           {storyTask?.submits.length || 0}
         </div>
       </div>
-      <div style={{ marginTop: 24 }}>
+      <div style={{ marginTop: 12, flex: 1 }}>
         {edit ? (
-          <div>
-            <MDEditorWithPreview
-              value={newDesc}
-              onChange={(e) => setNewDesc(e)}
-              placeholder={formatMessage({
-                id: 'create-task.task-desc.placeholder',
-              })}
-            />
-          </div>
+          <MDEditorWithPreview
+            disabled={loadingUpdateStoryTask}
+            value={newDesc}
+            onChange={(e) => setNewDesc(e)}
+            placeholder={formatMessage({
+              id: 'create-task.task-desc.placeholder',
+            })}
+            marginBottom={false}
+            style={{
+              height: 624,
+            }}
+            height={'calc(100% - 34px)'}
+          />
         ) : (
           <MacScrollbar className={styles.desc}>
             <MDEditor.Markdown

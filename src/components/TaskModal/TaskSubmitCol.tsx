@@ -73,7 +73,7 @@ export default function TaskSubmitCol({
     );
   }, [account, storyTask]);
 
-  const handleDelete = useCallback(async (id: number) => {
+  const handleDelete = useCallback(async (id: number | string) => {
     const token = await getTokenAsync(chainType, true);
     await runRemoveTaskSubmit(id, token);
     message.success(formatMessage({ id: 'task-modal.removed' }));
@@ -81,9 +81,20 @@ export default function TaskSubmitCol({
 
   return (
     <Col flex={'550px'} className={styles.taskSubmitCol}>
+      {approvedSubmits.length > 0 && (
+        <TaskSubmitCard
+          data={approvedSubmits[0]}
+          onViewMore={() => {
+            setViewMoreContent(approvedSubmits[0].content);
+            setViewModalVisible(true);
+          }}
+          minHeight={300}
+          maxHeight={300}
+        />
+      )}
       <Tabs
         size={'small'}
-        defaultActiveKey={'all'}
+        // defaultActiveKey={'all'}
         tabBarExtraContent={
           isAuthor &&
           storyTask?.status === 'Todo' && (
@@ -97,7 +108,12 @@ export default function TaskSubmitCol({
           )
         }
         style={{
-          height: storyTask?.status === 'Todo' ? 460 : '100%',
+          height:
+            storyTask?.status === 'Todo'
+              ? 460
+              : storyTask?.status === 'Done'
+              ? 'calc(100% - 416px)'
+              : '100%',
         }}
       >
         <Tabs.TabPane tab={formatMessage({ id: 'task-modal.all' })} key={'all'}>
@@ -113,9 +129,9 @@ export default function TaskSubmitCol({
             }
           >
             {storyTask && storyTask.submits?.length > 0 ? (
-              storyTask.submits.map((submit: API.StoryTaskSubmit) => (
+              storyTask.submits.map((submit: API.StoryChainTaskSubmit) => (
                 <TaskSubmitCard
-                  key={`all-task-${submit.id}`}
+                  key={`all-task-${submit.id || submit.chainSubmitId}`}
                   data={submit}
                   removable={
                     submit.account.toLowerCase() === account.toLowerCase() &&
@@ -126,7 +142,7 @@ export default function TaskSubmitCol({
                     setViewModalVisible(true);
                   }}
                   onDelete={async () => {
-                    await handleDelete(submit.id);
+                    await handleDelete(submit.id || submit.chainSubmitId);
                   }}
                 />
               ))
@@ -137,64 +153,12 @@ export default function TaskSubmitCol({
             )}
           </MacScrollbar>
         </Tabs.TabPane>
-
-        {storyTask?.status === 'Done' && (
-          <>
-            <Tabs.TabPane
-              tab={formatMessage({ id: 'task-modal.approved' })}
-              key={'approved'}
-            >
-              <MacScrollbar ref={myListRef} className={styles.submitList}>
-                {approvedSubmits.length > 0 ? (
-                  approvedSubmits.map((submit: API.StoryTaskSubmit) => (
-                    <TaskSubmitCard
-                      key={`approved-task-${submit.id}`}
-                      data={submit}
-                      onViewMore={() => {
-                        setViewMoreContent(submit.content);
-                        setViewModalVisible(true);
-                      }}
-                    />
-                  ))
-                ) : (
-                  <div className={styles.emptyTip}>
-                    {formatMessage({ id: 'task-modal.no-submit-tip' })}
-                  </div>
-                )}
-              </MacScrollbar>
-            </Tabs.TabPane>
-            <Tabs.TabPane
-              tab={formatMessage({ id: 'task-modal.rejected' })}
-              key={'rejected'}
-            >
-              <MacScrollbar ref={myListRef} className={styles.submitList}>
-                {rejectedSubmits.length > 0 ? (
-                  rejectedSubmits.map((submit: API.StoryTaskSubmit) => (
-                    <TaskSubmitCard
-                      key={`rejected-task-${submit.id}`}
-                      data={submit}
-                      onViewMore={() => {
-                        setViewMoreContent(submit.content);
-                        setViewModalVisible(true);
-                      }}
-                    />
-                  ))
-                ) : (
-                  <div className={styles.emptyTip}>
-                    {formatMessage({ id: 'task-modal.no-submit-tip' })}
-                  </div>
-                )}
-              </MacScrollbar>
-            </Tabs.TabPane>
-          </>
-        )}
-
         <Tabs.TabPane tab={formatMessage({ id: 'task-modal.my' })} key={'my'}>
           <MacScrollbar ref={myListRef} className={styles.submitList}>
             {mySubmits.length > 0 ? (
-              mySubmits.map((submit: API.StoryTaskSubmit) => (
+              mySubmits.map((submit: API.StoryChainTaskSubmit) => (
                 <TaskSubmitCard
-                  key={`my-task-${submit.id}`}
+                  key={`my-task-${submit.id || submit.chainSubmitId}`}
                   data={submit}
                   removable={storyTask?.status === 'Todo'}
                   onViewMore={() => {
@@ -218,6 +182,7 @@ export default function TaskSubmitCol({
         <>
           <Divider />
           <MDEditorWithPreview
+            disabled={loadingCreateTaskSubmit}
             value={content}
             onChange={(e) => setContent(e)}
             placeholder={formatMessage({

@@ -4,13 +4,15 @@ import styles from './ViewMoreContainer.less';
 
 interface ViewMoreContainerProps {
   children: any;
-  maxHeight?: number;
+  minHeight?: number | string;
+  maxHeight?: number | string;
   showViewMoreBtn?: boolean;
   onViewMore?: () => void;
 }
 
 export default function ViewMoreContainer({
   children,
+  minHeight = 'unset',
   maxHeight = 300,
   showViewMoreBtn = true,
   onViewMore = () => {},
@@ -33,7 +35,7 @@ export default function ViewMoreContainer({
       <div
         // ref={ref}
         className={[styles.container, styles.viewMoreContainer].join(' ')}
-        style={{ maxHeight: maxHeight }}
+        style={{ maxHeight: maxHeight, minHeight: minHeight }}
       >
         {children}
       </div>

@@ -53,7 +53,7 @@ export default function WorkTab({}: WorkTabProps) {
     setReviewModalVisible(false);
   }, [accounts[chainType]]);
 
-  const showTaskDetail = (taskId: number) => {
+  const showTaskDetail = (taskId: number | string) => {
     if (!accounts[chainType]) {
       openWalletModal();
       return;

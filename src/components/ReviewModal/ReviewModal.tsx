@@ -30,13 +30,13 @@ export default function ReviewModal({ visible, onClose }: ReviewModalProps) {
     }),
   );
 
-  const [preview, setPreview] = useState<API.StoryTaskSubmit>();
-  const [selectedSubmits, setSelectedSubmits] = useState<number[]>([]);
+  const [preview, setPreview] = useState<API.StoryChainTaskSubmit>();
+  const [selectedSubmit, setSelectedSubmit] = useState<number>(-1);
 
   const previewRef = useRef<any>();
 
   useEffect(() => {
-    setSelectedSubmits([]);
+    setSelectedSubmit(-1);
     setPreview(undefined);
   }, [visible]);
 
@@ -66,12 +66,16 @@ export default function ReviewModal({ visible, onClose }: ReviewModalProps) {
                     flex: 1,
                   }}
                 >
-                  {storyTask.submits.map((submit: API.StoryTaskSubmit) => (
+                  {storyTask.submits.map((submit: API.StoryChainTaskSubmit) => (
                     <TaskSubmitCard
-                      key={`review-${submit.id}`}
+                      key={`review-${submit.id || submit.chainSubmitId}`}
                       data={submit}
                       removable={false}
-                      active={preview?.id === submit.id}
+                      active={
+                        preview &&
+                        `${preview.id}` ===
+                          `${submit.id || submit.chainSubmitId}`
+                      }
                       onClick={() => {
                         setPreview(submit);
                         previewRef?.current?.scrollTo({
@@ -79,25 +83,20 @@ export default function ReviewModal({ visible, onClose }: ReviewModalProps) {
                           behavior: 'smooth',
                         });
                       }}
-                      onSelectedChange={(selected) => {
+                      selected={
+                        `${selectedSubmit}` ===
+                        `${submit.id || submit.chainSubmitId}`
+                      }
+                      onSelect={() => {
                         if (loadingDoneStoryTask) return;
-                        const _selectedSubmits = [...selectedSubmits];
-                        if (selected) {
-                          _selectedSubmits.push(submit.id);
-                        } else {
-                          _selectedSubmits.splice(
-                            _selectedSubmits.findIndex((e) => e === submit.id),
-                            1,
-                          );
-                        }
-                        setSelectedSubmits(_selectedSubmits);
+                        setSelectedSubmit(submit.id);
                       }}
                     />
                   ))}
                 </MacScrollbar>
                 <Tooltip
                   title={
-                    selectedSubmits.length === 0 &&
+                    !selectedSubmit &&
                     formatMessage({ id: 'task-review.select-submission-tip' })
                   }
                 >
@@ -106,20 +105,17 @@ export default function ReviewModal({ visible, onClose }: ReviewModalProps) {
                     block={true}
                     size={'large'}
                     type={'primary'}
-                    disabled={selectedSubmits.length === 0}
+                    disabled={!selectedSubmit}
                     loading={loadingDoneStoryTask}
                     onClick={() => {
                       Modal.confirm({
                         centered: true,
-                        title: formatMessage(
-                          {
-                            id: 'task-review.review-confirm',
-                          },
-                          { count: selectedSubmits.length },
-                        ),
+                        title: formatMessage({
+                          id: 'task-review.review-confirm',
+                        }),
                         onOk: async () => {
                           const token = await getTokenAsync(chainType, true);
-                          await runDoneStoryTask(selectedSubmits, token);
+                          await runDoneStoryTask(selectedSubmit, token);
                           message.success(
                             formatMessage({ id: 'task-review.done' }),
                           );
@@ -128,10 +124,7 @@ export default function ReviewModal({ visible, onClose }: ReviewModalProps) {
                       });
                     }}
                   >
-                    {formatMessage(
-                      { id: 'task-review.review' },
-                      { count: selectedSubmits.length },
-                    )}
+                    {formatMessage({ id: 'task-review.review' })}
                   </Button>
                 </Tooltip>
               </div>

@@ -108,10 +108,13 @@ export class KaikasWalletProvider implements WalletProvider {
     return await this.caver.klay.sign(message, account);
   }
 
+  async getNftAddress(storyId: string) {
+    const sales = await this.contract!.methods.sales(storyId).call();
+    return sales?.nft || '';
+  }
+
   async getNftSaleContract(storyId: string) {
-    const { nft: nftAddress } = await this.contract!.methods.sales(
-      storyId,
-    ).call();
+    const nftAddress = await this.getNftAddress(storyId);
     return new this.caver!.klay.Contract(NFT_ABI as any, nftAddress);
   }
 
@@ -257,7 +260,7 @@ export class KaikasWalletProvider implements WalletProvider {
     const account = this.provider.selectedAddress;
 
     const nftSaleContract = await this.getNftSaleContract(storyId);
-    const isApprovedForAll = nftSaleContract.methods
+    const isApprovedForAll = await nftSaleContract.methods
       .isApprovedForAll(account, this.factoryAddress)
       .call();
     if (!isApprovedForAll) {
@@ -270,7 +273,6 @@ export class KaikasWalletProvider implements WalletProvider {
         gas: await approveMethod.estimateGas({ from: account }),
       });
     }
-
     const method = this.contract.methods.createTask(
       storyId,
       cid,
@@ -317,20 +319,20 @@ export class KaikasWalletProvider implements WalletProvider {
     });
   }
 
-  async submitTaskResult(storyId: string, taskId: number, cid: string) {
+  async createTaskSubmit(storyId: string, taskId: number, cid: string) {
     if (!this.contract) throw new Error('Contract Unavailable');
     const account = this.provider.selectedAddress;
-    const method = this.contract.methods.submitTaskResult(storyId, taskId, cid);
+    const method = this.contract.methods.createTaskSubmit(storyId, taskId, cid);
     await method.send({
       from: account,
       gas: await method.estimateGas({ from: account }),
     });
   }
 
-  async withdrawTaskResult(storyId: string, taskId: number, submitId: number) {
+  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {
     if (!this.contract) throw new Error('Contract Unavailable');
     const account = this.provider.selectedAddress;
-    const method = this.contract.methods.withdrawTaskResult(
+    const method = this.contract.methods.withdrawTaskSubmit(
       storyId,
       taskId,
       submitId,

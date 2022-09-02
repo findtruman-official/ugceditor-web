@@ -42,6 +42,7 @@ export const getChains = async () => {
         type
         factoryAddress
         findsAddress
+        taskModule
       }
     }
   `);
@@ -285,6 +286,24 @@ export async function getStoryTasks(chain: string, chainStoryId: string) {
   );
 }
 
+export async function getChainTasks(chain: string, chainStoryId: string) {
+  return await client.request<{ chainTasks: API.StoryChainTask[] }>(
+    gql`
+      query chainTasks($chain: String!, $chainStoryId: String!) {
+        chainTasks(chain: $chain, chainStoryId: $chainStoryId) {
+          chainTaskId
+          status
+          title
+          submits {
+            chainSubmitId
+          }
+        }
+      }
+    `,
+    { chain, chainStoryId },
+  );
+}
+
 export async function getStoryTask(taskId: number) {
   return await client.request<{ storyTask: API.StoryTask }>(
     gql`
@@ -305,6 +324,55 @@ export async function getStoryTask(taskId: number) {
       }
     `,
     { id: taskId },
+  );
+}
+
+export async function getChainTask(
+  chain: string,
+  chainStoryId: string,
+  chainTaskId: string,
+) {
+  return await client.request<{ chainTask: API.StoryChainTask }>(
+    gql`
+      query chainTask(
+        $chain: String!
+        $chainStoryId: String!
+        $chainTaskId: String!
+      ) {
+        chainTask(
+          chain: $chain
+          chainStoryId: $chainStoryId
+          chainTaskId: $chainTaskId
+        ) {
+          chain
+          chainTaskId
+          cid
+          creator
+          account
+          createTime
+          title
+          description
+          nft
+          rewardNfts
+          status
+          submits {
+            chainSubmitId
+            chainTaskId
+            cid
+            content
+            createTime
+            creator
+            account
+            status
+          }
+        }
+      }
+    `,
+    {
+      chain,
+      chainStoryId,
+      chainTaskId,
+    },
   );
 }
 

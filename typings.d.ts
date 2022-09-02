@@ -132,6 +132,18 @@ declare global {
       chainStoryId: string;
     };
 
+    type StoryChainTask = StoryTask & {
+      chainTaskId: string;
+      cid: string;
+      creator: string;
+      nft: string;
+      rewardNfts: string[];
+      status: StoryChainTaskStatus;
+      submits: StoryChainTaskSubmit[];
+      createTime: string;
+      updateTime: string;
+    };
+
     type StoryTaskSubmit = {
       id: number;
       status: StoryTaskSubmitStatus;
@@ -141,11 +153,35 @@ declare global {
       createTime: string;
     };
 
+    type StoryChainTaskSubmit = StoryTaskSubmit & {
+      chain: string;
+      chainStoryId: string;
+      chainSubmitId: string;
+      chainTaskId: string;
+      cid: string;
+      creator: string;
+      // status: StoryChainTaskSubmitStatus;
+      createTime: string;
+      updateTime: string;
+    };
+
     type StoryTaskStatus = 'Cancelled' | 'Done' | 'Todo';
 
-    type StoryTaskSubmitStatus = 'Approved' | 'Pending' | 'Rejected';
+    type StoryChainTaskStatus = 'Cancelled' | 'Done' | 'Todo';
 
-    type TaskModuleType = 'basic' | 'chain';
+    type StoryTaskSubmitStatus =
+      | 'Approved'
+      | 'Pending'
+      | 'Rejected'
+      | 'Withdrawed';
+
+    type StoryChainTaskSubmitStatus =
+      | 'APPROVED'
+      | 'PENDING'
+      | 'REJECTED'
+      | 'WITHDRAWED';
+
+    type TaskModuleType = 'Basic' | 'Chain';
 
     // enum StoryTaskStatus {
     //   Cancelled = 'Cancelled',

@@ -1,7 +1,7 @@
 import MDEditorWithPreview from '@/components/MDEditorWithPreview/MDEditorWithPreview';
 import { useIntl } from '@@/exports';
 import { Button, Input, message, Modal, Select } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import styles from './CreateTaskModal.less';
 
@@ -22,6 +22,7 @@ export default function CreateTaskModal({
     'taskModel',
     (model) => ({
       runCreateStoryTask: model.runCreateStoryTask,
+      loadingCreateStoryTask: model.loadingCreateStoryTask,
       taskModule: model.taskModule,
     }),
   );
@@ -50,6 +51,10 @@ export default function CreateTaskModal({
   const [desc, setDesc] = useState('');
   const [rewards, setRewards] = useState<number[]>([]);
 
+  useEffect(() => {
+    setRewards([]);
+  }, [currentStory]);
+
   return (
     <Modal
       centered={true}
@@ -61,50 +66,54 @@ export default function CreateTaskModal({
       data-color-mode="dark"
       width={720}
     >
-      <Select
-        mode="multiple"
-        allowClear
-        style={{ width: '100%', marginTop: 24, padding: 0 }}
-        size={'large'}
-        bordered={false}
-        placeholder={formatMessage({ id: 'create-task.reward.placeholder' })}
-        loading={gettingNfts}
-        options={nfts?.map((nft: number) => ({
-          value: nft,
-          label: `# ${nft}`,
-        }))}
-        value={rewards}
-        notFoundContent={
-          <div className={styles.noNftTip}>
-            {!!reservedNftRest ? (
-              <>
-                <div style={{ marginBottom: 12 }}>
-                  {formatMessage({ id: 'create-task.nft-not-claimed' })}
-                </div>
-                <Button
-                  type={'text'}
-                  onClick={async () => {
-                    try {
-                      await claimReservedNft();
-                      message.success(formatMessage({ id: 'story.claimed' }));
-                    } catch (e) {
-                      console.log(e);
-                      message.error(formatMessage({ id: 'mint-failed' }));
-                    }
-                  }}
-                  loading={claimingReservedNft}
-                >
-                  {formatMessage({ id: 'create-task.claim-now' })}
-                </Button>
-              </>
-            ) : balanceOfStoryNft === 0 ? (
-              <div>{formatMessage({ id: 'create-task.reward.empty' })}</div>
-            ) : undefined}
-          </div>
-        }
-        onChange={setRewards}
-      />
+      {taskModule === 'Chain' && (
+        <Select
+          disabled={loadingCreateStoryTask}
+          mode="multiple"
+          allowClear
+          style={{ width: '100%', marginTop: 24, padding: 0 }}
+          size={'large'}
+          bordered={false}
+          placeholder={formatMessage({ id: 'create-task.reward.placeholder' })}
+          loading={gettingNfts}
+          options={nfts?.map((nft: number) => ({
+            value: nft,
+            label: `# ${nft}`,
+          }))}
+          value={rewards}
+          notFoundContent={
+            <div className={styles.noNftTip}>
+              {!!reservedNftRest ? (
+                <>
+                  <div style={{ marginBottom: 12 }}>
+                    {formatMessage({ id: 'create-task.nft-not-claimed' })}
+                  </div>
+                  <Button
+                    type={'text'}
+                    onClick={async () => {
+                      try {
+                        await claimReservedNft();
+                        message.success(formatMessage({ id: 'story.claimed' }));
+                      } catch (e) {
+                        console.log(e);
+                        message.error(formatMessage({ id: 'mint-failed' }));
+                      }
+                    }}
+                    loading={claimingReservedNft}
+                  >
+                    {formatMessage({ id: 'create-task.claim-now' })}
+                  </Button>
+                </>
+              ) : balanceOfStoryNft === 0 ? (
+                <div>{formatMessage({ id: 'create-task.reward.empty' })}</div>
+              ) : undefined}
+            </div>
+          }
+          onChange={setRewards}
+        />
+      )}
       <Input
+        disabled={loadingCreateStoryTask}
         maxLength={30}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -114,6 +123,7 @@ export default function CreateTaskModal({
       />
       <MDEditorWithPreview
         value={desc}
+        disabled={loadingCreateStoryTask}
         onChange={(e) => setDesc(e)}
         placeholder={formatMessage({
           id: 'create-task.task-desc.placeholder',
@@ -125,12 +135,17 @@ export default function CreateTaskModal({
         type={'primary'}
         block={true}
         disabled={!title || !desc}
-        onClick={() => {
+        loading={loadingCreateStoryTask}
+        onClick={async () => {
           try {
-            runCreateStoryTask(title, desc, token);
+            await runCreateStoryTask(
+              { title, description: desc, rewards },
+              token,
+            );
             onClose();
             setTitle('');
             setDesc('');
+            setRewards([]);
             message.success(formatMessage({ id: 'create-task.created' }));
           } catch (e) {
             message.error(formatMessage({ id: 'request-failed' }));

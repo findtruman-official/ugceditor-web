@@ -7,32 +7,36 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
-import { Checkbox, Col, Modal, Row, Tag } from 'antd';
-import { useCallback, useState } from 'react';
+import { Col, Modal, Radio, Row, Tag } from 'antd';
+import { useCallback } from 'react';
 import styles from './TaskSubmitCard.less';
 
-interface TaskSubmitCardProps {
+export interface TaskSubmitCardProps {
+  selected?: boolean;
   data: API.StoryTaskSubmit;
   removable?: boolean;
   onViewMore?: () => void;
   onDelete?: () => Promise<void>;
   active?: boolean;
   onClick?: () => void;
-  onSelectedChange?: (selected: boolean) => void;
+  onSelect?: () => void;
+  minHeight?: number | string;
+  maxHeight?: number | string;
 }
 
 export default function TaskSubmitCard({
+  selected = false,
   data,
   removable = false,
   onViewMore,
   onDelete,
   active = false,
   onClick,
-  onSelectedChange,
+  onSelect,
+  minHeight = 'unset',
+  maxHeight = 150,
 }: TaskSubmitCardProps) {
   const { formatMessage } = useIntl();
-
-  const [selected, setSelected] = useState(false);
 
   const renderStatusTag = useCallback((status: API.StoryTaskSubmitStatus) => {
     switch (status) {
@@ -75,13 +79,11 @@ export default function TaskSubmitCard({
           </span>
         </Col>
         <Col>
-          {onSelectedChange && (
-            <Checkbox
+          {onSelect && (
+            <Radio
               checked={selected}
               onChange={(e) => {
-                const checked = e.target.checked;
-                setSelected(checked);
-                onSelectedChange(checked);
+                e.target.checked && onSelect();
               }}
             />
           )}
@@ -101,7 +103,8 @@ export default function TaskSubmitCard({
       </Row>
       <ViewMoreContainer
         onViewMore={onViewMore}
-        maxHeight={150}
+        minHeight={minHeight}
+        maxHeight={maxHeight}
         showViewMoreBtn={!!onViewMore}
       >
         <MDEditor.Markdown source={data.content} linkTarget={'_blank'} />

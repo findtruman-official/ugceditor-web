@@ -3,10 +3,13 @@ import {
   createStoryTask,
   createTaskSubmit,
   doneStoryTask,
+  getChainTask,
+  getChainTasks,
   getStoryTask,
   getStoryTasks,
   removeTaskSubmit,
   updateStoryTask,
+  uploadJson,
 } from '@/services/api';
 import { useModel } from '@@/exports';
 import { useRequest } from 'ahooks';
@@ -14,20 +17,21 @@ import { useMemo, useState } from 'react';
 
 // @ts-ignore
 export default () => {
-  const { chains } = useModel('walletModel', (model) => ({
+  const { chains, connectedWallets } = useModel('walletModel', (model) => ({
     chains: model.chains,
+    connectedWallets: model.connectedWallets,
   }));
   const { chainType, storyId } = useModel('storyModel', (model) => ({
     chainType: model.chainType,
     storyId: model.storyId,
   }));
 
-  const [taskId, setTaskId] = useState(0);
+  const [taskId, setTaskId] = useState<number | string>(0);
 
-  const taskModule = useMemo(() => {
-    if (!chainType || !chains || !chains.length) return 'basic';
+  const taskModule = useMemo<'Basic' | 'Chain'>(() => {
+    if (!chainType || !chains || !chains.length) return 'Basic';
     return (
-      chains.find((e: API.Chain) => e.type === chainType)?.taskModule || 'basic'
+      chains.find((e: API.Chain) => e.type === chainType)?.taskModule || 'Basic'
     );
   }, [chains, chainType]);
 
@@ -38,26 +42,31 @@ export default () => {
   } = useRequest(
     async () => {
       if (!storyId || !chainType) return;
-      return (await getStoryTasks(chainType, storyId)).storyTasks;
+      if (taskModule === 'Basic') {
+        return (await getStoryTasks(chainType, storyId)).storyTasks;
+      } else {
+        return (await getChainTasks(chainType, storyId)).chainTasks.map(
+          (e) => ({
+            ...e,
+            id: e.chainTaskId,
+          }),
+        );
+      }
     },
     {
-      refreshDeps: [chainType, storyId],
+      refreshDeps: [chainType, storyId, taskModule],
     },
   );
 
   const todoTasks = useMemo(() => {
-    return storyTasks
-      ? storyTasks.filter((t: API.StoryTask) => t.status === 'Todo')
-      : [];
+    return storyTasks ? storyTasks.filter((t: any) => t.status === 'Todo') : [];
   }, [storyTasks]);
   const doneTasks = useMemo(() => {
-    return storyTasks
-      ? storyTasks.filter((t: API.StoryTask) => t.status === 'Done')
-      : [];
+    return storyTasks ? storyTasks.filter((t: any) => t.status === 'Done') : [];
   }, [storyTasks]);
   const cancelledTasks = useMemo(() => {
     return storyTasks
-      ? storyTasks.filter((t: API.StoryTask) => t.status === 'Cancelled')
+      ? storyTasks.filter((t: any) => t.status === 'Cancelled')
       : [];
   }, [storyTasks]);
 
@@ -69,17 +78,54 @@ export default () => {
   } = useRequest(
     async () => {
       if (!taskId) return;
-      return (await getStoryTask(taskId)).storyTask;
+
+      if (taskModule === 'Basic') {
+        return (await getStoryTask(taskId as number)).storyTask;
+      } else {
+        const res = (await getChainTask(chainType, storyId, taskId as string))
+          .chainTask;
+        return {
+          ...res,
+          submits: res.submits.map((e: API.StoryChainTaskSubmit) => ({
+            ...e,
+            id: e.chainSubmitId,
+          })),
+        };
+      }
     },
     {
-      refreshDeps: [taskId],
+      refreshDeps: [taskId, taskModule, chainType, storyId],
     },
   );
 
-  const { run: runCreateStoryTask, loading: loadingCreateStoryTask } =
+  const { runAsync: runCreateStoryTask, loading: loadingCreateStoryTask } =
     useRequest(
-      async (title: string, description: string, token: string) => {
-        await createStoryTask(chainType, storyId, title, description, token);
+      async (
+        data: {
+          title: string;
+          description: string;
+          rewards?: number[];
+        },
+        token: string,
+      ) => {
+        const { title, description, rewards = [] } = data;
+        if (taskModule === 'Basic') {
+          await createStoryTask(chainType, storyId, title, description, token);
+        } else {
+          if (!connectedWallets[chainType]) {
+            return;
+          }
+          const { cid } = await uploadJson(
+            {
+              title,
+              description,
+            },
+            token,
+          );
+          const provider = connectedWallets[chainType].provider;
+          const nftAddress = await provider.getNftAddress(storyId);
+          await provider.createTask(storyId, cid, nftAddress, rewards);
+        }
         refreshStoryTasks();
       },
       {
@@ -87,10 +133,21 @@ export default () => {
       },
     );
 
-  const { run: runCancelStoryTask, loading: loadingCancelStoryTask } =
+  const { runAsync: runCancelStoryTask, loading: loadingCancelStoryTask } =
     useRequest(
       async (token: string) => {
-        await cancelStoryTask(taskId, token);
+        if (taskModule === 'Basic') {
+          await cancelStoryTask(taskId as number, token);
+        } else {
+          if (!connectedWallets[chainType]) {
+            return;
+          }
+          await connectedWallets[chainType].provider.cancelTask(
+            storyId,
+            taskId as string,
+          );
+        }
+
         refreshStoryTasks();
       },
       {
@@ -98,21 +155,52 @@ export default () => {
       },
     );
 
-  const { run: runDoneStoryTask, loading: loadingDoneStoryTask } = useRequest(
-    async (submitIds: number[], token: string) => {
-      await doneStoryTask(taskId, submitIds, token);
-      refreshStoryTasks();
-      await refreshAsyncStoryTask();
-    },
-    {
-      manual: true,
-    },
-  );
+  const { runAsync: runDoneStoryTask, loading: loadingDoneStoryTask } =
+    useRequest(
+      async (submitId: number, token: string) => {
+        if (taskModule === 'Basic') {
+          await doneStoryTask(taskId as number, [submitId], token);
+        } else {
+          if (!connectedWallets[chainType]) {
+            return;
+          }
+          await connectedWallets[chainType].provider.markTaskDone(
+            storyId,
+            taskId,
+            submitId,
+          );
+        }
 
-  const { run: runUpdateStoryTask, loading: loadingUpdateStoryTask } =
+        refreshStoryTasks();
+        await refreshAsyncStoryTask();
+      },
+      {
+        manual: true,
+      },
+    );
+
+  const { runAsync: runUpdateStoryTask, loading: loadingUpdateStoryTask } =
     useRequest(
       async (title: string, description: string, token: string) => {
-        await updateStoryTask(taskId, title, description, token);
+        if (taskModule === 'Basic') {
+          await updateStoryTask(taskId as number, title, description, token);
+        } else {
+          if (!connectedWallets[chainType]) {
+            return;
+          }
+          const { cid } = await uploadJson(
+            {
+              title,
+              description,
+            },
+            token,
+          );
+          await connectedWallets[chainType].provider.updateTask(
+            storyId,
+            taskId,
+            cid,
+          );
+        }
         refreshStoryTasks();
         await refreshAsyncStoryTask();
       },
@@ -121,10 +209,28 @@ export default () => {
       },
     );
 
-  const { run: runCreateTaskSubmit, loading: loadingCreateTaskSubmit } =
+  const { runAsync: runCreateTaskSubmit, loading: loadingCreateTaskSubmit } =
     useRequest(
       async (content: string, token: string) => {
-        await createTaskSubmit(taskId, content, token);
+        if (taskModule === 'Basic') {
+          await createTaskSubmit(taskId as number, content, token);
+        } else {
+          if (!connectedWallets[chainType]) {
+            return;
+          }
+          const { cid } = await uploadJson(
+            {
+              content,
+            },
+            token,
+          );
+          await connectedWallets[chainType].provider.createTaskSubmit(
+            storyId,
+            taskId,
+            cid,
+          );
+        }
+
         refreshStoryTasks();
         await refreshAsyncStoryTask();
       },
@@ -133,10 +239,22 @@ export default () => {
       },
     );
 
-  const { run: runRemoveTaskSubmit, loading: loadingRemoveTaskSubmit } =
+  const { runAsync: runRemoveTaskSubmit, loading: loadingRemoveTaskSubmit } =
     useRequest(
       async (id: number, token: string) => {
-        await removeTaskSubmit(id, token);
+        if (taskModule === 'Basic') {
+          await removeTaskSubmit(id, token);
+        } else {
+          if (!connectedWallets[chainType]) {
+            return;
+          }
+          await connectedWallets[chainType].provider.withdrawTaskSubmit(
+            storyId,
+            taskId,
+            id,
+          );
+        }
+
         refreshStoryTasks();
         await refreshAsyncStoryTask();
       },
