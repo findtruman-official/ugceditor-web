@@ -29,7 +29,7 @@ export default function MDEditorWithPreview({
   const [preview, setPreview] = useState(false);
 
   return (
-    <>
+    <div data-color-mode="dark">
       <MDEditor
         height={height}
         style={style}
@@ -62,8 +62,10 @@ export default function MDEditorWithPreview({
           padding: '24px 48px',
         }}
       >
-        <MDEditor.Markdown source={value} linkTarget={'_blank'} />
+        <div data-color-mode="dark">
+          <MDEditor.Markdown source={value} linkTarget={'_blank'} />
+        </div>
       </Modal>
-    </>
+    </div>
   );
 }

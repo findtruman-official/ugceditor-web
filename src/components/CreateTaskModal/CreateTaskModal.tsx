@@ -63,7 +63,6 @@ export default function CreateTaskModal({
         !loadingCreateStoryTask && onClose();
       }}
       footer={null}
-      data-color-mode="dark"
       width={720}
     >
       {taskModule === 'Chain' && (

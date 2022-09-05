@@ -105,7 +105,9 @@ export default function TaskSubmitCard({
         maxHeight={maxHeight}
         showViewMoreBtn={!!onViewMore}
       >
-        <MDEditor.Markdown source={data.content} linkTarget={'_blank'} />
+        <div data-color-mode="dark">
+          <MDEditor.Markdown source={data.content} linkTarget={'_blank'} />
+        </div>
       </ViewMoreContainer>
     </div>
   );

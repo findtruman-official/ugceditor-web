@@ -253,7 +253,7 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
             height={'calc(100% - 34px)'}
           />
         ) : (
-          <MacScrollbar className={styles.desc}>
+          <MacScrollbar className={styles.desc} data-color-mode="dark">
             <MDEditor.Markdown
               source={storyTask?.description}
               linkTarget={'_blank'}

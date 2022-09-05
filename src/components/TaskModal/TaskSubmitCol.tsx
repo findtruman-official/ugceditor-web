@@ -259,7 +259,9 @@ export default function TaskSubmitCol({
           padding: '24px 48px',
         }}
       >
-        <MDEditor.Markdown source={viewMoreContent} linkTarget={'_blank'} />
+        <div data-color-mode="dark">
+          <MDEditor.Markdown source={viewMoreContent} linkTarget={'_blank'} />
+        </div>
       </Modal>
     </Col>
   );

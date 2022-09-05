@@ -139,6 +139,7 @@ export default function ReviewModal({ visible, onClose }: ReviewModalProps) {
               <MacScrollbar
                 ref={previewRef}
                 style={{ overflowY: 'auto', height: '100%' }}
+                data-color-mode="dark"
               >
                 <MDEditor.Markdown
                   source={preview?.content}
