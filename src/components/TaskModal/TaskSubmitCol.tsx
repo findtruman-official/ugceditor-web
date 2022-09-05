@@ -140,7 +140,7 @@ export default function TaskSubmitCol({
               storyTask?.status === 'Todo'
                 ? 460
                 : storyTask?.status === 'Done'
-                ? 'calc(100% - 416px)'
+                ? 384
                 : '100%',
           }}
         >
