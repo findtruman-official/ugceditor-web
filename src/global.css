@@ -35,7 +35,7 @@
   /*font-weight: normal;*/
 }
 
-body {
+#root {
   overflow-x: hidden;
 }
 
