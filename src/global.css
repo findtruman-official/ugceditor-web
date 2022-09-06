@@ -103,6 +103,12 @@ img {
   border-radius: 4px;
 }
 
+.nft-card-skeleton .ant-skeleton-element .ant-skeleton-image {
+  width: 256px !important;
+  height: 256px !important;
+  border-radius: 4px 4px 0 0;
+}
+
 .w-md-editor {
   background: transparent !important;
 }

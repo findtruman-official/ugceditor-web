@@ -5,7 +5,16 @@ import { useIntl } from '@@/plugin-locale';
 import { LoadingOutlined } from '@ant-design/icons';
 import { BN } from '@project-serum/anchor';
 import { useRequest } from 'ahooks';
-import { Button, Col, message, Modal, Row, Spin, Tooltip } from 'antd';
+import {
+  Button,
+  Col,
+  message,
+  Modal,
+  Row,
+  Skeleton,
+  Spin,
+  Tooltip,
+} from 'antd';
 import { useContext, useMemo } from 'react';
 import { useModel } from 'umi';
 import styles from './NftCard.less';
@@ -116,7 +125,12 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
         width: 260,
       }}
     >
-      {currentStory?.nft ? (
+      {!currentStory ? (
+        <div className={'nft-card-skeleton'} style={{ height: 480 }}>
+          <Skeleton.Image active={true} />
+          <Skeleton style={{ padding: '20px 24px' }} active={true} />
+        </div>
+      ) : currentStory.nft ? (
         <div className={styles.nftCard}>
           <img
             className={styles.nftCover}
