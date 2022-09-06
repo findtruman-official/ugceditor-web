@@ -448,7 +448,7 @@ export class PhantomWalletProvider implements WalletProvider {
     return 0;
   }
 
-  async claimAuthorReservedNft(storyId: string) {}
+  async claimAuthorReservedNft(storyId: string, amount: number) {}
 
   async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
     return [];

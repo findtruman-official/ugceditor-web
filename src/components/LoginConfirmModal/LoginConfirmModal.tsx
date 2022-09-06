@@ -35,7 +35,7 @@ export default function LoginConfirmModal({
 
   return (
     <Modal
-      visible={!!loginState}
+      open={!!loginState}
       closable={false}
       title={false}
       footer={null}

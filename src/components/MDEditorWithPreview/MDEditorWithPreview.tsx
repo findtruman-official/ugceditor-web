@@ -53,7 +53,7 @@ export default function MDEditorWithPreview({
         <SearchOutlined /> {formatMessage({ id: 'create-task.preview' })}
       </div>
       <Modal
-        visible={preview}
+        open={preview}
         onCancel={() => setPreview(false)}
         centered={true}
         footer={null}

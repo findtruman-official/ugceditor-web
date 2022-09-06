@@ -29,21 +29,15 @@ export default function CreateTaskModal({
   const { getToken } = useModel('walletModel', (model) => ({
     getToken: model.getToken,
   }));
-  const {
-    currentStory,
-    claimReservedNft,
-    claimingReservedNft,
-    balanceOfStoryNft,
-    nfts,
-    gettingNfts,
-  } = useModel('storyModel', (model) => ({
-    currentStory: model.currentStory,
-    claimReservedNft: model.claimReservedNft,
-    claimingReservedNft: model.claimingReservedNft,
-    balanceOfStoryNft: model.balanceOfStoryNft,
-    nfts: model.nfts,
-    gettingNfts: model.gettingNfts,
-  }));
+  const { currentStory, balanceOfStoryNft, nfts, gettingNfts } = useModel(
+    'storyModel',
+    (model) => ({
+      currentStory: model.currentStory,
+      balanceOfStoryNft: model.balanceOfStoryNft,
+      nfts: model.nfts,
+      gettingNfts: model.gettingNfts,
+    }),
+  );
   const chainType = currentStory?.chainInfo.type;
   const token = getToken(chainType);
 
@@ -58,7 +52,7 @@ export default function CreateTaskModal({
   return (
     <Modal
       centered={true}
-      visible={visible}
+      open={visible}
       onCancel={() => {
         !loadingCreateStoryTask && onClose();
       }}
@@ -85,26 +79,9 @@ export default function CreateTaskModal({
               <div className={styles.noNftTip}>
                 {!!reservedNftRest ? (
                   <>
-                    <div style={{ marginBottom: 12 }}>
+                    <div>
                       {formatMessage({ id: 'create-task.nft-not-claimed' })}
                     </div>
-                    <Button
-                      type={'text'}
-                      onClick={async () => {
-                        try {
-                          await claimReservedNft();
-                          message.success(
-                            formatMessage({ id: 'story.claimed' }),
-                          );
-                        } catch (e) {
-                          console.log(e);
-                          message.error(formatMessage({ id: 'mint-failed' }));
-                        }
-                      }}
-                      loading={claimingReservedNft}
-                    >
-                      {formatMessage({ id: 'create-task.claim-now' })}
-                    </Button>
                   </>
                 ) : balanceOfStoryNft === 0 ? (
                   <div>{formatMessage({ id: 'create-task.reward.empty' })}</div>

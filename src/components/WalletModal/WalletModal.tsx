@@ -48,7 +48,7 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
     <Modal
       closable={false}
       centered={true}
-      visible={visible}
+      open={visible}
       onCancel={() => {
         if (!connecting) {
           onClose();

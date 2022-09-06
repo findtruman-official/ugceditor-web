@@ -250,7 +250,7 @@ export default function TaskSubmitCol({
         footer={null}
         closable={false}
         width={1000}
-        visible={viewModalVisible}
+        open={viewModalVisible}
         onCancel={() => {
           setViewMoreContent('');
           setViewModalVisible(false);

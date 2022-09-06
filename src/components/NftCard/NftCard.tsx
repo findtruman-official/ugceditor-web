@@ -2,20 +2,22 @@ import ColorfulBorder from '@/components/Colorful/ColorfulBorder';
 import { WalletContext, WalletContextType } from '@/layouts';
 import { PREFIX } from '@/utils/const';
 import { useIntl } from '@@/plugin-locale';
-import { LoadingOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import { BN } from '@project-serum/anchor';
 import { useRequest } from 'ahooks';
 import {
   Button,
   Col,
+  InputNumber,
   message,
   Modal,
+  Popover,
   Row,
   Skeleton,
   Spin,
   Tooltip,
 } from 'antd';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useModel } from 'umi';
 import styles from './NftCard.less';
 
@@ -56,6 +58,12 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
     claimingReservedNft: model.claimingReservedNft,
     refreshNfts: model.refreshNfts,
   }));
+  const { taskModule } = useModel('taskModel', (model) => ({
+    taskModule: model.taskModule,
+  }));
+
+  const [claimReservedOpen, setClaimReservedOpen] = useState(false);
+  const [claimReservedAmount, setClaimReservedAmount] = useState(1);
 
   const chain = currentStory?.chainInfo.type;
   const wallet = connectedWallets[chain];
@@ -117,6 +125,12 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
       return 0;
     }
   }, [currentStory]);
+
+  useEffect(() => {
+    if (reservedNftRest === 0) {
+      setClaimReservedOpen(false);
+    }
+  }, [reservedNftRest]);
 
   return (
     <ColorfulBorder
@@ -205,45 +219,105 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                     </Button>
                   </Col>
                 )}
-                {isAuthor && (
+                {isAuthor && taskModule === 'Chain' && (
                   <Col flex={1}>
-                    <Tooltip
-                      title={formatMessage(
-                        {
-                          id:
-                            reservedNftRest > 0
-                              ? 'story.claim-reserved-nft'
-                              : 'story.reserved-nft-claimed',
-                        },
-                        { count: reservedNftRest },
-                      )}
-                    >
-                      <Button
-                        style={{ marginLeft: 6 }}
-                        type={'primary'}
-                        disabled={minting || reservedNftRest === 0}
-                        loading={claimingReservedNft}
-                        onClick={async () => {
-                          try {
-                            await claimReservedNft();
-                            message.success(
-                              formatMessage({ id: 'story.claimed' }),
-                            );
-                          } catch (e) {
-                            console.log(e);
-                            message.error(formatMessage({ id: 'mint-failed' }));
+                    {reservedNftRest > 0 ? (
+                      <Popover
+                        open={claimReservedOpen}
+                        onOpenChange={(open) => {
+                          if (!open && !claimingReservedNft) {
+                            setClaimReservedOpen(false);
                           }
                         }}
-                        block={true}
+                        trigger={'click'}
+                        content={
+                          <div>
+                            <div style={{ marginBottom: 8, fontSize: 15 }}>
+                              {formatMessage({
+                                id: 'story.claim-reserved-nft',
+                              })}
+                            </div>
+                            <div
+                              style={{
+                                color: 'rgba(255, 255, 255, .5)',
+                                marginBottom: 8,
+                              }}
+                            >
+                              <InfoCircleOutlined />{' '}
+                              {formatMessage(
+                                { id: 'story.nft-reserved' },
+                                { count: reservedNftRest },
+                              )}
+                            </div>
+                            <Row gutter={8}>
+                              <Col>
+                                <InputNumber
+                                  disabled={claimingReservedNft}
+                                  value={claimReservedAmount}
+                                  onChange={(e) => setClaimReservedAmount(e)}
+                                  step={1}
+                                  min={1}
+                                  max={reservedNftRest}
+                                />
+                              </Col>
+                              <Col>
+                                <Button
+                                  type={'primary'}
+                                  loading={claimingReservedNft}
+                                  onClick={async () => {
+                                    try {
+                                      await claimReservedNft(
+                                        claimReservedAmount,
+                                      );
+                                      setClaimReservedAmount(1);
+                                      message.success(
+                                        formatMessage({ id: 'story.claimed' }),
+                                      );
+                                    } catch (e) {
+                                      console.log(e);
+                                      message.error(
+                                        formatMessage({ id: 'mint-failed' }),
+                                      );
+                                    }
+                                  }}
+                                >
+                                  {formatMessage({ id: 'story.claim' })}
+                                </Button>
+                              </Col>
+                            </Row>
+                          </div>
+                        }
                       >
-                        {formatMessage({
-                          id:
-                            reservedNftRest > 0
-                              ? 'story.claim-reserved'
-                              : 'story.reserved-claimed',
+                        <Button
+                          style={{ marginLeft: 6 }}
+                          type={'primary'}
+                          disabled={minting}
+                          onClick={() => setClaimReservedOpen(true)}
+                          block={true}
+                        >
+                          {formatMessage({
+                            id: 'story.claim-reserved',
+                          })}
+                        </Button>
+                      </Popover>
+                    ) : (
+                      <Tooltip
+                        title={formatMessage({
+                          id: 'story.reserved-nft-claimed',
                         })}
-                      </Button>
-                    </Tooltip>
+                      >
+                        <Button
+                          style={{ marginLeft: 6 }}
+                          type={'primary'}
+                          disabled={true}
+                          block={true}
+                        >
+                          {formatMessage({
+                            id: 'story.reserved-claimed',
+                          })}
+                        </Button>
+                      </Tooltip>
+                    )}
                   </Col>
                 )}
               </Row>

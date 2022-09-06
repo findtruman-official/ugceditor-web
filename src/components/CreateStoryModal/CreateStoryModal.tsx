@@ -165,7 +165,7 @@ export default function CreateStoryModal({
   return (
     <Modal
       className={'create-story-modal'}
-      visible={visible}
+      open={visible}
       onCancel={() => {
         !publishing && onClose();
       }}

@@ -365,12 +365,13 @@ export default () => {
 
   const { runAsync: claimReservedNft, loading: claimingReservedNft } =
     useRequest(
-      async () => {
+      async (amount: number) => {
         if (!isAuthor || !chainType || !storyId || !connectedWallets[chainType])
           return;
 
         await connectedWallets[chainType].provider.claimAuthorReservedNft(
           storyId,
+          amount,
         );
         refreshBalanceOfStoryNft();
         refreshNfts();

@@ -29,7 +29,7 @@ export default function TaskModal({
       centered={true}
       footer={null}
       width={1296}
-      visible={visible}
+      open={visible}
       onCancel={() => {
         onClose();
       }}

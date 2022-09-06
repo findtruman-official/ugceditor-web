@@ -271,7 +271,7 @@ export interface WalletProvider {
    * 批量铸造作者保留Nft
    * 数量应为 authorReserved - authorClaimed
    */
-  claimAuthorReservedNft(storyId: string): Promise<void>;
+  claimAuthorReservedNft(storyId: string, amount: number): Promise<void>;
 
   /**
    * 查询作者持有的故事NFT的tokenId

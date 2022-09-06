@@ -400,7 +400,7 @@ const Story: React.FC = () => {
       />
 
       <Modal
-        visible={descModalVisible}
+        open={descModalVisible}
         onCancel={() => setDescModalVisible(false)}
         title={false}
         closable={false}

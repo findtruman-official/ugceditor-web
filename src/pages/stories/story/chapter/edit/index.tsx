@@ -241,7 +241,7 @@ const Edit: React.FC = () => {
         closable={false}
         footer={false}
         centered={true}
-        visible={promptVisible}
+        open={promptVisible}
         onCancel={() => setPromptVisible(false)}
       >
         <div className={styles.promptTip}>

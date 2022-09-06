@@ -45,7 +45,7 @@ export default function ReviewModal({ visible, onClose }: ReviewModalProps) {
       footer={null}
       centered={true}
       width={1296}
-      visible={visible}
+      open={visible}
       destroyOnClose={true}
       onCancel={() => {
         onClose();

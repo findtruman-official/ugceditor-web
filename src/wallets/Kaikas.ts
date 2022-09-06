@@ -351,14 +351,17 @@ export class KaikasWalletProvider implements WalletProvider {
     return authorReserved - authorClaimed;
   }
 
-  async claimAuthorReservedNft(storyId: string) {
+  async claimAuthorReservedNft(storyId: string, amount: number) {
     if (!this.contract) throw new Error('Contract Unavailable');
 
     const rest = await this.authorReservedNftRest(storyId);
-    if (!rest) return;
+    if (rest < amount) return;
 
     const account = this.provider.selectedAddress;
-    const method = this.contract.methods.claimAuthorReservedNft(storyId, rest);
+    const method = this.contract.methods.claimAuthorReservedNft(
+      storyId,
+      amount,
+    );
     await method.send({
       from: account,
       gas: await method.estimateGas({ from: account }),

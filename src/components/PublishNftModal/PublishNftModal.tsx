@@ -91,7 +91,7 @@ export default function PublishNftModal({
   return (
     <Modal
       className={'publish-nft-modal'}
-      visible={visible}
+      open={visible}
       onCancel={() => {
         !publishingNft && onClose();
       }}
