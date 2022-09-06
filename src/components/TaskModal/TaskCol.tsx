@@ -220,7 +220,7 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
                   fontWeight: 'bold',
                   marginRight: 8,
                 }}
-              >{`${currentStory.info.title} NFT`}</ColorfulText>
+              >{`${currentStory?.info?.title || ''} NFT`}</ColorfulText>
               {storyTask.rewardNfts.map((e: string) => (
                 <Tag key={e}>{`# ${e}`}</Tag>
               ))}

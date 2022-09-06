@@ -147,6 +147,7 @@ export default function TaskSubmitCol({
           <Tabs.TabPane
             tab={formatMessage({ id: 'task-modal.all' })}
             key={'all'}
+            style={{ height: '100%' }}
           >
             <MacScrollbar
               ref={allListRef}
@@ -184,7 +185,11 @@ export default function TaskSubmitCol({
               )}
             </MacScrollbar>
           </Tabs.TabPane>
-          <Tabs.TabPane tab={formatMessage({ id: 'task-modal.my' })} key={'my'}>
+          <Tabs.TabPane
+            tab={formatMessage({ id: 'task-modal.my' })}
+            key={'my'}
+            style={{ height: '100%' }}
+          >
             <MacScrollbar ref={myListRef} className={styles.submitList}>
               {mySubmits.length > 0 ? (
                 mySubmits.map((submit: API.StoryChainTaskSubmit) => (
