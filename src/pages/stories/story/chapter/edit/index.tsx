@@ -128,7 +128,7 @@ const Edit: React.FC = () => {
       <Helmet
         title={`${
           currentChapter?.name || formatMessage({ id: 'chapter.new-chapter' })
-        } - Ugceditor Web`}
+        } - UGCEditor`}
       />
       {isAuthor ? (
         <>

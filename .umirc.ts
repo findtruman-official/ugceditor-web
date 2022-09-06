@@ -9,7 +9,7 @@ export default defineConfig({
   initialState: {},
   request: {},
   layout: {
-    title: 'Ugceditor Web',
+    title: 'UGCEditor',
     locale: true,
   },
   routes: [
