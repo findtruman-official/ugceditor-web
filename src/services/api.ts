@@ -7,6 +7,7 @@ export const login = async (
   account: string,
   chain: string,
   message: string,
+  pubkey: string,
   signature: string,
 ) => {
   return await client.request<{ login: API.Jwt }>(
@@ -15,12 +16,14 @@ export const login = async (
         $account: String!
         $chain: String!
         $message: String!
+        $pubkey: String
         $signature: String!
       ) {
         login(
           account: $account
           chain: $chain
           message: $message
+          pubkey: $pubkey
           signature: $signature
         ) {
           expiresIn
@@ -28,7 +31,7 @@ export const login = async (
         }
       }
     `,
-    { account, chain, message, signature },
+    { account, chain, message, signature, pubkey },
   );
 };
 

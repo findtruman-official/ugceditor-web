@@ -64,7 +64,7 @@ export class PhantomWalletProvider implements WalletProvider {
     if (this.provider) {
       this.provider.on('connect', async (publicKey: string) => {
         this.setAutoConnect(WalletAutoConnectType.True);
-        onConnect?.(publicKey.toString());
+        onConnect?.({ address: publicKey.toString() });
 
         const wallet = window.solana;
         const network = clusterApiUrl('devnet');
@@ -78,7 +78,7 @@ export class PhantomWalletProvider implements WalletProvider {
       });
       this.provider.on('accountChanged', (publicKey: string) => {
         if (publicKey) {
-          onAccountChanged?.(publicKey.toString());
+          onAccountChanged?.({ address: publicKey.toString() });
         } else {
           this.connect();
         }

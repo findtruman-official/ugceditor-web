@@ -14,9 +14,9 @@ export enum WalletAutoConnectType {
 }
 
 export interface WalletEvents {
-  onConnect?: (address: string) => void;
+  onConnect?: (payload: { address: string; pubKey?: string }) => void;
   onDisconnect?: () => void;
-  onAccountChanged?: (address: string) => void;
+  onAccountChanged?: (payload: { address: string; pubKey?: string }) => void;
   onChainChanged?: (chainId: string) => void;
 }
 

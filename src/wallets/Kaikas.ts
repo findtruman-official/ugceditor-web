@@ -23,7 +23,7 @@ export class KaikasWalletProvider implements WalletProvider {
   factoryAddress: string = '';
   findsMintAddress: string = '';
 
-  onConnect?: (address: string) => void;
+  onConnect?: (payload: { address: string; pubKey?: string }) => void;
   onDisconnect?: () => void;
 
   constructor(
@@ -44,7 +44,7 @@ export class KaikasWalletProvider implements WalletProvider {
       this.onConnect = onConnect || (() => {});
       this.onDisconnect = onDisconnect || (() => {});
       this.provider.on('accountsChanged', (accounts: string[]) => {
-        onAccountChanged?.(accounts[0]);
+        onAccountChanged?.({ address: accounts[0] });
       });
       this.provider.on('networkChanged', () => {});
     }
@@ -80,7 +80,7 @@ export class KaikasWalletProvider implements WalletProvider {
 
     try {
       const accounts = await this.provider.enable();
-      this.onConnect?.(accounts[0]);
+      this.onConnect?.({ address: accounts[0] });
       this.setAutoConnect(WalletAutoConnectType.True);
       return accounts[0];
     } catch (error) {

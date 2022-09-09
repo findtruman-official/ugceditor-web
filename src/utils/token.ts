@@ -24,10 +24,12 @@ export const refreshToken = async (
   account: string,
   chain: string,
   message: string,
+  pubKey: string,
   signature: string,
 ) => {
-  const { token, expiresIn } = (await login(account, chain, message, signature))
-    .login;
+  const { token, expiresIn } = (
+    await login(account, chain, message, pubKey, signature)
+  ).login;
   saveToken(account, chain, token, new Date().valueOf() + expiresIn * 1000);
   return token;
 };

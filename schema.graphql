@@ -33,7 +33,7 @@ type Mutation {
     createStoryTask(chain: String!, chainStoryId: String!, description: String!, title: String!): StoryTask!
     createTaskSubmit(content: String!, taskId: Int!): StoryTaskSubmit!
     doneStoryTask(id: Float!, submitIds: [Int!]!): StoryTask!
-    login(account: String!, chain: String!, message: String!, signature: String!): Jwt!
+    login(account: String!, chain: String!, message: String!, pubkey: String, signature: String!): Jwt!
     metadataUriPrefix(amount: Int!, chain: String!, description: String!, image: String!, name: String!): IpfsResult!
     removeTaskSubmit(id: Int!): Boolean!
     "returns null if no story on chain."
@@ -171,10 +171,10 @@ enum StoryChainTaskStatus {
 }
 
 enum StoryChainTaskSubmitStatus {
-    APPROVED
-    PENDING
-    REJECTED
-    WITHDRAWED
+    Approved
+    Pending
+    Rejected
+    Withdrawed
 }
 
 enum StorySort {

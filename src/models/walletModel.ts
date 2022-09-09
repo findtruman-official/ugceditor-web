@@ -24,11 +24,6 @@ interface Wallet {
   provider: WalletProvider;
 }
 
-/**
- * 约定：
- *    1. 可以同时连接多个链
- *    2. 一个链同时只连接一个钱包
- */
 export default () => {
   const [connecting, setConnecting] = useState(false);
 
@@ -36,31 +31,35 @@ export default () => {
     return (await getChains()).chains;
   });
 
-  /**
-   * 已连接的钱包
-   * 一个链同时只存在一个连接的钱包
-   */
   const [connectedWallets, setConnectedWallets] = useState<
     Record<ChainType, Wallet | undefined>
   >({
     [ChainType.Solana]: undefined,
     [ChainType.Klaytn]: undefined,
   });
-  /**
-   * 每个链当前连接的账户，未连接则为空
-   */
+
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
+    [ChainType.Solana]: '',
+    [ChainType.Klaytn]: '',
+  });
+
+  const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
     return {
-      onConnect: (address: string) => {
+      onConnect: (payload: { address: string; pubKey?: string }) => {
+        const { address, pubKey } = payload;
         const chainType = getChainType(walletType);
         setAccounts((accounts) => ({
           ...accounts,
           [chainType]: address,
+        }));
+        setPubKeys((pubKeys) => ({
+          ...pubKeys,
+          [chainType]: pubKey || '',
         }));
         setConnectedWallets((state) => ({
           ...state,
@@ -78,19 +77,21 @@ export default () => {
           [chainType]: undefined,
         }));
       },
-      onAccountChanged: (address: string) => {
+      onAccountChanged: (payload: { address: string; pubKey?: string }) => {
+        const { address, pubKey } = payload;
         const chainType = getChainType(walletType);
         setAccounts((accounts) => ({
           ...accounts,
           [chainType]: address,
         }));
+        setPubKeys((pubKeys) => ({
+          ...pubKeys,
+          [chainType]: pubKey || '',
+        }));
       },
     };
   };
 
-  /**
-   * 列出所有支持的链，链所支持的钱包，用于 WalletModal 的显示与调用
-   */
   const chainWallets: ChainWallet[] = useMemo(() => {
     if (!chains || chains.length === 0) return [];
 
@@ -221,9 +222,6 @@ export default () => {
   //   },
   // );
 
-  /**
-   * 获取 token
-   */
   const getToken = useCallback(
     (chainType: ChainType) => {
       if (!chainType) return;
@@ -237,14 +235,11 @@ export default () => {
     [accounts, connectedWallets],
   );
 
-  /**
-   * 获取 token
-   * @refresh: 如果 localStorage 中未找到 token(或token失效)，是否需要获取
-   */
   const getTokenAsync = useCallback(
     async (chainType: ChainType, refresh = false) => {
       if (!chainType) return;
       const account = accounts[chainType];
+      const pubKey = pubKeys[chainType];
       if (!account) {
         return '';
       } else {
@@ -256,7 +251,13 @@ export default () => {
             return '';
           }
           const signature = await wallet.provider.signMessage(message);
-          return await refreshToken(account, chainType, message, signature);
+          return await refreshToken(
+            account,
+            chainType,
+            message,
+            pubKey,
+            signature,
+          );
         }
         return token;
       }
