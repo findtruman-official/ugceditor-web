@@ -264,7 +264,11 @@ export class PhantomWalletProvider implements WalletProvider {
     price: number,
     total: number,
     reserved: number,
-    title: string,
+    metadata: {
+      name: string;
+      desc: string;
+      img: string;
+    },
     uriPrefix: string,
   ) {
     const { program } = await this.getProgram();
@@ -285,8 +289,9 @@ export class PhantomWalletProvider implements WalletProvider {
       fromWallet.publicKey,
     );
 
+    const { name } = metadata;
     await program.methods
-      .publishStoryNft(storyId, _price, _total, _reserved, title, uriPrefix)
+      .publishStoryNft(storyId, _price, _total, _reserved, name, uriPrefix)
       .accounts({
         author: fromWallet.publicKey,
         story: storyKey,
@@ -452,5 +457,9 @@ export class PhantomWalletProvider implements WalletProvider {
 
   async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
     return [];
+  }
+
+  async getNftAddress(storyId: string) {
+    return '';
   }
 }

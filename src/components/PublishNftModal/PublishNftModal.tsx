@@ -68,7 +68,7 @@ export default function PublishNftModal({
           price,
           totalSupply,
           reservedAmount,
-          name,
+          { name, desc, img },
           uriPrefix,
         );
 

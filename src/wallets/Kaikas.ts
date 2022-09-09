@@ -217,16 +217,21 @@ export class KaikasWalletProvider implements WalletProvider {
     price: number,
     total: number,
     reserved: number,
-    title: string,
+    metadata: {
+      name: string;
+      desc: string;
+      img: string;
+    },
     uriPrefix: string,
   ) {
     if (!this.contract) throw new Error('Contract Unavailable');
     const author = this.provider.selectedAddress;
     const decimals = await this.getMintDecimals();
     const _price = new BN(price).mul(new BN(10).pow(new BN(decimals)));
+    const { name } = metadata;
     const method = this.contract.methods.publishStoryNft(
       id,
-      title,
+      name,
       'Story',
       uriPrefix,
       this.findsMintAddress,
