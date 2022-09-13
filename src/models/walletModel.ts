@@ -8,6 +8,7 @@ import {
 import { ChainType, WalletProvider, WalletType } from '@/wallets';
 import { KaikasWalletProvider } from '@/wallets/Kaikas';
 import { PhantomWalletProvider } from '@/wallets/Phantom';
+import { TempleWalletProvider } from '@/wallets/Temple';
 import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -133,6 +134,24 @@ export default () => {
           },
         ],
       });
+
+    const tezosChainInfo = chains.find((c) => c.type === ChainType.Tezos);
+    tezosChainInfo && _chainWallets.push({
+      chainType: ChainType.Tezos,
+      icon: ChainLogos[ChainType.Tezos],
+      wallets: [
+        {
+          name: 'Temple',
+          icon: WalletLogos[WalletType.Temple],
+          walletType: WalletType.Temple,
+          provider: new TempleWalletProvider(
+            getWalletEvents(WalletType.Temple),
+            tezosChainInfo.factoryAddress,
+            tezosChainInfo.findsAddress,
+          ),
+        },
+      ]
+    });
 
     return _chainWallets;
   }, [chains]);
