@@ -37,16 +37,19 @@ export default () => {
   >({
     [ChainType.Solana]: undefined,
     [ChainType.Klaytn]: undefined,
+    [ChainType.Tezos]: undefined,
   });
 
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
+    [ChainType.Tezos]: '',
   });
 
   const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
+    [ChainType.Tezos]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
@@ -136,22 +139,23 @@ export default () => {
       });
 
     const tezosChainInfo = chains.find((c) => c.type === ChainType.Tezos);
-    tezosChainInfo && _chainWallets.push({
-      chainType: ChainType.Tezos,
-      icon: ChainLogos[ChainType.Tezos],
-      wallets: [
-        {
-          name: 'Temple',
-          icon: WalletLogos[WalletType.Temple],
-          walletType: WalletType.Temple,
-          provider: new TempleWalletProvider(
-            getWalletEvents(WalletType.Temple),
-            tezosChainInfo.factoryAddress,
-            tezosChainInfo.findsAddress,
-          ),
-        },
-      ]
-    });
+    tezosChainInfo &&
+      _chainWallets.push({
+        chainType: ChainType.Tezos,
+        icon: ChainLogos[ChainType.Tezos],
+        wallets: [
+          {
+            name: 'Temple',
+            icon: WalletLogos[WalletType.Temple],
+            walletType: WalletType.Temple,
+            provider: new TempleWalletProvider(
+              getWalletEvents(WalletType.Temple),
+              tezosChainInfo.factoryAddress,
+              tezosChainInfo.findsAddress,
+            ),
+          },
+        ],
+      });
 
     return _chainWallets;
   }, [chains]);

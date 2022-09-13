@@ -1,9 +1,15 @@
-import { TempleWallet } from '@temple-wallet/dapp';
-import { TezosToolkit } from '@taquito/taquito';
-import { ChainType, WalletAutoConnectType, WalletEvents, WalletProvider, WalletType } from '@/wallets/index';
-import { message } from 'antd';
+import {
+  ChainType,
+  WalletAutoConnectType,
+  WalletEvents,
+  WalletProvider,
+  WalletType,
+} from '@/wallets/index';
 import { BN } from '@project-serum/anchor';
+import { TezosToolkit } from '@taquito/taquito';
 import { bytes2Char } from '@taquito/utils';
+import { TempleWallet } from '@temple-wallet/dapp';
+import { message } from 'antd';
 
 const TESTNET_RPC_URL = 'https://rpc.jakartanet.teztnets.xyz';
 
@@ -36,7 +42,6 @@ export class TempleWalletProvider implements WalletProvider {
     }
   }
 
-
   async isAvailable() {
     return await TempleWallet.isAvailable();
   }
@@ -46,7 +51,11 @@ export class TempleWalletProvider implements WalletProvider {
   }
 
   openWebsite() {
-    window.open('https://chrome.google.com/webstore/detail/temple-tezos-wallet/ookjlbkiijinhpmnjffcofjonbfbgaoc', '_blank', 'noreferrer noopener');
+    window.open(
+      'https://chrome.google.com/webstore/detail/temple-tezos-wallet/ookjlbkiijinhpmnjffcofjonbfbgaoc',
+      '_blank',
+      'noreferrer noopener',
+    );
   }
 
   setAutoConnect(autoConnect: WalletAutoConnectType) {
@@ -66,8 +75,11 @@ export class TempleWalletProvider implements WalletProvider {
   async connect() {
     if (!this.provider) return;
 
-    try{
-      await this.provider.connect({ name: 'jakartanet', rpc: TESTNET_RPC_URL }, { forcePermission: false });
+    try {
+      await this.provider.connect(
+        { name: 'jakartanet', rpc: TESTNET_RPC_URL },
+        { forcePermission: false },
+      );
       const pkh = await this.provider.getPKH();
       const pk = this.provider.permission.publicKey;
       this.onConnect?.({ address: pkh.toString(), pubKey: pk });
@@ -88,9 +100,9 @@ export class TempleWalletProvider implements WalletProvider {
   async signMessage(message: string) {
     if (!this.provider) throw new Error('Provider Unavailable');
 
-    try{
-      return await this.provider.sign(Buffer.from(message).toString("hex")); // Only hex strings
-    }catch (error) {
+    try {
+      return await this.provider.sign(Buffer.from(message).toString('hex')); // Only hex strings
+    } catch (error) {
       console.log(error);
     }
   }
@@ -105,23 +117,23 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
     await contract.methods.publishStory(cid).send();
-    const contractStorage = await contract.storage();
+    const contractStorage = (await contract.storage()) as any;
     const storyId = contractStorage.nextId.toString();
     return storyId;
   }
 
   async getMintDecimals() {
     if (!this.tezos) throw new Error('Provider Unavailable');
-      const findsMintContract = await this.tezos.wallet.at(this.findsMintAddress);
-      const storage = await findsMintContract.storage();
-      const tokenMetadataValue = await storage.assets.token_metadata.get(0);
-      const valuesMap = tokenMetadataValue.token_info.valueMap;
-      const decimals = valuesMap.find((val: string, key: string) => {
-        if (key.substring(1, key.length-1) === 'decimals'){
-          return val
-        }
-      })
-      return Number(bytes2Char(decimals));
+    const findsMintContract = await this.tezos.wallet.at(this.findsMintAddress);
+    const storage = (await findsMintContract.storage()) as any;
+    const tokenMetadataValue = await storage.assets.token_metadata.get(0);
+    const valuesMap = tokenMetadataValue.token_info.valueMap;
+    const decimals = valuesMap.find((val: string, key: string) => {
+      if (key.substring(1, key.length - 1) === 'decimals') {
+        return val;
+      }
+    });
+    return Number(bytes2Char(decimals));
   }
 
   async publishStoryNft(
@@ -144,7 +156,19 @@ export class TempleWalletProvider implements WalletProvider {
     const contract = await this.tezos.wallet.at(this.factoryAddress);
     const _name = escape(metadata.name);
     const _desc = escape(metadata.desc);
-    await contract.methods.publishStoryNft(Number(id), _name, metadata.img, _desc, uriPrefix, this.findsMintAddress, _price, total, reserved).send();
+    await contract.methods
+      .publishStoryNft(
+        Number(id),
+        _name,
+        metadata.img,
+        _desc,
+        uriPrefix,
+        this.findsMintAddress,
+        _price,
+        total,
+        reserved,
+      )
+      .send();
   }
 
   async mintStoryNft(
@@ -178,20 +202,25 @@ export class TempleWalletProvider implements WalletProvider {
     // await storyContract.methods.mintStoryNft(Number(id)).send();
 
     //=========================
-    const batchOp = await this.tezos.wallet.batch()
-      .withContractCall(findsContract.methods.update_operators([{
-        add_operator: {
-          owner: author,
-          operator: nftSaleAddr,
-          token_id: 0
-        }
-      }]))
-        .withContractCall(storyContract.methods.mintStoryNft(Number(id)))
+    const batchOp = await this.tezos.wallet
+      .batch()
+      .withContractCall(
+        findsContract.methods.update_operators([
+          {
+            add_operator: {
+              owner: author,
+              operator: nftSaleAddr,
+              token_id: 0,
+            },
+          },
+        ]),
+      )
+      .withContractCall(storyContract.methods.mintStoryNft(Number(id)))
       .send();
     await batchOp.confirmation();
   }
 
-  async balanceOfStoryNft(account: number, nftName: string, storyId: string) {
+  async balanceOfStoryNft(account: string, nftName: string, storyId: string) {
     // TODO-STEP1： 主合约/storage/nftMap/...获取到对应的addr
     // if (!this.factoryAddress) throw new Error('Contract Unavailable');
     // if (!this.tezos) throw new Error('Provider Unavailable');
@@ -209,9 +238,8 @@ export class TempleWalletProvider implements WalletProvider {
     // const tokenMetadataValue = await storage.ledger.get({owner: 'tz1YRbhGah3URpJc9wDdHzN6c97kGJ4fY4bS', token_id: 1});
     // console.log('tokenMetadataValue', tokenMetadataValue)
 
-    return 'Unfinished';
+    return 0;
   }
-
 
   async createTask(
     storyId: string,
@@ -255,5 +283,4 @@ export class TempleWalletProvider implements WalletProvider {
   async getNftAddress(storyId: string) {
     return '';
   }
-
 }
