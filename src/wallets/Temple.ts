@@ -193,20 +193,30 @@ export class TempleWalletProvider implements WalletProvider {
 
   async balanceOfStoryNft(account: number, nftName: string, storyId: string) {
     // TODO-STEP1： 主合约/storage/nftMap/...获取到对应的addr
-    // if (!this.factoryAddress) throw new Error('Contract Unavailable');
-    // if (!this.tezos) throw new Error('Provider Unavailable');
-    // const contract = await this.tezos.wallet.at(this.factoryAddress);
-    // const contractStorage = await contract.storage();
-    // const nftAddr = await contractStorage.nftMap.get(Number(storyId));
+    if (!this.factoryAddress) throw new Error('Contract Unavailable');
+    if (!this.tezos) throw new Error('Provider Unavailable');
+    const contract = await this.tezos.wallet.at(this.factoryAddress);
+    const contractStorage = await contract.storage();
+    const nftAddr = await contractStorage.nftMap.get(Number(storyId));
 
     // TODO-STEP2：根据addr调用合约，调用入口函数【balance_of】，通过callback获取到NFT的持有量
-    // const nftContract = await this.tezos.wallet.at('KT1QLmTNMXLnTAmSnd6HnBp7Wbq5rSWobH9R');
-    // const storyContractStorage = await nftContract.storage();
-    // const storyNftValue = storyContractStorage.storyNftMap.get(Number(storyId));
-    // console.log('storyNftValue', storyNftValue)
-    //
-    // const storage = await nftContract.storage();
-    // const tokenMetadataValue = await storage.ledger.get({owner: 'tz1YRbhGah3URpJc9wDdHzN6c97kGJ4fY4bS', token_id: 1});
+    const nftContract = await this.tezos.wallet.at('KT1QLmTNMXLnTAmSnd6HnBp7Wbq5rSWobH9R');
+    const storyContractStorage = await nftContract.storage();
+    const storyNftValue = storyContractStorage.storyNftMap.get(Number(storyId));
+    console.log('storyNftValue', storyNftValue)
+    const storyNftTotal = storyNftValue.total;
+    console.log('storyNftTotal', storyNftTotal)
+    const nftAmountArray = new Array(storyNftTotal);
+    console.log('nftAmountArray', nftAmountArray)
+    const nftContractStorage = await nftContract.storage();
+    const NFTHoldingsList = nftAmountArray.filter(async (token_id: number) => {
+      return await nftContractStorage.ledger.get({owner: this.provider.permission.pkh, token_id});
+    })
+    console.log('NFTHoldings = ', NFTHoldingsList.length)
+
+
+    // const nftContractStorage = await nftContract.storage();
+    // const tokenMetadataValue = await nftContractStorage.ledger.get({owner: 'tz1YRbhGah3URpJc9wDdHzN6c97kGJ4fY4bS', token_id: 1});
     // console.log('tokenMetadataValue', tokenMetadataValue)
 
     return 'Unfinished';
