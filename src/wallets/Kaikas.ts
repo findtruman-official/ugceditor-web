@@ -265,19 +265,22 @@ export class KaikasWalletProvider implements WalletProvider {
     const account = this.provider.selectedAddress;
 
     const nftSaleContract = await this.getNftSaleContract(storyId);
-    const isApprovedForAll = await nftSaleContract.methods
-      .isApprovedForAll(account, this.factoryAddress)
-      .call();
-    if (!isApprovedForAll) {
-      const approveMethod = nftSaleContract.methods.setApprovalForAll(
-        this.factoryAddress,
-        true,
-      );
-      await approveMethod.send({
-        from: account,
-        gas: await approveMethod.estimateGas({ from: account }),
-      });
+    if (parseInt(nftSaleContract._address) !== 0) {
+      const isApprovedForAll = await nftSaleContract.methods
+        .isApprovedForAll(account, this.factoryAddress)
+        .call();
+      if (!isApprovedForAll) {
+        const approveMethod = nftSaleContract.methods.setApprovalForAll(
+          this.factoryAddress,
+          true,
+        );
+        await approveMethod.send({
+          from: account,
+          gas: await approveMethod.estimateGas({ from: account }),
+        });
+      }
     }
+
     const method = this.contract.methods.createTask(
       storyId,
       cid,
