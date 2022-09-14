@@ -2256,10 +2256,27 @@
     deepmerge "^4.2.2"
     svgo "^2.8.0"
 
+"@taquito/contracts-library@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/contracts-library/-/contracts-library-14.0.0.tgz#1ab17946dcd09a0fffa0db2192e8a25c3a7d43a8"
+  integrity sha512-U3vp9OYli1m7sRPVMCLUXaccc1U3En+rOLCIPG8r0mIeabUYfqWhFnUwtEFNXftC0wv4NmWoYZHIcxH8k3ZW6g==
+  dependencies:
+    "@taquito/rpc" "^14.0.0"
+    "@taquito/taquito" "^14.0.0"
+    "@taquito/utils" "^14.0.0"
+    bignumber.js "^9.0.2"
+
 "@taquito/http-utils@^13.0.1":
   version "13.0.1"
   resolved "https://registry.npmmirror.com/@taquito/http-utils/-/http-utils-13.0.1.tgz#b682b7161ce8011afdea1b06750ad21e15916c63"
   integrity sha512-eHzd0HSL3qX6bOOSaQClm+0XmpbSNcJP69uzaBJwfXo7ntQR1bUfGLn6+1Hgsk/lJ0JxakD2PDA4aaeajHvyPw==
+  dependencies:
+    axios "^0.26.0"
+
+"@taquito/http-utils@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/http-utils/-/http-utils-14.0.0.tgz#20470f8e08d33451241742221d416c72a70d881b"
+  integrity sha512-ZWZzod/+/OEE26b9CnDRjHGfUKBJft3aXv/e/A9bTHAtvRNJqGIhofHcDg/jTaolBMarCF2b3XBYw35aOOSk4A==
   dependencies:
     axios "^0.26.0"
 
@@ -2271,10 +2288,23 @@
     "@taquito/utils" "^13.0.1"
     bignumber.js "^9.0.2"
 
+"@taquito/local-forging@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/local-forging/-/local-forging-14.0.0.tgz#6844d90fa530d39ce7aaaa8cd11c8723d494a7d9"
+  integrity sha512-Nm0xGmS1Jzd+tU0a/8Y8XuTghbiPBgHDLo+e4141TK3OAwTzOw0an+w3xK9QVfzvxfIcZBSMjeMZzOwDdiqkJQ==
+  dependencies:
+    "@taquito/utils" "^14.0.0"
+    bignumber.js "^9.0.2"
+
 "@taquito/michel-codec@^13.0.1":
   version "13.0.1"
   resolved "https://registry.npmmirror.com/@taquito/michel-codec/-/michel-codec-13.0.1.tgz#cfadbd5886724b861d82f75b6f679104573dc7bb"
   integrity sha512-A9MxhDMdTTK31ty5Ke2wg4wkt7F/Y++tD8wq9YIFJzxt+MkpWX5b2i1f7yHXPsK/81YiGAi/LDamLtLCekY1LA==
+
+"@taquito/michel-codec@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/michel-codec/-/michel-codec-14.0.0.tgz#53d09e956b04359b43ff2a1e8a487c6da20c5a5f"
+  integrity sha512-ftnBvUVddlHBqvQbGPHEb26KrS4lIcaZ1eIpYJWiz+akb4Pcfyq7j/OEsDZbB7Pl2FP9hqu7ZygOF34zY6Lrtw==
 
 "@taquito/michelson-encoder@^13.0.1":
   version "13.0.1"
@@ -2283,6 +2313,16 @@
   dependencies:
     "@taquito/rpc" "^13.0.1"
     "@taquito/utils" "^13.0.1"
+    bignumber.js "^9.0.2"
+    fast-json-stable-stringify "^2.1.0"
+
+"@taquito/michelson-encoder@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/michelson-encoder/-/michelson-encoder-14.0.0.tgz#f62a1ef3cb432c4c9163f20161a73d772b98dda1"
+  integrity sha512-KIS+xl4rKfnd6hf9LUr6W+Pb7gv8F/Qsx0fho9CtM2PodKvdef3YlvkpScBUM9QZntAlvq2XQXUVXcZkbvxygw==
+  dependencies:
+    "@taquito/rpc" "^14.0.0"
+    "@taquito/utils" "^14.0.0"
     bignumber.js "^9.0.2"
     fast-json-stable-stringify "^2.1.0"
 
@@ -2307,6 +2347,15 @@
     "@taquito/utils" "^13.0.1"
     bignumber.js "^9.0.2"
 
+"@taquito/rpc@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/rpc/-/rpc-14.0.0.tgz#30bd353a485abba0a74477e1b0eac454076b30e9"
+  integrity sha512-FMfb80sA+VJwNx8OTNN07boDAt2roISqLLCUgmOIwy/cFDqhII7gdS4aYWJWqlKbdPKCPqh3a3ZQD1X/jyQHOA==
+  dependencies:
+    "@taquito/http-utils" "^14.0.0"
+    "@taquito/utils" "^14.0.0"
+    bignumber.js "^9.0.2"
+
 "@taquito/taquito@^13.0.1":
   version "13.0.1"
   resolved "https://registry.npmmirror.com/@taquito/taquito/-/taquito-13.0.1.tgz#806812b6853db555fcd614048ba36db4d14d8a57"
@@ -2321,6 +2370,20 @@
     bignumber.js "^9.0.2"
     rxjs "^6.6.3"
 
+"@taquito/taquito@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/taquito/-/taquito-14.0.0.tgz#7dc8dccbe164f5ef52d61e40f9a8084da340b172"
+  integrity sha512-JaXfvqOCF3dkwXxhe00Ravb8WLMC2VqJxerf4GrGUEpJw+NAkwbGEb8k/52+MQQdlxMPepZdPPru/HM3nFG0Tw==
+  dependencies:
+    "@taquito/http-utils" "^14.0.0"
+    "@taquito/local-forging" "^14.0.0"
+    "@taquito/michel-codec" "^14.0.0"
+    "@taquito/michelson-encoder" "^14.0.0"
+    "@taquito/rpc" "^14.0.0"
+    "@taquito/utils" "^14.0.0"
+    bignumber.js "^9.0.2"
+    rxjs "^6.6.3"
+
 "@taquito/utils@^13.0.1":
   version "13.0.1"
   resolved "https://registry.npmmirror.com/@taquito/utils/-/utils-13.0.1.tgz#24a1c7d7e62043fc7dcba2838b391b28aea2992e"
@@ -2329,6 +2392,21 @@
     "@stablelib/blake2b" "^1.0.1"
     "@stablelib/ed25519" "^1.0.2"
     "@types/bs58check" "^2.1.0"
+    blakejs "^1.2.1"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    elliptic "^6.5.4"
+    typedarray-to-buffer "^4.0.0"
+
+"@taquito/utils@^14.0.0":
+  version "14.0.0"
+  resolved "https://registry.npmmirror.com/@taquito/utils/-/utils-14.0.0.tgz#2fdbf0de677b5ef68e8a6d618a6a996195ae170b"
+  integrity sha512-0RSHn/CzbcbMdldJJIlXyxOvAajwmL6iPKJ6NaRyYJqqLM2CxYjG72KpXVv716pCMV1MbIWsOAr9FKbxW73PsA==
+  dependencies:
+    "@stablelib/blake2b" "^1.0.1"
+    "@stablelib/ed25519" "^1.0.2"
+    "@types/bs58check" "^2.1.0"
+    bignumber.js "^9.0.2"
     blakejs "^1.2.1"
     bs58check "^2.1.2"
     buffer "^6.0.3"
@@ -3618,7 +3696,7 @@ bignumber.js@8.0.2:
   resolved "https://registry.npmmirror.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
   integrity sha512-EiuvFrnbv0jFixEQ9f58jo7X0qI2lNGIr/MxntmVzQc5JUweDSh8y8hbTCAomFtqwUPIOWcLXP0VEOSZTG7FFw==
 
-bignumber.js@^9.0.0, bignumber.js@^9.0.1, bignumber.js@^9.0.2:
+bignumber.js@^9.0.0, bignumber.js@^9.0.1, bignumber.js@^9.0.2, bignumber.js@^9.1.0:
   version "9.1.0"
   resolved "https://registry.npmmirror.com/bignumber.js/-/bignumber.js-9.1.0.tgz#8d340146107fe3a6cb8d40699643c302e8773b62"
   integrity sha512-4LwHK4nfDOraBCtst+wOWIHbu1vhvAPJK8g8nROd4iuc3PSEjWif/qwbkh8jwCJz6yDBvtU4KPynETgrfh7y3A==
