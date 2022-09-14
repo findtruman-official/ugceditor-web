@@ -89,7 +89,7 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.provider) throw new Error('Provider Unavailable');
 
     try{
-      return await this.provider.sign(Buffer.from(message).toString("hex")); // Only hex strings
+      return await this.provider.sign(Buffer.from(message).toString("hex"));
     }catch (error) {
       console.log(error);
     }
@@ -106,22 +106,21 @@ export class TempleWalletProvider implements WalletProvider {
     const contract = await this.tezos.wallet.at(this.factoryAddress);
     await contract.methods.publishStory(cid).send();
     const contractStorage = await contract.storage();
-    const storyId = contractStorage.nextId.toString();
-    return storyId;
+    return contractStorage.nextId.toString();
   }
 
   async getMintDecimals() {
     if (!this.tezos) throw new Error('Provider Unavailable');
-      const findsMintContract = await this.tezos.wallet.at(this.findsMintAddress);
-      const storage = await findsMintContract.storage();
-      const tokenMetadataValue = await storage.assets.token_metadata.get(0);
-      const valuesMap = tokenMetadataValue.token_info.valueMap;
-      const decimals = valuesMap.find((val: string, key: string) => {
-        if (key.substring(1, key.length-1) === 'decimals'){
-          return val
-        }
-      })
-      return Number(bytes2Char(decimals));
+    const findsMintContract = await this.tezos.wallet.at(this.findsMintAddress);
+    const storage = await findsMintContract.storage();
+    const tokenMetadataValue = await storage.assets.token_metadata.get(0);
+    const valuesMap = tokenMetadataValue.token_info.valueMap;
+    const decimals = valuesMap.find((val: string, key: string) => {
+      if (key.substring(1, key.length - 1) === 'decimals') {
+        return val;
+      }
+    });
+    return Number(bytes2Char(decimals));
   }
 
   async publishStoryNft(
@@ -140,7 +139,7 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
     const decimals = await this.getMintDecimals();
-    const _price = new BN(price).mul(new BN(10).pow(new BN(decimals)));
+    const _price = price * Math.pow(10, decimals);
     const contract = await this.tezos.wallet.at(this.factoryAddress);
     const _name = escape(metadata.name);
     const _desc = escape(metadata.desc);
@@ -160,66 +159,50 @@ export class TempleWalletProvider implements WalletProvider {
     const findsContract = await this.tezos.wallet.at(this.findsMintAddress);
     const storyContract = await this.tezos.wallet.at(this.factoryAddress);
 
+    //TODO: Before casting, call the Finds contract to check whether the user's Finds balance is sufficient, if not, call onInsufficientFinds
     //TODO: 铸造前调用 Finds 合约查询用户的 Finds 余额是否足够，若不足则调用 onInsufficientFinds 弹窗提示
+    // [request:{owne: 'address', token_id: number}, balance: number]
 
-    // // TODO-STEP1： 先调用finds合约的入口函数【update_operators】，授权
-    // const findsContract = await this.tezos.wallet.at(this.findsMintAddress);
-    // const authorizeContract = await findsContract.methods.update_operators([{
-    //   add_operator: {
-    //     owner: author,
-    //     operator: nftSaleAddr,
-    //     token_id: 0
-    //   }
-    // }]).send();
-    //
-    //
-    // // TODO-STEP2：调用mintStoryNft，传入storyId
-    // const storyContract = await this.tezos.wallet.at(this.factoryAddress);
-    // await storyContract.methods.mintStoryNft(Number(id)).send();
-
-    //=========================
     const batchOp = await this.tezos.wallet.batch()
       .withContractCall(findsContract.methods.update_operators([{
         add_operator: {
-          owner: author,
+          owner: this.provider.permission.pkh,
           operator: nftSaleAddr,
-          token_id: 0
-        }
+          token_id: 0,
+        },
       }]))
-        .withContractCall(storyContract.methods.mintStoryNft(Number(id)))
+      .withContractCall(storyContract.methods.mintStoryNft(Number(id)))
       .send();
     await batchOp.confirmation();
   }
 
   async balanceOfStoryNft(account: number, nftName: string, storyId: string) {
-    // TODO-STEP1： 主合约/storage/nftMap/...获取到对应的addr
     if (!this.factoryAddress) throw new Error('Contract Unavailable');
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
     const contractStorage = await contract.storage();
     const nftAddr = await contractStorage.nftMap.get(Number(storyId));
 
-    // TODO-STEP2：根据addr调用合约，调用入口函数【balance_of】，通过callback获取到NFT的持有量
-    const nftContract = await this.tezos.wallet.at('KT1QLmTNMXLnTAmSnd6HnBp7Wbq5rSWobH9R');
-    const storyContractStorage = await nftContract.storage();
-    const storyNftValue = storyContractStorage.storyNftMap.get(Number(storyId));
-    console.log('storyNftValue', storyNftValue)
-    const storyNftTotal = storyNftValue.total;
-    console.log('storyNftTotal', storyNftTotal)
-    const nftAmountArray = new Array(storyNftTotal);
-    console.log('nftAmountArray', nftAmountArray)
+    const storyContractStorage = await contract.storage();
+    const storyNftValue = await storyContractStorage.storyNftMap.get(Number(storyId));
+    const storyNftTotal = Number(storyNftValue.total);
+    const nftAmountArray = new Array(storyNftTotal).fill(1).map((v, i) => ++i);
+
+    const nftContract = await this.tezos.wallet.at(nftAddr);
     const nftContractStorage = await nftContract.storage();
-    const NFTHoldingsList = nftAmountArray.filter(async (token_id: number) => {
-      return await nftContractStorage.ledger.get({owner: this.provider.permission.pkh, token_id});
-    })
-    console.log('NFTHoldings = ', NFTHoldingsList.length)
+    const BigMap = nftContractStorage.ledger;
 
+    let n = 0;
 
-    // const nftContractStorage = await nftContract.storage();
-    // const tokenMetadataValue = await nftContractStorage.ledger.get({owner: 'tz1YRbhGah3URpJc9wDdHzN6c97kGJ4fY4bS', token_id: 1});
-    // console.log('tokenMetadataValue', tokenMetadataValue)
+    for (let i = 0; i < nftAmountArray.length; i++) {
+      const token_id = nftAmountArray[i];
+      const res = await nftContractStorage.ledger.get({ owner: this.provider.permission.pkh, token_id });
+      res && n++;
+    }
 
-    return 'Unfinished';
+    console.log('return n = ', n);
+    return n;
+    // return 'coming soon';
   }
 
 
@@ -256,7 +239,8 @@ export class TempleWalletProvider implements WalletProvider {
     return 0;
   }
 
-  async claimAuthorReservedNft(storyId: string, amount: number) {}
+  async claimAuthorReservedNft(storyId: string, amount: number) {
+  }
 
   async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
     return [];
