@@ -8,8 +8,8 @@ import {
   WalletProvider,
   WalletType,
 } from '@/wallets/index';
-import { BN } from '@project-serum/anchor';
 import { message } from 'antd';
+import BigNumber from 'bignumber.js';
 import Caver, { Contract } from 'caver-js';
 import * as _ from 'lodash';
 
@@ -135,19 +135,19 @@ export class KaikasWalletProvider implements WalletProvider {
     onInsufficientFinds?: (account: string, amount: string) => void,
   ) {
     const account = this.provider.selectedAddress;
-    const priceBN = new BN(price);
+    const priceBN = new BigNumber(price);
 
     const tokenAmount = await this.findsContract!.methods.balanceOf(
       this.provider.selectedAddress,
     ).call();
-    const enoughToken = new BN(tokenAmount).gte(priceBN);
+    const enoughToken = new BigNumber(tokenAmount).gte(priceBN);
     if (!enoughToken) {
       const mintDecimals = await this.getMintDecimals();
       onInsufficientFinds?.(
         account,
-        new BN(price)
-          .sub(new BN(tokenAmount))
-          .div(new BN(10).pow(new BN(mintDecimals)))
+        new BigNumber(price)
+          .minus(new BigNumber(tokenAmount))
+          .div(new BigNumber(10).pow(new BigNumber(mintDecimals)))
           .toString(),
       );
       throw new Error('Insufficient Finds Token');
@@ -157,10 +157,10 @@ export class KaikasWalletProvider implements WalletProvider {
       account,
       nftSaleAddr,
     ).call();
-    const enoughAllowance = new BN(allowance).gte(priceBN);
+    const enoughAllowance = new BigNumber(allowance).gte(priceBN);
     if (!enoughAllowance) {
       let toApprove = '1500000000000000000000';
-      if (priceBN.gte(new BN(toApprove))) {
+      if (priceBN.gte(new BigNumber(toApprove))) {
         toApprove = price;
       }
       const approveMethod = this.findsContract!.methods.approve(
@@ -227,7 +227,9 @@ export class KaikasWalletProvider implements WalletProvider {
     if (!this.contract) throw new Error('Contract Unavailable');
     const author = this.provider.selectedAddress;
     const decimals = await this.getMintDecimals();
-    const _price = new BN(price).mul(new BN(10).pow(new BN(decimals)));
+    const _price = new BigNumber(price).times(
+      new BigNumber(10).pow(new BigNumber(decimals)),
+    );
     const { name } = metadata;
     const method = this.contract.methods.publishStoryNft(
       id,

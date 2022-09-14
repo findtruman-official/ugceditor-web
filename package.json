@@ -26,6 +26,7 @@
     "ahooks": "^3.7.0",
     "antd": "^4.23.0",
     "antd-img-crop": "^4.2.4",
+    "bignumber.js": "^9.1.0",
     "caver-js": "^1.9.0",
     "graphql": "^16.5.0",
     "graphql-request": "^4.3.0",
