@@ -309,6 +309,23 @@ export default () => {
     { refreshDeps: [accounts, currentStory, chainType, connectedWallets] },
   );
 
+  const {
+    data: restOfStoryNftOnChain,
+    loading: gettingRestOfStoryNftOnChain,
+    refresh: refreshRestOfStoryNftOnChain,
+  } = useRequest(
+    async () => {
+      if (!chainType || !connectedWallets[chainType] || !currentStory?.nft)
+        return 0;
+
+      return await connectedWallets[chainType].provider.restOfStoryNftOnChain(
+        currentStory.nft.name,
+        currentStory.chainStoryId,
+      );
+    },
+    { refreshDeps: [accounts, currentStory, chainType, connectedWallets] },
+  );
+
   const { data: reservedNftRest, refreshAsync: refreshReservedNftRest } =
     useRequest(
       async () => {
@@ -418,6 +435,9 @@ export default () => {
     balanceOfStoryNft,
     gettingBalanceOfStoryNft,
     refreshBalanceOfStoryNft,
+    restOfStoryNftOnChain,
+    gettingRestOfStoryNftOnChain,
+    refreshRestOfStoryNftOnChain,
     reservedNftRest,
     refreshReservedNftRest,
     nfts,

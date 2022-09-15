@@ -41,6 +41,9 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
     balanceOfStoryNft,
     gettingBalanceOfStoryNft,
     refreshBalanceOfStoryNft,
+    restOfStoryNftOnChain,
+    gettingRestOfStoryNftOnChain,
+    refreshRestOfStoryNftOnChain,
     reservedNftRest,
     claimReservedNft,
     claimingReservedNft,
@@ -53,6 +56,9 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
     balanceOfStoryNft: model.balanceOfStoryNft,
     gettingBalanceOfStoryNft: model.gettingBalanceOfStoryNft,
     refreshBalanceOfStoryNft: model.refreshBalanceOfStoryNft,
+    restOfStoryNftOnChain: model.restOfStoryNftOnChain,
+    gettingRestOfStoryNftOnChain: model.gettingRestOfStoryNftOnChain,
+    refreshRestOfStoryNftOnChain: model.refreshRestOfStoryNftOnChain,
     reservedNftRest: model.reservedNftRest,
     claimReservedNft: model.claimReservedNft,
     claimingReservedNft: model.claimingReservedNft,
@@ -102,6 +108,7 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
         );
         message.success(formatMessage({ id: 'story.claimed' }));
         refreshBalanceOfStoryNft();
+        refreshRestOfStoryNftOnChain();
         refreshNfts();
         refreshCurrentStory();
       } catch (e) {
@@ -115,7 +122,9 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
   );
 
   const rest = useMemo(() => {
-    if (currentStory?.nft) {
+    if (restOfStoryNftOnChain != -1) {
+      return restOfStoryNftOnChain;
+    } else if (currentStory?.nft) {
       return (
         currentStory.nft.total -
         currentStory.nft.sold -
@@ -124,7 +133,7 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
     } else {
       return 0;
     }
-  }, [currentStory]);
+  }, [currentStory, restOfStoryNftOnChain]);
 
   useEffect(() => {
     if (reservedNftRest === 0) {
@@ -181,7 +190,17 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                 <div className={styles.nftMetaLabel}>
                   {formatMessage({ id: 'story.rest' })}
                 </div>
-                <div className={styles.nftMetaValue}>{rest}</div>
+                <div className={styles.nftMetaValue}>
+                  {!isChainConnected ? (
+                    rest
+                  ) : gettingRestOfStoryNftOnChain ? (
+                    <LoadingOutlined />
+                  ) : restOfStoryNftOnChain === -1 ? (
+                    rest
+                  ) : (
+                    restOfStoryNftOnChain
+                  )}
+                </div>
               </Col>
               <Col span={12}>
                 <div className={styles.nftMetaLabel}>

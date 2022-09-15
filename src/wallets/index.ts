@@ -90,6 +90,8 @@ export interface WalletProvider {
     storyId: string,
   ): Promise<number>;
 
+  restOfStoryNftOnChain(nftName: string, storyId: string): Promise<number>;
+
   getNftAddress(storyId: string): Promise<string>;
 
   createTask(

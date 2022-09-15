@@ -420,6 +420,10 @@ export class PhantomWalletProvider implements WalletProvider {
     }
   }
 
+  async restOfStoryNftOnChain(nftName: string, storyId: string) {
+    return -1;
+  }
+
   async createTask(
     storyId: string,
     nftAddress: string,

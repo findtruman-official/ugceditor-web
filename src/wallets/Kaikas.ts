@@ -123,6 +123,15 @@ export class KaikasWalletProvider implements WalletProvider {
     return parseInt(await nftSaleContract.methods.balanceOf(account).call());
   }
 
+  async restOfStoryNftOnChain(nftName: string, storyId: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+
+    const { authorReserved, total, sold } = await this.contract.methods
+      .sales(storyId)
+      .call();
+    return total - authorReserved - sold;
+  }
+
   async getMintDecimals() {
     return await this.findsContract!.methods.decimals().call();
   }
