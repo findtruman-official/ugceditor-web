@@ -37,16 +37,19 @@ export default () => {
   >({
     [ChainType.Solana]: undefined,
     [ChainType.Klaytn]: undefined,
+    [ChainType.Tezos]: undefined,
   });
 
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
+    [ChainType.Tezos]: '',
   });
 
   const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
+    [ChainType.Tezos]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
