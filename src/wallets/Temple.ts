@@ -217,7 +217,7 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.factoryAddress) throw new Error('Contract Unavailable');
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage();
+    const contractStorage = await contract.storage() as any;
     const nftAddr = await contractStorage.nftMap.get(Number(storyId));
     const nftContract = await this.tezos.wallet.at(nftAddr);
     const storyNftSoldNum = (await contractStorage.storyNftMap.get(Number(storyId))).sold.toString();
@@ -233,11 +233,11 @@ export class TempleWalletProvider implements WalletProvider {
     return gotNfts.length;
   }
 
-  async restOfStoryNftOnChain(storyId: string) {
+  async restOfStoryNftOnChain(nftName: string, storyId: string) {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage();
+    const contractStorage = await contract.storage() as any;
     const storyNftInfo = await contractStorage.storyNftMap.get(Number(storyId));
     return storyNftInfo.total.toString() - storyNftInfo.sold.toString() - storyNftInfo.authorReserve.toString();
   }

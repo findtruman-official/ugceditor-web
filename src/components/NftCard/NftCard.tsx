@@ -3,7 +3,6 @@ import { WalletContext, WalletContextType } from '@/layouts';
 import { PREFIX } from '@/utils/const';
 import { useIntl } from '@@/plugin-locale';
 import { InfoCircleOutlined, LoadingOutlined } from '@ant-design/icons';
-import { BN } from '@project-serum/anchor';
 import { useRequest } from 'ahooks';
 import {
   Button,
@@ -17,6 +16,7 @@ import {
   Spin,
   Tooltip,
 } from 'antd';
+import BigNumber from 'bignumber.js';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useModel } from 'umi';
 import styles from './NftCard.less';
@@ -180,9 +180,9 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                 </div>
                 <div className={styles.nftMetaValue}>
                   {mintDecimals
-                    ? new BN(currentStory.nft.price)
-                        .div(new BN(10).pow(new BN(mintDecimals)))
-                        .toString()
+                    ? new BigNumber(currentStory.nft.price)
+                      .div(new BigNumber(10).pow(new BigNumber(mintDecimals)))
+                      .toString()
                     : '-'}
                 </div>
               </Col>
