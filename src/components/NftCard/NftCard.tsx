@@ -122,7 +122,7 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
   );
 
   const rest = useMemo(() => {
-    if (restOfStoryNftOnChain != -1) {
+    if (isChainConnected && restOfStoryNftOnChain != -1) {
       return restOfStoryNftOnChain;
     } else if (currentStory?.nft) {
       return (
@@ -133,7 +133,7 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
     } else {
       return 0;
     }
-  }, [currentStory, restOfStoryNftOnChain]);
+  }, [currentStory, restOfStoryNftOnChain, isChainConnected]);
 
   useEffect(() => {
     if (reservedNftRest === 0) {
@@ -234,7 +234,11 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                 ) : (
                   <Col flex={1}>
                     <Button type={'primary'} disabled={true} block={true}>
-                      {formatMessage({ id: 'story.sold-out' })}
+                      {gettingRestOfStoryNftOnChain ? (
+                        <LoadingOutlined />
+                      ) : (
+                        formatMessage({ id: 'story.sold-out' })
+                      )}
                     </Button>
                   </Col>
                 )}
