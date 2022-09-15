@@ -49,7 +49,7 @@ export class TempleWalletProvider implements WalletProvider {
   }
 
   getProvider<PT>(): PT | undefined | any {
-    return new TempleWallet('MyAwesomeDapp');
+    return new TempleWallet('JakartanetDapp');
   }
 
   openWebsite() {
@@ -231,6 +231,15 @@ export class TempleWalletProvider implements WalletProvider {
     })
 
     return gotNfts.length;
+  }
+
+  async restOfStoryNftOnChain(storyId: string) {
+    if (!this.tezos) throw new Error('Provider Unavailable');
+
+    const contract = await this.tezos.wallet.at(this.factoryAddress);
+    const contractStorage = await contract.storage();
+    const storyNftInfo = await contractStorage.storyNftMap.get(Number(storyId));
+    return storyNftInfo.total.toString() - storyNftInfo.sold.toString() - storyNftInfo.authorReserve.toString();
   }
 
   async createTask(
