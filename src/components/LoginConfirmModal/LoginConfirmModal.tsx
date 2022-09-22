@@ -42,6 +42,7 @@ export default function LoginConfirmModal({
       centered={true}
       onCancel={() => {}}
       width={400}
+      zIndex={9999}
     >
       <Typography.Title level={4}>
         {formatMessage({ id: 'confirm-login.tip.title' })}
