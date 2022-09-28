@@ -8,6 +8,7 @@ import {
 import { ChainType, WalletProvider, WalletType } from '@/wallets';
 import { KaikasWalletProvider } from '@/wallets/Kaikas';
 import { PhantomWalletProvider } from '@/wallets/Phantom';
+import { PlugWalletProvider } from '@/wallets/Plug';
 import { TempleWalletProvider } from '@/wallets/Temple';
 import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -38,18 +39,21 @@ export default () => {
     [ChainType.Solana]: undefined,
     [ChainType.Klaytn]: undefined,
     [ChainType.Tezos]: undefined,
+    [ChainType.Dfinity]: undefined,
   });
 
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
     [ChainType.Tezos]: '',
+    [ChainType.Dfinity]: '',
   });
 
   const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
     [ChainType.Tezos]: '',
+    [ChainType.Dfinity]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
@@ -156,6 +160,23 @@ export default () => {
           },
         ],
       });
+
+    _chainWallets.push({
+      chainType: ChainType.Dfinity,
+      icon: ChainLogos[ChainType.Dfinity],
+      wallets: [
+        {
+          name: 'Plug',
+          icon: WalletLogos[WalletType.Plug],
+          walletType: WalletType.Plug,
+          provider: new PlugWalletProvider(
+            getWalletEvents(WalletType.Plug),
+            '',
+            '',
+          ),
+        },
+      ],
+    });
 
     return _chainWallets;
   }, [chains]);

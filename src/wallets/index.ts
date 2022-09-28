@@ -2,12 +2,14 @@ export enum ChainType {
   Solana = 'solana-dev',
   Klaytn = 'klaytn-baobab',
   Tezos = 'tezos-jakartanet',
+  Dfinity = 'dfinity',
 }
 
 export enum WalletType {
   Phantom,
   Kaikas,
   Temple,
+  Plug,
 }
 
 export enum WalletAutoConnectType {
