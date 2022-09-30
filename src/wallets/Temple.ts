@@ -10,7 +10,6 @@ import { TezosToolkit } from '@taquito/taquito';
 import { bytes2Char } from '@taquito/utils';
 import { TempleWallet } from '@temple-wallet/dapp';
 import { message } from 'antd';
-import * as _ from 'lodash';
 
 const TESTNET_RPC_URL = 'https://jakartanet.ecadinfra.com';
 
@@ -319,6 +318,12 @@ export class TempleWalletProvider implements WalletProvider {
     await contract.methods.withdrawTaskSubmit(Number(storyId), taskId, submitId).send();
   }
 
+
+  sleep (milliseconds: number) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
+
+
   async authorReservedNftRest(storyId: string) {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
@@ -327,6 +332,7 @@ export class TempleWalletProvider implements WalletProvider {
     let storyNftInfo = await contractStorage.storyNftMap.get(Number(storyId));
     while (!storyNftInfo) {
       storyNftInfo = await contractStorage.storyNftMap.get(Number(storyId));
+      await this.sleep(2500);
     }
     return Number(storyNftInfo?.authorReserve) - Number(storyNftInfo?.authorClaimed);
   }
@@ -345,6 +351,7 @@ export class TempleWalletProvider implements WalletProvider {
 
     let authorClaimed_new = (await contractStorage.storyNftMap.get(Number(storyId))).authorClaimed;
     while (Number(authorClaimed_old) == Number(authorClaimed_new)) {
+      await this.sleep(2500);
       authorClaimed_new = (await contractStorage.storyNftMap.get(Number(storyId))).authorClaimed;
     }
   }
