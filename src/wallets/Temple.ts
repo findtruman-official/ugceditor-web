@@ -11,7 +11,7 @@ import { bytes2Char } from '@taquito/utils';
 import { TempleWallet } from '@temple-wallet/dapp';
 import { message } from 'antd';
 
-const TESTNET_RPC_URL = 'https://jakartanet.ecadinfra.com';
+const TESTNET_RPC_URL = 'https://ghostnet.tezos.marigold.dev/';
 
 export class TempleWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Temple;
