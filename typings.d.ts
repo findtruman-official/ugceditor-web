@@ -1,10 +1,23 @@
 import '@umijs/max/typings';
 
 declare global {
+  interface Plug {
+    sessionManager: {
+      sessionData?: {
+        agent: any;
+        principalId: string;
+        accountId: string;
+      };
+    };
+  }
+
   interface Window {
     phantom: any;
     solana: any;
     klaytn: any;
+    ic: {
+      plug: Plug;
+    };
   }
 
   namespace API {

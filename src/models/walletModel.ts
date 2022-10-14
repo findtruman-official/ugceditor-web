@@ -8,6 +8,7 @@ import {
 import { ChainType, WalletProvider, WalletType } from '@/wallets';
 import { KaikasWalletProvider } from '@/wallets/Kaikas';
 import { PhantomWalletProvider } from '@/wallets/Phantom';
+import { PlugWalletProvider } from '@/wallets/Plug';
 import { TempleWalletProvider } from '@/wallets/Temple';
 import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -38,18 +39,21 @@ export default () => {
     [ChainType.Solana]: undefined,
     [ChainType.Klaytn]: undefined,
     [ChainType.Tezos]: undefined,
+    [ChainType.Dfinity]: undefined,
   });
 
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
     [ChainType.Tezos]: '',
+    [ChainType.Dfinity]: '',
   });
 
   const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
     [ChainType.Solana]: '',
     [ChainType.Klaytn]: '',
     [ChainType.Tezos]: '',
+    [ChainType.Dfinity]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
@@ -152,6 +156,25 @@ export default () => {
               getWalletEvents(WalletType.Temple),
               tezosChainInfo.factoryAddress,
               tezosChainInfo.findsAddress,
+            ),
+          },
+        ],
+      });
+
+    const dfinityChainInfo = chains.find((c) => c.type === ChainType.Dfinity);
+    dfinityChainInfo &&
+      _chainWallets.push({
+        chainType: ChainType.Dfinity,
+        icon: ChainLogos[ChainType.Dfinity],
+        wallets: [
+          {
+            name: 'Plug',
+            icon: WalletLogos[WalletType.Plug],
+            walletType: WalletType.Plug,
+            provider: new PlugWalletProvider(
+              getWalletEvents(WalletType.Plug),
+              dfinityChainInfo.factoryAddress,
+              dfinityChainInfo.findsAddress,
             ),
           },
         ],
@@ -273,14 +296,18 @@ export default () => {
           if (!wallet) {
             return '';
           }
-          const signature = await wallet.provider.signMessage(message);
-          return await refreshToken(
-            account,
-            chainType,
-            message,
-            pubKey,
-            signature,
-          );
+          if (chainType === ChainType.Dfinity) {
+            return await refreshToken(account, chainType, message, '', '');
+          } else {
+            const signature = await wallet.provider.signMessage(message);
+            return await refreshToken(
+              account,
+              chainType,
+              message,
+              pubKey,
+              signature,
+            );
+          }
         }
         return token;
       }
