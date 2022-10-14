@@ -2,7 +2,7 @@ export enum ChainType {
   Solana = 'solana-dev',
   Klaytn = 'klaytn-baobab',
   Tezos = 'tezos-jakartanet',
-  Dfinity = 'dfinity',
+  Dfinity = 'ic',
 }
 
 export enum WalletType {
