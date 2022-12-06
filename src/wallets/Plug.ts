@@ -20,7 +20,6 @@ import {
   idlFactory as nftFactory,
   _SERVICE as NftType,
 } from '../../../declarations/nft';
-import {log} from "util";
 
 export class PlugWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Plug;
