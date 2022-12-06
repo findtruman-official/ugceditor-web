@@ -20,6 +20,7 @@ import {
   idlFactory as nftFactory,
   _SERVICE as NftType,
 } from '../../../declarations/nft';
+import {log} from "util";
 
 export class PlugWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Plug;
@@ -243,7 +244,6 @@ export class PlugWalletProvider implements WalletProvider {
         Number(await nftActor!.balanceOfDip721(Principal.fromText(account))) ===
         nftBalance
       ) {
-        console.log('refresh balance');
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
       console.log(`<mintStoryNft>`, res);
@@ -252,15 +252,47 @@ export class PlugWalletProvider implements WalletProvider {
     }
   }
 
+  nftSaleActorManager: Record<string, {
+    actor?: any;
+    callbacks: ((actor: any) => void)[];
+  }> = {}
+
   async getNftSaleActor(storyId: string) {
     if (!this.backendActor) throw new Error('Actor not available!');
 
-    const [sale] = await this.backendActor.getSale(BigInt(storyId));
-    if (sale?.nft) {
-      return this.provider.createActor({
-        canisterId: sale.nft.toText(),
-        interfaceFactory: nftFactory,
-      }) as NftType;
+    if (!this.nftSaleActorManager[storyId]) {
+      this.nftSaleActorManager[storyId] = {
+        actor: undefined,
+        callbacks: []
+      };
+
+      new Promise(async () => {
+        const [sale] = await this.backendActor!.getSale(BigInt(storyId));
+        if (sale?.nft) {
+          const actor = await this.provider.createActor({
+            canisterId: sale.nft.toText(),
+            interfaceFactory: nftFactory,
+          }) as NftType;
+          this.nftSaleActorManager[storyId].actor = actor;
+
+          for (let callback of this.nftSaleActorManager[storyId].callbacks) {
+            callback(actor);
+          }
+          this.nftSaleActorManager[storyId].callbacks = []
+        }
+      })
+
+      return new Promise((resolve: (actor: any) => void) => {
+        this.nftSaleActorManager[storyId].callbacks.push(resolve)
+      })
+    } else {
+      if (this.nftSaleActorManager[storyId].actor) {
+        return this.nftSaleActorManager[storyId].actor;
+      } else {
+        return new Promise((resolve: (actor: any) => void) => {
+          this.nftSaleActorManager[storyId].callbacks.push(resolve)
+        })
+      }
     }
   }
 
@@ -281,7 +313,7 @@ export class PlugWalletProvider implements WalletProvider {
     const [sale] = await this.backendActor.getSale(BigInt(storyId));
     if (sale) {
       const { authorReserved, total, sold } = sale;
-      return total - authorReserved - sold;
+      return Number(total) - Number(authorReserved) - Number(sold);
     }
     return -1;
   }
@@ -397,7 +429,7 @@ export class PlugWalletProvider implements WalletProvider {
     const [sale] = await this.backendActor.getSale(BigInt(storyId));
     if (sale) {
       const { authorReserved, authorClaimed } = sale;
-      return authorReserved - authorClaimed;
+      return Number(authorReserved) - Number(authorClaimed);
     }
     return 0;
   }
