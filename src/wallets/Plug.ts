@@ -7,19 +7,19 @@ import {
 } from '@/wallets/index';
 import { Principal } from '@dfinity/principal';
 import { message } from 'antd';
+import BigNumber from 'bignumber.js';
 import {
   idlFactory as backendFactory,
   _SERVICE as BackendType,
-} from '../assets/icp-declarations/backend';
+} from '../../../declarations/backend';
 import {
   idlFactory as findsFactory,
   _SERVICE as FindsType,
-} from '../assets/icp-declarations/finds';
+} from '../../../declarations/finds';
 import {
   idlFactory as nftFactory,
   _SERVICE as NftType,
-} from '../assets/icp-declarations/nft';
-import BigNumber from 'bignumber.js';
+} from '../../../declarations/nft';
 
 export class PlugWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Plug;
@@ -243,7 +243,6 @@ export class PlugWalletProvider implements WalletProvider {
         Number(await nftActor!.balanceOfDip721(Principal.fromText(account))) ===
         nftBalance
       ) {
-        console.log('refresh balance');
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
       console.log(`<mintStoryNft>`, res);
@@ -252,15 +251,50 @@ export class PlugWalletProvider implements WalletProvider {
     }
   }
 
+  nftSaleActorManager: Record<
+    string,
+    {
+      actor?: any;
+      callbacks: ((actor: any) => void)[];
+    }
+  > = {};
+
   async getNftSaleActor(storyId: string) {
     if (!this.backendActor) throw new Error('Actor not available!');
 
-    const [sale] = await this.backendActor.getSale(BigInt(storyId));
-    if (sale?.nft) {
-      return this.provider.createActor({
-        canisterId: sale.nft.toText(),
-        interfaceFactory: nftFactory,
-      }) as NftType;
+    if (!this.nftSaleActorManager[storyId]) {
+      this.nftSaleActorManager[storyId] = {
+        actor: undefined,
+        callbacks: [],
+      };
+
+      new Promise(async () => {
+        const [sale] = await this.backendActor!.getSale(BigInt(storyId));
+        if (sale?.nft) {
+          const actor = (await this.provider.createActor({
+            canisterId: sale.nft.toText(),
+            interfaceFactory: nftFactory,
+          })) as NftType;
+          this.nftSaleActorManager[storyId].actor = actor;
+
+          for (let callback of this.nftSaleActorManager[storyId].callbacks) {
+            callback(actor);
+          }
+          this.nftSaleActorManager[storyId].callbacks = [];
+        }
+      });
+
+      return new Promise((resolve: (actor: any) => void) => {
+        this.nftSaleActorManager[storyId].callbacks.push(resolve);
+      });
+    } else {
+      if (this.nftSaleActorManager[storyId].actor) {
+        return this.nftSaleActorManager[storyId].actor;
+      } else {
+        return new Promise((resolve: (actor: any) => void) => {
+          this.nftSaleActorManager[storyId].callbacks.push(resolve);
+        });
+      }
     }
   }
 
@@ -276,10 +310,23 @@ export class PlugWalletProvider implements WalletProvider {
   }
 
   async restOfStoryNftOnChain(nftName: string, storyId: string) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    const [sale] = await this.backendActor.getSale(BigInt(storyId));
+    if (sale) {
+      const { authorReserved, total, sold } = sale;
+      return Number(total) - Number(authorReserved) - Number(sold);
+    }
     return -1;
   }
 
   async getNftAddress(storyId: string) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    const [sale] = await this.backendActor.getSale(BigInt(storyId));
+    if (sale) {
+      return sale.nft.toText();
+    }
     return '';
   }
 
@@ -288,25 +335,130 @@ export class PlugWalletProvider implements WalletProvider {
     cid: string,
     nftAddress: string,
     rewards: number[],
-  ) {}
+  ) {
+    if (!this.backendActor) throw new Error('Actor not available!');
 
-  async updateTask(storyId: string, taskId: string, cid: string) {}
+    try {
+      const res = await this.backendActor.createTask(
+        BigInt(storyId),
+        cid,
+        Principal.fromText(nftAddress),
+        rewards.map((r) => BigInt(r)),
+      );
+      console.log('<createTask>', res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
-  async cancelTask(storyId: string, taskId: number) {}
+  async updateTask(storyId: string, taskId: string, cid: string) {
+    if (!this.backendActor) throw new Error('Actor not available!');
 
-  async createTaskSubmit(storyId: string, taskId: number, cid: string) {}
+    try {
+      const res = await this.backendActor.updateTask(
+        BigInt(storyId),
+        BigInt(taskId),
+        cid,
+      );
+      console.log('<updateTask>', res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
-  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {}
+  async cancelTask(storyId: string, taskId: number) {
+    if (!this.backendActor) throw new Error('Actor not available!');
 
-  async markTaskDone(storyId: string, taskId: number, submitId: number) {}
+    try {
+      const res = await this.backendActor.cancelTask(
+        BigInt(storyId),
+        BigInt(taskId),
+      );
+      console.log('<cancelTask>', res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async createTaskSubmit(storyId: string, taskId: number, cid: string) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    try {
+      const res = await this.backendActor.createTaskSubmit(
+        BigInt(storyId),
+        BigInt(taskId),
+        cid,
+      );
+      console.log('<createTaskSubmit>', res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    try {
+      const res = await this.backendActor.withdrawTaskSubmit(
+        BigInt(storyId),
+        BigInt(taskId),
+        BigInt(submitId),
+      );
+      console.log('<withdrawTaskSubmit>', res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async markTaskDone(storyId: string, taskId: number, submitId: number) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    try {
+      const res = await this.backendActor.markTaskDone(
+        BigInt(storyId),
+        BigInt(taskId),
+        BigInt(submitId),
+      );
+      console.log('<markTaskDone>', res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   async authorReservedNftRest(storyId: string) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    const [sale] = await this.backendActor.getSale(BigInt(storyId));
+    if (sale) {
+      const { authorReserved, authorClaimed } = sale;
+      return Number(authorReserved) - Number(authorClaimed);
+    }
     return 0;
   }
 
-  async claimAuthorReservedNft(storyId: string, amount: number) {}
+  async claimAuthorReservedNft(storyId: string, amount: number) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    try {
+      const res = await this.backendActor.claimAuthorReservedNft(
+        BigInt(storyId),
+        BigInt(amount),
+      );
+      console.log('<claimAuthorReservedNft>', res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
+    if (!this.backendActor) throw new Error('Actor not available!');
+
+    const nftActor = await this.getNftSaleActor(storyId);
+    if (nftActor) {
+      return await nftActor.getTokenIdsForUserDip721(
+        Principal.fromText(account),
+      );
+    }
     return [];
   }
 }
