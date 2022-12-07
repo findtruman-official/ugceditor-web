@@ -11,15 +11,9 @@ import BigNumber from 'bignumber.js';
 import {
   idlFactory as backendFactory,
   _SERVICE as BackendType,
-} from '../../../declarations/backend';
-import {
-  idlFactory as findsFactory,
-  _SERVICE as FindsType,
-} from '../../../declarations/finds';
-import {
-  idlFactory as nftFactory,
-  _SERVICE as NftType,
-} from '../../../declarations/nft';
+} from './ic/backend';
+import { idlFactory as findsFactory, _SERVICE as FindsType } from './ic/finds';
+import { idlFactory as nftFactory, _SERVICE as NftType } from './ic/nft';
 
 export class PlugWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Plug;
