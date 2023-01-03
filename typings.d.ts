@@ -208,4 +208,37 @@ declare global {
     //   Rejected = 'Rejected',
     // }
   }
+
+  namespace WalletCallback {
+    type CallbackType = 'publish-story' | 'update-story' | 'nft-sale';
+
+    type PublishStoryPayload = {
+      id: string;
+      cover: string;
+      name: string;
+      description: string;
+      chain: string;
+      chainType: string;
+    };
+    type UpdateStoryPayload = {
+      id: string;
+      contentHash: string;
+      chainType: string;
+    };
+    type NftSalePayload = {
+      id: string;
+      chainType: string;
+    };
+
+    type CallbackPayload =
+      | PublishStoryPayload
+      | UpdateStoryPayload
+      | NftSalePayload;
+
+    type CallbackObject = {
+      type: CallbackType;
+      chainType: string;
+      payload: CallbackPayload;
+    };
+  }
 }

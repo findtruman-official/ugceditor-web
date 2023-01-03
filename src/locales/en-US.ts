@@ -94,6 +94,7 @@ export default {
   'publish-nft-modal.published': 'Published！',
   'request-failed': 'Request Failed!',
   'mint-failed': 'Mint Failed!',
+  'transaction-failed': 'Transaction Failed!',
   'connect-wallet-to': 'Connect to {chain}',
   'confirm-login.tip.title': 'STATEMENT',
   'confirm-login.tip.desc':

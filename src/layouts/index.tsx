@@ -1,6 +1,7 @@
 import Header from '@/components/Header/Header';
 import LoginConfirmModal from '@/components/LoginConfirmModal/LoginConfirmModal';
 import WalletModal from '@/components/WalletModal/WalletModal';
+import useWalletCallback from '@/hooks/useWalletCallback';
 import { isChapterPage, isStoryPage } from '@/utils/regExp';
 import { ChainType } from '@/wallets';
 import { useLocation } from '@@/exports';
@@ -29,7 +30,8 @@ export const WalletContext = createContext<WalletContextType>({
 
 export default function Layout() {
   const location = useLocation();
-  const { pathname } = location;
+  const { pathname, search } = location;
+  useWalletCallback({ search });
 
   const [walletModalVisible, setWalletModalVisible] = useState(false);
   const [loginState, setLoginState] = useState<

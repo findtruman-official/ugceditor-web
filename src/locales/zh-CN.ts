@@ -91,6 +91,7 @@ export default {
   'publish-nft-modal.published': '已发行！',
   'request-failed': '请求失败！',
   'mint-failed': '铸造失败！',
+  'transaction-failed': '交易失败！',
   'connect-wallet-to': '连接到{chain}',
   'confirm-login.tip.title': '声明',
   'confirm-login.tip.desc':
