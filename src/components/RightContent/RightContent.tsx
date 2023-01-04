@@ -23,7 +23,11 @@ export default function RightContent() {
             {Object.values(connectedWallets).map((wallet) =>
               wallet ? (
                 <Avatar
-                  style={{ border: '1px solid #1f1f1f', background: '#1f1f1f' }}
+                  style={{
+                    border: '1px solid #1f1f1f',
+                    background: '#1f1f1f',
+                    padding: 4,
+                  }}
                   key={wallet.walletType}
                   src={wallet.icon}
                 />
