@@ -248,7 +248,7 @@ export async function syncStoryContentHash(
 ) {
   return await client.request<{ story: API.Story }>(
     gql`
-      mutation story($chain: String!, $chainStoryId: String!) {
+      mutation syncStoryContentHash($chain: String!, $chainStoryId: String!) {
         syncStoryContentHash(chain: $chain, chainStoryId: $chainStoryId) {
           chainStoryId
         }
@@ -261,7 +261,7 @@ export async function syncStoryContentHash(
 export async function syncStoryNftSale(chain: string, chainStoryId: string) {
   return await client.request<{ story: API.Story }>(
     gql`
-      mutation story($chain: String!, $chainStoryId: String!) {
+      mutation syncStoryNftSale($chain: String!, $chainStoryId: String!) {
         syncStoryNftSale(chain: $chain, chainStoryId: $chainStoryId) {
           chainStoryId
         }

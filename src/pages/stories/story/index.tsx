@@ -232,7 +232,9 @@ const Story: React.FC = () => {
                           {formatMessage({ id: 'story.author' })}
                         </div>
                         <div className={styles.infoDescription}>
-                          {shortenAccount(currentStory?.author)}
+                          {wallet?.noShortenAccount
+                            ? currentStory?.author
+                            : shortenAccount(currentStory?.author)}
                         </div>
                       </div>
                       <div className={styles.infoGroup}>

@@ -205,7 +205,7 @@ export default () => {
     loading: boolean;
   }>({
     condition: async (item) => {
-      await syncStoryContentHash(item.chainType, item.id);
+      await syncStoryContentHash(item.chainType, `${item.id}`);
       const { story } = await getStory(item.chainType, item.id);
       return !!story;
     },
@@ -252,7 +252,7 @@ export default () => {
     chainType: ChainType;
   }>({
     condition: async (item) => {
-      await syncStoryContentHash(item.chainType, item.id);
+      await syncStoryContentHash(item.chainType, `${item.id}`);
       const { story } = await getStory(item.chainType, item.id);
       const meet = story.contentHash === item.contentHash;
       if (

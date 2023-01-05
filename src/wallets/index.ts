@@ -3,6 +3,7 @@ export enum ChainType {
   Klaytn = 'klaytn-baobab',
   Tezos = 'tezos-jakartanet',
   Dfinity = 'ic',
+  Near = 'near',
 }
 
 export enum WalletType {
@@ -10,6 +11,7 @@ export enum WalletType {
   Kaikas,
   Temple,
   Plug,
+  NearWallet,
 }
 
 export enum WalletAutoConnectType {
@@ -59,7 +61,10 @@ export interface WalletProvider {
 
   signMessage(message: any): Promise<any>;
 
-  publishStory(cid: string): Promise<string>;
+  publishStory(
+    cid: string,
+    payload: Omit<WalletCallback.PublishStoryPayload, 'id'>,
+  ): Promise<string>;
 
   updateStory(id: string, cid: string): Promise<void>;
 

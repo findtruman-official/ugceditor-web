@@ -7,8 +7,7 @@ import {
 } from '@/utils/token';
 import { ChainType, WalletProvider, WalletType } from '@/wallets';
 import { KaikasWalletProvider } from '@/wallets/Kaikas';
-import { PhantomWalletProvider } from '@/wallets/Phantom';
-import { PlugWalletProvider } from '@/wallets/Plug';
+import { NearWalletProvider } from '@/wallets/NearWallet';
 import { TempleWalletProvider } from '@/wallets/Temple';
 import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -24,6 +23,7 @@ interface Wallet {
   icon: string;
   walletType: WalletType;
   provider: WalletProvider;
+  noShortenAccount?: boolean;
 }
 
 export default () => {
@@ -40,6 +40,7 @@ export default () => {
     [ChainType.Klaytn]: undefined,
     [ChainType.Tezos]: undefined,
     [ChainType.Dfinity]: undefined,
+    [ChainType.Near]: undefined,
   });
 
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
@@ -47,6 +48,7 @@ export default () => {
     [ChainType.Klaytn]: '',
     [ChainType.Tezos]: '',
     [ChainType.Dfinity]: '',
+    [ChainType.Near]: '',
   });
 
   const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
@@ -54,6 +56,7 @@ export default () => {
     [ChainType.Klaytn]: '',
     [ChainType.Tezos]: '',
     [ChainType.Dfinity]: '',
+    [ChainType.Near]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
@@ -180,6 +183,26 @@ export default () => {
         ],
       });
 
+    const nearChainInfo = chains.find((c) => c.type === ChainType.Near);
+    nearChainInfo &&
+      _chainWallets.push({
+        chainType: ChainType.Near,
+        icon: ChainLogos[ChainType.Near],
+        wallets: [
+          {
+            name: 'NEAR Wallet',
+            icon: WalletLogos[WalletType.NearWallet],
+            walletType: WalletType.NearWallet,
+            provider: new NearWalletProvider(
+              getWalletEvents(WalletType.NearWallet),
+              nearChainInfo.factoryAddress,
+              nearChainInfo.findsAddress,
+            ),
+            noShortenAccount: true,
+          },
+        ],
+      });
+
     return _chainWallets;
   }, [chains]);
 
@@ -296,7 +319,7 @@ export default () => {
           if (!wallet) {
             return '';
           }
-          if (chainType === ChainType.Dfinity) {
+          if (chainType === ChainType.Dfinity || chainType === ChainType.Near) {
             return await refreshToken(account, chainType, message, '', '');
           } else {
             const signature = await wallet.provider.signMessage(message);

@@ -131,10 +131,17 @@ export default function CreateStoryModal({
             chainType: chain,
           });
         } else {
-          const newStoryId = await wallet.provider.publishStory(cid);
           const chainName = chains.find(
             (c: API.Chain) => c.type === chain,
           ).name;
+
+          const newStoryId = await wallet.provider.publishStory(cid, {
+            cover: values.cover,
+            name: values.title,
+            description: values.description,
+            chain: chainName,
+            chainType: chain,
+          });
           addCreateStoryPolling({
             id: newStoryId,
             cover: values.cover,

@@ -72,7 +72,9 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
                       className={styles.currentWalletAddress}
                       onClick={() => copy(account)}
                     >
-                      {shortenAccount(account)}
+                      {wallet.noShortenAccount
+                        ? account
+                        : shortenAccount(account)}
                     </div>
                   </Tooltip>
                   <DisconnectOutlined

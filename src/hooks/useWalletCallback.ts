@@ -20,7 +20,11 @@ export function getWalletCallbackSearchParam(
 }
 
 function clearSearch() {
-  history.replaceState(null, '', window.location.href.split('?')[0]);
+  history.replaceState(
+    null,
+    '',
+    `${window.location.origin}/${window.location.hash.split('?')[0]}`,
+  );
 }
 
 const useWalletCallback = ({ search }: { search: string }) => {
@@ -36,20 +40,23 @@ const useWalletCallback = ({ search }: { search: string }) => {
   const { formatMessage } = useIntl();
 
   useEffect(() => {
-    if (!search) return;
-
+    if (!search && !window.location.search) return;
+    const walletSearchParams = new URLSearchParams(window.location.search);
     const searchParams = new URLSearchParams(search);
     const callbackBase64 = searchParams.get('walletCallback');
-    const errorCode = searchParams.get('errorCode');
-    const errorMessage = searchParams.get('errorMessage');
-
+    const errorCode = walletSearchParams.get('errorCode');
+    const errorMessage = walletSearchParams.get('errorMessage');
+    console.log({ errorCode, errorMessage });
     if (errorCode || errorMessage) {
       clearSearch();
       message.error(formatMessage({ id: 'transaction-failed' }));
       return;
     }
 
-    if (!callbackBase64) return;
+    if (!callbackBase64) {
+      clearSearch();
+      return;
+    }
 
     try {
       const callbackObj: WalletCallback.CallbackObject = JSON.parse(
