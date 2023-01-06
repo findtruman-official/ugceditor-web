@@ -23,7 +23,9 @@ function clearSearch() {
   history.replaceState(
     null,
     '',
-    `${window.location.origin}/${window.location.hash.split('?')[0]}`,
+    `${window.location.origin}${window.location.pathname}${
+      window.location.hash.split('?')[0]
+    }`,
   );
 }
 
@@ -76,7 +78,6 @@ const useWalletCallback = ({ search }: { search: string }) => {
 
       switch (type) {
         case 'publish-story': {
-          console.log('[PublishStory]', payload);
           addCreateStoryPolling({
             ...payload,
             nftPublished: false,
@@ -90,7 +91,6 @@ const useWalletCallback = ({ search }: { search: string }) => {
           break;
         }
         case 'update-story': {
-          console.log('[UpdateStory]', payload);
           addUpdateStoryPolling(payload);
           message.success(
             formatMessage({
@@ -100,7 +100,6 @@ const useWalletCallback = ({ search }: { search: string }) => {
           break;
         }
         case 'nft-sale': {
-          console.log('[NftSale]', payload);
           addNftSalePolling(payload);
           message.success(formatMessage({ id: 'publish-nft-modal.published' }));
           break;
