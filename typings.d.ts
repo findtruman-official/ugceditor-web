@@ -223,6 +223,7 @@ declare global {
     type UpdateStoryPayload = {
       id: string;
       contentHash: string;
+      clearChapterCache: boolean;
       chainType: string;
     };
     type NftSalePayload = {

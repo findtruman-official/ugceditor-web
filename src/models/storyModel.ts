@@ -109,9 +109,12 @@ export default () => {
     },
     [storyId, chapterCaches],
   );
-  const clearChapterCaches = useCallback(() => {
-    localStorage.removeItem(`FCC_CHAPTER_CACHE_${storyId}`);
-  }, [storyId]);
+  const clearChapterCaches = useCallback(
+    (_storyId?: string) => {
+      localStorage.removeItem(`FCC_CHAPTER_CACHE_${_storyId || storyId}`);
+    },
+    [storyId],
+  );
 
   const isAuthor = useMemo(() => {
     if (currentStory) {

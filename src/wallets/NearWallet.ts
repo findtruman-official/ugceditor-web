@@ -257,7 +257,7 @@ export class NearWalletProvider implements WalletProvider {
     return this.lateReturn<string>(nextStoryId);
   }
 
-  async updateStory(id: string, cid: string) {
+  async updateStory(id: string, cid: string, clearChapterCaches?: boolean) {
     if (!this.wallet) throw new Error('Near Wallet Unavailable');
 
     const searchParam = getWalletCallbackSearchParam(
@@ -265,6 +265,7 @@ export class NearWalletProvider implements WalletProvider {
       {
         id,
         contentHash: cid,
+        clearChapterCache: clearChapterCaches || false,
         chainType: this.chainType,
       },
       ChainType.Near,

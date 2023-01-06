@@ -33,12 +33,17 @@ const useWalletCallback = ({ search }: { search: string }) => {
   const { accounts } = useModel('walletModel', (state) => ({
     accounts: state.accounts,
   }));
-  const { addCreateStoryPolling, addNftSalePolling, addUpdateStoryPolling } =
-    useModel('storyModel', (state) => ({
-      addCreateStoryPolling: state.addCreateStoryPolling,
-      addNftSalePolling: state.addNftSalePolling,
-      addUpdateStoryPolling: state.addUpdateStoryPolling,
-    }));
+  const {
+    addCreateStoryPolling,
+    addNftSalePolling,
+    addUpdateStoryPolling,
+    clearChapterCaches,
+  } = useModel('storyModel', (state) => ({
+    addCreateStoryPolling: state.addCreateStoryPolling,
+    addNftSalePolling: state.addNftSalePolling,
+    addUpdateStoryPolling: state.addUpdateStoryPolling,
+    clearChapterCaches: state.clearChapterCaches,
+  }));
   const { formatMessage } = useIntl();
 
   useEffect(() => {
@@ -97,6 +102,11 @@ const useWalletCallback = ({ search }: { search: string }) => {
               id: 'story.story-updated',
             }),
           );
+          if (
+            (payload as WalletCallback.UpdateStoryPayload).clearChapterCache
+          ) {
+            clearChapterCaches(payload.id);
+          }
           break;
         }
         case 'nft-sale': {
