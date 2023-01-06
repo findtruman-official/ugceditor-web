@@ -22,9 +22,8 @@ export class NearWalletProvider implements WalletProvider {
   factoryAddress: string = '';
   findsMintAddress: string = '';
 
-  THIRTY_TGAS = '30000000000000'; // 3*10^13
+  THIRTY_TGAS = '30000000000000';
   TotalPrepaidGasExceeded = '300000000000000';
-  DefaultDepositInYocto = nearAPI.utils.format.parseNearAmount('5.3');
 
   onConnect: (payload: { address: string; pubKey?: string }) => void;
   onDisconnect: () => void;
@@ -145,7 +144,6 @@ export class NearWalletProvider implements WalletProvider {
       args_base64: Buffer.from(JSON.stringify(args)).toString('base64'),
       finality: 'optimistic',
     });
-    console.log(`[ViewMethod] ${method} =>`, res);
     return JSON.parse(Buffer.from(res.result).toString());
   }
 
@@ -200,7 +198,7 @@ export class NearWalletProvider implements WalletProvider {
                   storyId: parseInt(storyId),
                   amount: amount,
                 },
-                deposit: this.DefaultDepositInYocto,
+                deposit: '1',
                 gas: this.TotalPrepaidGasExceeded,
               },
             },
@@ -233,7 +231,7 @@ export class NearWalletProvider implements WalletProvider {
       'publish-story',
       {
         ...payload,
-        id: nextStoryId,
+        id: nextStoryId.toString(),
       },
       ChainType.Near,
     );
@@ -337,7 +335,21 @@ export class NearWalletProvider implements WalletProvider {
                   total,
                   authorReserve: reserved,
                 },
-                deposit: this.DefaultDepositInYocto!,
+                deposit: nearAPI.utils.format.parseNearAmount('2.87'),
+                gas: this.TotalPrepaidGasExceeded,
+              },
+            },
+          ],
+        },
+        {
+          receiverId: this.findsMintAddress,
+          actions: [
+            {
+              type: 'FunctionCall',
+              params: {
+                methodName: 'storage_deposit',
+                args: {},
+                deposit: nearAPI.utils.format.parseNearAmount('0.023'),
                 gas: this.TotalPrepaidGasExceeded,
               },
             },
@@ -375,9 +387,9 @@ export class NearWalletProvider implements WalletProvider {
                 args: {
                   receiver_id: this.factoryAddress,
                   amount: _price,
-                  msg: `"${id}"`,
+                  msg: id.toString(),
                 },
-                deposit: '1', // TODO
+                deposit: '1',
                 gas: this.TotalPrepaidGasExceeded,
               },
             },
