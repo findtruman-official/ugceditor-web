@@ -1,11 +1,7 @@
 import { client } from '@/services/index';
-import { EMPTY_TOKEN_PLACEHOLDER, PREFIX } from '@/utils/const';
+import { PREFIX } from '@/utils/const';
 import { request } from '@umijs/max';
 import { gql } from 'graphql-request';
-
-export const parseToken = (token: string) => {
-  return token.replace(EMPTY_TOKEN_PLACEHOLDER, '');
-};
 
 export const login = async (
   account: string,
@@ -203,7 +199,7 @@ export async function uploadJson<T>(data: T, token: string) {
     method: 'POST',
     data,
     headers: {
-      'x-token': parseToken(token),
+      'x-token': token,
     },
   });
 }
@@ -411,7 +407,7 @@ export async function createStoryTask(
     `,
     { chain, chainStoryId, description, title },
     {
-      'x-token': parseToken(token),
+      'x-token': token,
     },
   );
 }
@@ -427,7 +423,7 @@ export async function cancelStoryTask(id: number, token: string) {
     `,
     { id },
     {
-      'x-token': parseToken(token),
+      'x-token': token,
     },
   );
 }
@@ -447,7 +443,7 @@ export async function doneStoryTask(
     `,
     { id, submitIds },
     {
-      'x-token': parseToken(token),
+      'x-token': token,
     },
   );
 }
@@ -472,7 +468,7 @@ export async function updateStoryTask(
     `,
     { id, title, description },
     {
-      'x-token': parseToken(token),
+      'x-token': token,
     },
   );
 }
@@ -492,7 +488,7 @@ export async function createTaskSubmit(
     `,
     { taskId, content },
     {
-      'x-token': parseToken(token),
+      'x-token': token,
     },
   );
 }
@@ -506,7 +502,7 @@ export async function removeTaskSubmit(id: number, token: string) {
     `,
     { id },
     {
-      'x-token': parseToken(token),
+      'x-token': token,
     },
   );
 }

@@ -1,4 +1,3 @@
-import { parseToken } from '@/services/api';
 import { PREFIX } from '@/utils/const';
 import { PlusOutlined } from '@ant-design/icons';
 import { Upload, UploadFile } from 'antd';
@@ -38,7 +37,7 @@ export default function ImageUploader({
   return (
     <ImgCrop aspect={aspect} rotate>
       <Upload
-        headers={{ 'x-token': parseToken(token) }}
+        headers={{ 'x-token': token }}
         action={`${PREFIX}/ipfs/file`}
         name={'file'}
         accept={'image/*'}

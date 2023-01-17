@@ -4,5 +4,3 @@ export const PREFIX =
 export const LINK_STORY_GAMEPLAY = 'https://findtruman.io/co-creation/';
 export const LINK_ACHIEVEMENTS =
   'https://findtruman.io/co-creation/#/achievements';
-
-export const EMPTY_TOKEN_PLACEHOLDER = 'EMPTY_TOKEN_PLACEHOLDER';

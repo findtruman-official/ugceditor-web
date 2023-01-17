@@ -51,6 +51,13 @@ export default function Layout() {
       setChapterId: model.setChapterId,
     }),
   );
+  const { getTokenAsync, connectedWallets } = useModel(
+    'walletModel',
+    (model) => ({
+      getTokenAsync: model.getTokenAsync,
+      connectedWallets: model.connectedWallets,
+    }),
+  );
 
   useEffect(() => {
     if (!isStoryPage(pathname) && !isChapterPage(pathname)) {
@@ -66,19 +73,27 @@ export default function Layout() {
         openWalletModal: () => setWalletModalVisible(true),
         confirmLogin: (chainType, callbacks) => {
           return new Promise<string | undefined>((resolve) => {
-            setLoginState({
-              chainType,
-              onConfirm: (token) => {
-                setLoginState(undefined);
+            const wallet = connectedWallets[chainType];
+            if (wallet.noSignature) {
+              getTokenAsync(chainType, true).then((token: string) => {
                 callbacks?.onConfirm?.(token);
                 resolve(token);
-              },
-              onReject: () => {
-                setLoginState(undefined);
-                callbacks?.onReject?.();
-                resolve(undefined);
-              },
-            });
+              });
+            } else {
+              setLoginState({
+                chainType,
+                onConfirm: (token) => {
+                  setLoginState(undefined);
+                  callbacks?.onConfirm?.(token);
+                  resolve(token);
+                },
+                onReject: () => {
+                  setLoginState(undefined);
+                  callbacks?.onReject?.();
+                  resolve(undefined);
+                },
+              });
+            }
           });
         },
       }}

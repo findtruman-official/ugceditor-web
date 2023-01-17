@@ -1,5 +1,4 @@
 import { getChains } from '@/services/api';
-import { EMPTY_TOKEN_PLACEHOLDER } from '@/utils/const';
 import { ChainLogos, WalletLogos } from '@/utils/logos';
 import {
   getTokenFromStorage,
@@ -302,12 +301,7 @@ export default () => {
       if (!account) {
         return '';
       } else {
-        const wallet = connectedWallets[chainType];
-        if (wallet?.noSignature) {
-          return EMPTY_TOKEN_PLACEHOLDER;
-        } else {
-          return getTokenFromStorage(account, chainType);
-        }
+        return getTokenFromStorage(account, chainType);
       }
     },
     [accounts, connectedWallets],
