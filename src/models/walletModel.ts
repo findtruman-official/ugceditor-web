@@ -1,4 +1,5 @@
 import { getChains } from '@/services/api';
+import { EMPTY_TOKEN_PLACEHOLDER } from '@/utils/const';
 import { ChainLogos, WalletLogos } from '@/utils/logos';
 import {
   getTokenFromStorage,
@@ -24,6 +25,7 @@ interface Wallet {
   walletType: WalletType;
   provider: WalletProvider;
   noShortenAccount?: boolean;
+  noSignature?: boolean;
 }
 
 export default () => {
@@ -179,6 +181,7 @@ export default () => {
               dfinityChainInfo.factoryAddress,
               dfinityChainInfo.findsAddress,
             ),
+            noSignature: true,
           },
         ],
       });
@@ -199,6 +202,7 @@ export default () => {
               nearChainInfo.findsAddress,
             ),
             noShortenAccount: true,
+            noSignature: true,
           },
         ],
       });
@@ -298,7 +302,12 @@ export default () => {
       if (!account) {
         return '';
       } else {
-        return getTokenFromStorage(account, chainType);
+        const wallet = connectedWallets[chainType];
+        if (wallet?.noSignature) {
+          return EMPTY_TOKEN_PLACEHOLDER;
+        } else {
+          return getTokenFromStorage(account, chainType);
+        }
       }
     },
     [accounts, connectedWallets],
@@ -319,7 +328,7 @@ export default () => {
           if (!wallet) {
             return '';
           }
-          if (chainType === ChainType.Dfinity || chainType === ChainType.Near) {
+          if (wallet.noSignature) {
             return await refreshToken(account, chainType, message, '', '');
           } else {
             const signature = await wallet.provider.signMessage(message);
