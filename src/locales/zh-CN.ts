@@ -141,4 +141,5 @@ export default {
   'task-review.review': '设为完成',
   'task-review.review-confirm': '您即将采纳提交，并将该任务设为完成状态！',
   'task-review.select-submission-tip': '请选择一个提交以批准！',
+  'modal.check-status': '正在检查交易状态',
 };

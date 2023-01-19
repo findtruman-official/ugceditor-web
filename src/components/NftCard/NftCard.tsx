@@ -280,7 +280,7 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                                   onChange={(e) => setClaimReservedAmount(e)}
                                   step={1}
                                   min={1}
-                                  max={reservedNftRest}
+                                  max={wallet.provider.reservedCanClaimedAtOnce < reservedNftRest ? wallet.provider.reservedCanClaimedAtOnce : reservedNftRest}
                                 />
                               </Col>
                               <Col>

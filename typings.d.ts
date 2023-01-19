@@ -210,7 +210,7 @@ declare global {
   }
 
   namespace WalletCallback {
-    type CallbackType = 'publish-story' | 'update-story' | 'nft-sale';
+    type CallbackType = 'publish-story' | 'update-story' | 'nft-sale' | 'create-task' | 'cancel-task' | 'done-task' | 'update-task' | 'task-create-submit' | 'task-remove-submit';
 
     type PublishStoryPayload = {
       id: string;
@@ -230,11 +230,45 @@ declare global {
       id: string;
       chainType: string;
     };
+    type CreateTaskPayload = {
+      chain: string;
+      chainStoryId: string;
+      cid: string;
+    };
+    type CancleTaskPayload = {
+      chain: string;
+      chainStoryId: string;
+      chainTaskId: string;
+    };
+    type UpdateTaskPayload = {
+      chain: string;
+      chainStoryId: string;
+      chainTaskId: string;
+      cid: string;
+    };
+    type TaskSubmitPayload = {
+      chain: string;
+      chainStoryId: string;
+      chainTaskId: string;
+      cid: string;
+    };
+    type TaskRemoveSubmitPayload = {
+      chain: string;
+      chainStoryId: string;
+      chainTaskId: string;
+      chainSubmitId: string;
+    };
+
 
     type CallbackPayload =
       | PublishStoryPayload
       | UpdateStoryPayload
-      | NftSalePayload;
+      | NftSalePayload
+      | CreateTaskPayload
+      | UpdateTaskPayload
+      | CancleTaskPayload
+      | TaskSubmitPayload
+      | TaskRemoveSubmitPayload;
 
     type CallbackObject = {
       type: CallbackType;

@@ -132,6 +132,8 @@ export interface WalletProvider {
 
   authorReservedNftRest(storyId: string): Promise<number>;
 
+  reservedCanClaimedAtOnce?: number;
+
   claimAuthorReservedNft(storyId: string, amount: number): Promise<void>;
 
   tokenIdOfStoryNft(

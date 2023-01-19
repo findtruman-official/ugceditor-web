@@ -149,4 +149,5 @@ export default {
     'You are going to accept the submission and mark the task as done!',
   'task-review.select-submission-tip':
     'One of these submissions should be approved!',
+  'modal.check-status': 'Checking transaction status',
 };
