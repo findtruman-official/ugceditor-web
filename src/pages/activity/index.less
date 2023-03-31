@@ -1,0 +1,279 @@
+@BGTopDistance: -50px;
+@SectionDistance: 100px;
+@minPageWidth: 1200px;
+@NearActivityTheme: #d71212;
+
+.mobile {
+}
+
+.container {
+  width: 100vw;
+  min-width: @minPageWidth;
+  cursor: default;
+  margin-top: -88px;
+}
+
+.mobile.container {
+  width: 100vw;
+  min-width: auto;
+  cursor: default;
+}
+
+.activityBg {
+  width: 100%;
+  height: auto;
+  position: relative;
+}
+
+//.section {
+//  width: @minPageWidth;
+//  margin: 50px auto 100px;
+//}
+
+.section {
+  width: @minPageWidth;
+  margin: 50px auto 100px;
+
+  .sectionTitle {
+    width: 100%;
+    font-size: 40px;
+    text-align: center;
+    letter-spacing: 0.3px;
+    font-weight: bold;
+    color: rgb(255 255 255 / 85%);
+    margin-bottom: 24px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    margin-bottom: 12px;
+    font-weight: bold;
+    color: rgb(255 255 255 / 85%);
+  }
+
+  .desc {
+    font-size: 16px;
+    text-align: left;
+    font-weight: normal;
+    white-space: pre-wrap;
+    word-break: break-word;
+    letter-spacing: 0.3px;
+  }
+
+  .moreTitle {
+    cursor: pointer;
+    color: @NearActivityTheme;
+  }
+}
+
+
+.microStoryCard {
+  background-color: #191919;
+  border-radius: 8px;
+  position: relative;
+  width: 280px;
+
+  .createCard {
+    width: 100%;
+    height: 380px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    border: 1px dashed #595959;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border: 1px dashed #d71212;
+      color: #d71212;
+    }
+
+    .new{
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+
+
+  .publishedTag{
+    position: absolute;
+    top: 15px;
+    right: -5px;
+    background-color: #d71212;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    padding: 2px 5px;
+  }
+
+  .storyCover {
+    width: 100%;
+    aspect-ratio: 1;
+    //height: 280px;
+    min-height: 12px;
+    background-color: #0d0d0d;
+    cursor: pointer;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    display: block;
+  }
+
+  .storyInfo {
+    padding: 10px 12px;
+  }
+
+  .title {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+  }
+
+  .userInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50px;
+    margin-right: 10px;
+  }
+
+  .username {
+    font-weight: normal;
+    font-size: 14px;
+  }
+
+  .flexRowEvently{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+
+  .actions{
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover{
+      color: #d71212;
+    }
+  }
+}
+
+
+
+.btnContainer {
+  width: 100%;
+  min-width: @minPageWidth;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  bottom: 24px;
+}
+
+
+.submitBtn {
+  height: 40px;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 400px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  color: rgb(255 255 255 / 95%);
+  box-shadow: 0 0 10px 2px rgba(#000, 0.8), 0 0 16px 4px rgba(#000, 0.6);
+  position: relative;
+  background-color: #d71212;
+
+  &:hover {
+    color: rgb(255 255 255 / 95%);
+    background-color: #bd1111;
+  }
+}
+
+.loading {
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+
+.emptyTip {
+  width: 100%;
+  text-align: center;
+  color: rgb(255 255 255 / 65%);
+  font-size: 1rem;
+  padding: 12px;
+  font-weight: bold;
+}
+
+
+
+.scrollList {
+  //position: absolute;
+  //top: 0;
+  //left: 0;
+  //animation: move 60s linear infinite;
+  ////overflow: hidden;
+}
+.scrollList:hover {
+  //animation-play-state: paused;
+}
+
+.backTop{
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+  font-size: 20px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.8)!important;
+  border-color: rgba(255,255,255,0.3)!important;
+
+  &:hover{
+    color: rgba(255,255,255,1)!important;
+    border-color: rgba(255,255,255,0.5)!important;
+  }
+}
+
+.centerSection {
+  .section;
+  text-align: center;
+}
+
+.endTimeLine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 12px;
+  row-gap: 12px;
+  font-size: 16px;
+  line-height: 36px;
+  font-weight: bold;
+
+  span:nth-child(2n-1) {
+    width: 36px;
+    height: 36px;
+    text-align: center;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+  }
+}

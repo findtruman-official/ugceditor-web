@@ -1,7 +1,7 @@
 import ColorfulText from '@/components/Colorful/ColorfulText';
 import MDEditorWithPreview from '@/components/MDEditorWithPreview/MDEditorWithPreview';
 import { shortenAccount } from '@/utils/format';
-import { useIntl, useModel } from '@@/exports';
+import {useIntl, useLocation, useModel} from '@@/exports';
 import {
   CheckCircleFilled,
   CheckOutlined,
@@ -29,6 +29,7 @@ import {
 import { MacScrollbar } from 'mac-scrollbar';
 import { useCallback, useEffect, useState } from 'react';
 import styles from './TaskModal.less';
+import useWalletCallback from "@/hooks/useWalletCallback";
 
 interface TaskColProps {
   visible: boolean;
@@ -62,6 +63,10 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
     updateTaskPolling: model.updateTaskPolling,
   }));
 
+  const location = useLocation();
+  const { search } = location;
+  const {walletCallbackType} = useWalletCallback({search, handle:false})
+
   const [edit, setEdit] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
@@ -69,6 +74,19 @@ export default function TaskCol({ visible, onClose }: TaskColProps) {
   useEffect(() => {
     setEdit(false);
   }, [visible]);
+
+  useEffect(() => {
+    storyTask?.title && setNewTitle(storyTask.title);
+    storyTask?.description && setNewDesc(storyTask.description);
+  }, [storyTask]);
+
+  useEffect(() => {
+    if(walletCallbackType === 'update-task'){
+      storyTask?.title && setNewTitle(storyTask.title);
+      storyTask?.description && setNewDesc(storyTask.description);
+      setEdit(true);
+    }
+  }, [walletCallbackType])
 
   const renderStatus = useCallback((status: API.StoryTaskStatus) => {
     if (!status) return undefined;

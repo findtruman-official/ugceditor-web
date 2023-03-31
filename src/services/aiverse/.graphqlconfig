@@ -1,0 +1,14 @@
+{
+  "name": "Untitled GraphQL Schema",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Default GraphQL Endpoint": {
+        "url": "http://192.168.0.107:3000/graphql",
+        "headers": {
+        },
+        "introspect": false
+      }
+    }
+  }
+}

@@ -50,6 +50,10 @@ export default defineConfig({
     {
       redirect: '/stories',
     },
+    {
+      path: '/activity',
+      component: './activity',
+    },
   ],
   locale: {
     default: 'en-US',
@@ -62,16 +66,25 @@ export default defineConfig({
   mfsu: false,
   proxy: {
     '/fcc-story/graphql': {
-      target: 'http://10.243.248.69:3000/graphql/',
-      // target: 'https://findtruman.io/fcc-story/graphql',
+      // target: 'http://10.243.248.69:3000/graphql/',
+      target: 'https://findtruman.io/fcc-story/graphql',
+      // target: 'http://10.243.118.105:3000/graphql',
       changeOrigin: true,
       pathRewrite: { '^/fcc-story/graphql': '' },
     },
     '/fcc-story/ipfs': {
-      target: 'http://10.243.248.69:3000/ipfs',
-      // target: 'https://findtruman.io/fcc-story/ipfs',
+      // target: 'http://10.243.248.69:3000/ipfs',
+      target: 'https://findtruman.io/fcc-story/ipfs',
+      // target: 'http://10.243.118.105:3000/ipfs',
       changeOrigin: true,
       pathRewrite: { '^/fcc-story/ipfs': '' },
+    },
+    '/graphql': {
+      // target: 'http://10.243.248.69:3000/graphql/',
+      target: 'http://192.168.0.107:3000/graphql/',
+      // target: 'https://aiverse.me/graphql/',
+      changeOrigin: true,
+      pathRewrite: { '^/graphql': '' },
     },
   },
   history: {

@@ -1,0 +1,765 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+"Content详情"
+union ActivityContentDetails = ActivityContentDetailsOutput
+
+union BillWechatOrderPayInfo = BillWechatOrderPayInfoApp | BillWechatOrderPayInfoJsApi | BillWechatOrderPayInfoWeb
+
+"Content公开信息"
+union PublicInfo = ActivityContentPublicInfoMicrostory | ActivityContentPublicInfoOutput
+
+union TaskInfo = CreativeInfo | CustomizedInfo | ParallelInfo
+
+type Activity {
+    coverImgUrl: String!
+    id: String!
+    isContentAvailable(contentId: String!, contentType: ActivityContentType!): Boolean!
+    name: String!
+    planFinishAt: DateTime!
+    planStartAt: DateTime!
+    "活动规则"
+    rule: ActivityRule!
+    "当活动没有指定垫图时,返回空字符串"
+    specifiedInputImage: String!
+    status: String!
+}
+
+"活动中的投稿内容, 通过contentType字段指定内容形式。"
+type ActivityContent {
+    contentId: String!
+    contentType: ActivityContentType!
+    "详细信息. 当前用户为内容所有者时才返回."
+    details: ActivityContentDetails
+    "公开信息"
+    pubInfo: PublicInfo!
+    "该内容是否已经被使用了"
+    used: Boolean!
+}
+
+type ActivityContentDetailsOutput {
+    contentType: ActivityContentType!
+    output: Output!
+}
+
+type ActivityContentPublicInfoMicrostory {
+    contentType: ActivityContentType!
+    contents: [ActivityMicroStoryContent!]!
+    coverOutputId: String!
+    coverOutputUrl: String!
+    description: String!
+    microStoryId: String!
+    title: String!
+    uid: String!
+}
+
+type ActivityContentPublicInfoOutput {
+    contentType: ActivityContentType!
+    image: String!
+}
+
+type ActivityMicroStory {
+    contents: [ActivityMicroStoryContent!]!
+    coverOutputId: String!
+    coverOutputUrl: String!
+    description: String!
+    frozen: Boolean!
+    id: String!
+    title: String!
+    uid: String!
+}
+
+type ActivityMicroStoryContent {
+    description: String!
+    id: String!
+    order: Float!
+    outputId: String!
+    outputUrl: String!
+}
+
+type ActivitySubmission {
+    activity: Activity!
+    content: ActivityContent!
+    createTime: DateTime!
+    id: String!
+    publisher: String!
+    publisherInfo: UserBasicInfo!
+    uid: String!
+    votes: Int!
+}
+
+type ActivityUserStatus {
+    activity: Activity!
+    id: String!
+    "-1代表无限制"
+    restSubmitChances: Int!
+    "-1代表无限制"
+    restVoteChances: Int!
+    """
+
+    活动中有些功能或更多的操作次数需要满足一定条件才能被使用. 该字段标明是否已满足条件.
+    在neo中表现为用户充值过则投稿无限制&单作品投票无限制.
+    """
+    unlimited: Boolean!
+}
+
+"充值记录"
+type Bill {
+    "购买渠道"
+    channel: String!
+    id: String!
+    "渠道中订单ID"
+    orderId: String!
+    "获得的积分"
+    points: Float!
+    "购买时间（交易上链的时间）"
+    purchaseTime: DateTime!
+    "对应的规则. 如: 0.08eth 兑换 100积分"
+    reason: String!
+    uid: String!
+}
+
+"微信积分购买订单"
+type BillWechatOrder {
+    "系统内订单ID"
+    id: String!
+    source: WechatOrderSource!
+    status: WechatOrderStatus!
+    uid: String!
+}
+
+type BillWechatOrderPayInfoApp {
+    "随机串"
+    nonceStr: String!
+    "下单后的预支付id"
+    prepayid: String!
+    "签名参数"
+    signature: String!
+    source: WechatOrderSource!
+    "签名采用的时间戳(秒)"
+    timeStamp: Float!
+}
+
+type BillWechatOrderPayInfoJsApi {
+    "随机串"
+    nonceStr: String!
+    "下单后的预支付id形成的package参数"
+    package: String!
+    "签名"
+    signature: String!
+    source: WechatOrderSource!
+    "签名采用的时间戳(秒)"
+    timeStamp: Float!
+}
+
+type BillWechatOrderPayInfoWeb {
+    "支付二维码内容"
+    payUrl: String!
+    source: WechatOrderSource!
+}
+
+type CollectionsItem {
+    "创造者"
+    creator: String!
+    "本质上对应AigcTask的一个Output"
+    id: String!
+    image: String!
+    published: Boolean!
+    shared: Boolean!
+    task: Task!
+    type: CollectionsType!
+}
+
+type CreativeInfo {
+    artStyle: ArtStyle
+    images: Int!
+    inputImage: String
+    model: CreativeEngineId!
+    prompt: String!
+    promptStrength: Float
+    ratio: Ratio
+    type: String!
+}
+
+type CreativeTaskMetadata {
+    "是否开放了高级功能"
+    advancedFeaturesEnabled: Boolean!
+    "是否曾经分享过"
+    hasEverShared: Boolean!
+    "单图花费的积分"
+    perOutputCost: Int!
+    "发布创造宇宙作品至Gallery后的奖励积分"
+    publishAwardedPoints: Int!
+    "剩余的免费图片张数"
+    restFreeTimes: Int!
+    "分享奖励积分"
+    shareAwardedPoints: Int!
+    "分享奖励积分（创造宇宙中首次）"
+    shareAwardedPointsFirstTime: Int!
+}
+
+"定义宇宙元数据"
+type CustomTaskMetadata {
+    "是否曾经分享过"
+    hasEverShared: Boolean!
+    "单图花费的积分"
+    perOutputCost: Int!
+    "发布作品至Gallery后的奖励积分"
+    publishAwardedPoints: Int!
+    "剩余的免费图片张数"
+    restFreeTimes: Int!
+    "分享奖励积分"
+    shareAwardedPoints: Int!
+    "分享奖励积分（定义宇宙中首次）"
+    shareAwardedPointsFirstTime: Int!
+}
+
+type CustomizedInfo {
+    model: CustomizedModel!
+    prompt: String!
+    type: String!
+}
+
+type Jwt {
+    expireAt: Int!
+    token: String!
+}
+
+type Mutation {
+    "提交申请信息"
+    applySupport(
+        "表单中的信息对象序列化后的字符串"
+        serializedData: String!,
+        "用于区分需要精修的资源类型，不参与服务端业务逻辑，人工使用数据时能区分即可．"
+        type: String!
+    ): String!
+    bindEthAccount(address: String!, message: String!, sig: String!, wallet: String!): UserBoundEthAccount!
+    bindLensProfile(accessToken: String!, profileId: String!): UserLensProfile!
+    bindNearAccount(accountId: String!, message: String!, publicKey: String!, sig: String!, wallet: String!): UserBoundNearAccount!
+    bindNeoAccount(message: String!, publicKey: String!, sig: String!, wallet: String!): UserBoundNeoAccount!
+    createActivitySubmission(actId: String!, contentId: String!, contentType: ActivityContentType!): ActivitySubmission!
+    createActivityVote(submissionId: String!): String!
+    "创建创造宇宙的生成任务（高级）"
+    createCreativeAdvancedTask(
+        artStyle: ArtStyle,
+        "[1..4]"
+        images: Int!,
+        inputImage: String,
+        "指定输入的语言"
+        lang: AigcSupportedLang,
+        model: CreativeEngineId!,
+        negativePrompt: String,
+        prompt: String!,
+        promptStrength: Float,
+        ratio: Ratio
+    ): Task!
+    "创建创造宇宙的生成任务"
+    createCreativeTask(
+        "[1..4]"
+        images: Int!,
+        "指定输入的语言"
+        lang: AigcSupportedLang,
+        model: CreativeEngineId!,
+        prompt: String!,
+        ratio: Ratio
+    ): Task!
+    "活动中的图生图(各参数不要求用户是付费账户)"
+    createCreativeTaskFromAct(
+        actId: String!,
+        artStyle: ArtStyle,
+        "指定输入的语言"
+        lang: AigcSupportedLang,
+        prompt: String!,
+        promptStrength: Float
+    ): Task!
+    "创建定义宇宙的生成任务"
+    createCustomizedTask(
+        "指定输入的语言"
+        lang: AigcSupportedLang,
+        model: CustomizedModel!,
+        prompt: String!
+    ): Task!
+    createMicroStory(activityId: String, contents: [ActivityMicroStoryContentArgs!], coverOutputId: String, description: String, microStoryId: String, title: String): ActivityMicroStory!
+    "创建平行宇宙的生成任务"
+    createParallelTask(
+        "是否来自与placeholder"
+        fromPlaceholder: Boolean,
+        nft: String!,
+        tokenId: Int!
+    ): Task!
+    "删除Item"
+    deleteCollectionsItem(itemId: String!): String!
+    deleteMicroStory(microStoryId: String!): String!
+    "删除"
+    deleteOutput(id: String!): String!
+    getShortUrl(url: String!): ShortUrl!
+    preSubmitMicroStory(activityId: String!, microStoryId: String!): PreMicroStory!
+    "发布collections item至Gallery"
+    publishCollectionsItem(itemId: String!): CollectionsItem!
+    "发布至Gallery"
+    publishOutput(id: String!): Output!
+    refreshToken: Jwt!
+    "设置collections为已分享"
+    setCollectionsItemShared(itemId: String!): CollectionsItem!
+    "设置Output为已分享"
+    setOutputShared(id: String!): Output!
+    unbindEthAccount: String!
+    unbindLensProfile: String!
+    unbindNearAccount: String!
+    unbindNeoAccount: String!
+    updateMicroStory(activityId: String, contents: [ActivityMicroStoryContentArgs!], coverOutputId: String, description: String, microStoryId: String, title: String): ActivityMicroStory!
+    "上传Lens的Metadata至Arweave"
+    uploadLensMetadataToAr(serialized: String!): String!
+    "上传Output的图片到Arweave"
+    uploadOutputImageToAr(outputId: String!): String!
+}
+
+type Output {
+    creator: String!
+    creatorInfo: UserBasicInfo!
+    id: String!
+    image: String!
+    published: Boolean!
+    shared: Boolean!
+    submission: ActivitySubmission
+    task: Task!
+    type: TaskType!
+}
+
+type ParallelInfo {
+    nft: String!
+    tokenId: Float!
+    type: String!
+}
+
+"平行宇宙元数据"
+type ParallelTaskMetadata {
+    "是否曾经分享过"
+    hasEverShared: Boolean!
+    "单图花费的积分"
+    perOutputCost: Int!
+    placeHolderNft: String!
+    placeHolderNftTokenId: Int!
+    "发布作品至Gallery后的奖励积分"
+    publishAwardedPoints: Int!
+    "剩余的免费图片张数"
+    restFreeTimes: Int!
+    "分享奖励积分"
+    shareAwardedPoints: Int!
+    "分享奖励积分（平行宇宙中首次）"
+    shareAwardedPointsFirstTime: Int!
+}
+
+type PointsPrice {
+    "兑换的积分数量"
+    points: Int!
+    "价格, 单位eth"
+    price: Float!
+    "临时优惠，额外的积分数量"
+    tempPoints: Int!
+}
+
+type PreMicroStory {
+    metadata: String
+    metadataHash: String
+    reason: String
+    signature: String
+}
+
+"三个世界中发布的内容"
+type Publication {
+    id: String!
+    image: String!
+    publishTime: DateTime!
+    "发布者"
+    publisher: String!
+    publisherInfo: UserBasicInfo!
+    task: Task!
+    type: PublicationType!
+}
+
+type Query {
+    activities(
+        "筛选指定状态的活动,缺省时表示全部状态"
+        statusIn: [ActivityStatus!]
+    ): [Activity!]!
+    activitiesUserStatus(
+        "筛选指定状态的活动,缺省时表示全部状态"
+        statusIn: [ActivityStatus!]
+    ): [ActivityUserStatus!]!
+    activity(id: String!): Activity!
+    activityAvailableContents(
+        actId: String!,
+        "是否包含已经用于该活动的内容"
+        includeUsed: Boolean!,
+        "从1开始的页数"
+        page: Int!,
+        "每页数据范围, 范围[1, 20]"
+        pageSize: Int!
+    ): [ActivityContent!]!
+    activityContent(contentId: String!, contentType: ActivityContentType!): ActivityContent!
+    activitySubmission(id: String!): ActivitySubmission!
+    activitySubmissions(
+        "活动ID"
+        actId: String!,
+        "排序"
+        order: SubmissionOrder!,
+        "排序规则"
+        orderBy: SubmissionOrderBy!,
+        "从1开始的页数"
+        page: Int!,
+        "每页数据范围, 范围[1, 20]"
+        pageSize: Int!
+    ): [ActivitySubmission!]!
+    activityUserStatus(id: String!): ActivityUserStatus!
+    availableVotesForSubmission(submissionId: String!): Int!
+    "查询订单状态"
+    billWechatOrder(id: String!): BillWechatOrder!
+    "关闭订单, 关闭后延迟2秒再查询"
+    closeBillWechatOrder(orderId: String!): String!
+    collections(
+        onlyFinished: Boolean = true,
+        "从1开始的页数"
+        page: Int!,
+        "每页数据范围, 范围[1, 20]"
+        pageSize: Int!,
+        "筛选内容类型．缺省表示全部类型内容."
+        type: CollectionsType
+    ): [CollectionsItem!]!
+    countUserActivityMicroStories(activityId: String!, includeUsed: Boolean!): Int!
+    "App下单"
+    createWechatPayOrderApp(
+        "目标购买套餐的价格, 单位\"元\""
+        price: Float!
+    ): BillWechatOrder!
+    "App下单"
+    createWechatPayOrderJsApi(
+        "目标购买套餐的价格, 单位\"元\""
+        price: Float!
+    ): BillWechatOrder!
+    "Web下单"
+    createWechatPayOrderWeb(
+        "目标购买套餐的价格, 单位\"元\""
+        price: Float!
+    ): BillWechatOrder!
+    "用户的创造宇宙数据"
+    creativeTaskMetadata: CreativeTaskMetadata!
+    currentUser: User!
+    "用户的定义宇宙数据"
+    customTaskMetadata: CustomTaskMetadata!
+    "获取指定用户ID的JWT,当用户不存在时会创建用户．通过此接口创建的用户不会有微信等绑定信息，即不会有头像昵称等."
+    devJwt(
+        "用户ID, 缺省时采用随机ID."
+        uid: String
+    ): Jwt!
+    ethPurchaseContractAddress: String!
+    getMicroStory(microStoryId: String!): ActivityMicroStory!
+    myBillWechatOrders(statusIn: [WechatOrderStatus!]): [BillWechatOrder!]!
+    myCollectionItem(itemId: String!): CollectionsItem!
+    nearOutputs(actId: String!, page: Float!, pageSize: Float!): [Output!]!
+    nearOutputsLen(actId: String!): Float!
+    nearPurchaseWalletAddress: String!
+    neoPurchaseWalletAddress: String!
+    "查看NFT是否还有变身的机会"
+    nftHasConvertChances(nft: String!, tokenId: Int!): Boolean!
+    output(id: String!): Output!
+    "查询output的发布物"
+    outputPublication(outputId: String!): Publication
+    outputs(
+        onlyFinished: Boolean = true,
+        "从1开始的页数"
+        page: Int!,
+        "每页数据范围, 范围[1, 20]"
+        pageSize: Int!,
+        "指定Gallery发布状态, 缺省时表示不参与筛选逻辑"
+        published: Boolean,
+        "任务的类型．缺省表示全部类型."
+        type: TaskType
+    ): [Output!]!
+    "用户的平行宇宙数据"
+    parallelTaskMetadata: ParallelTaskMetadata!
+    "查看用户占位NFT是否还有变身机会"
+    placeholderNftHasConvertChances: Boolean!
+    pointsPrices(channel: PurchaseChannelId!): [PointsPrice!]!
+    publication(id: String!): Publication!
+    publications(
+        "从1开始的页数"
+        page: Int!,
+        "每页数据范围, 范围[1, 20]"
+        pageSize: Int!,
+        "筛选发布的类型．缺省表示全部类型发布."
+        type: PublicationType
+    ): [Publication!]!
+    "查看已经同步到的购买记录"
+    selfBills: [Bill!]!
+    "查询当前用户自身可用积分"
+    selfPoints: UserPoints!
+    supportedNfts: [SupportedNft!]!
+    task(id: String!): Task!
+    tasks(
+        "从1开始的页数"
+        page: Int!,
+        "每页数据范围, 范围[1, 20]"
+        pageSize: Int!,
+        "任务的类型．缺省表示全部类型."
+        type: TaskType
+    ): [Task!]!
+    totalActivityAvailableContents(actId: String!, includeUsed: Boolean!): Int!
+    totalOutputs(
+        onlyFinished: Boolean = true,
+        "指定Gallery发布状态, 缺省时表示不参与筛选逻辑"
+        published: Boolean,
+        type: TaskType
+    ): Int!
+    userActivityMicroStories(activityId: String!, includeUsed: Boolean!, page: Float!, pageSize: Float!): [ActivityMicroStory!]!
+    votedActivitySubmissions(
+        "活动ID"
+        actId: String!,
+        "排序"
+        order: SubmissionOrder!,
+        "排序规则"
+        orderBy: SubmissionOrderBy!,
+        "从1开始的页数"
+        page: Int!,
+        "每页数据范围, 范围[1, 20]"
+        pageSize: Int!
+    ): [ActivitySubmission!]!
+    "获取支付相关的payinfo,仅在支付场景使用"
+    wechatPayInfo(orderId: String!): BillWechatOrderPayInfo!
+    "微信js sdk需要的signature"
+    wechatSignature(appid: String!, url: String!): WechatSignature!
+    "从Jwt Token中识别代表的钱包地址"
+    whoami: String!
+}
+
+type ShortUrl {
+    short: String!
+    url: String!
+}
+
+type SupportedNft {
+    "NFT合约是否支持枚举"
+    enumerable: Boolean!
+    name: String!
+    "NFT地址"
+    nft: String!
+}
+
+type Task {
+    createTime: DateTime!
+    creator: String!
+    error: TaskErrorType!
+    id: String!
+    info: TaskInfo!
+    outputs: [Output!]!
+    "处理进度, [0-100]"
+    progress: Int!
+    status: TaskStatus!
+    type: TaskType!
+}
+
+type User {
+    avatarUrl: String!
+    eth: UserBoundEthAccount
+    google: UserGoogle
+    id: String!
+    lens: UserLensProfile
+    near: UserBoundNearAccount
+    neo: UserBoundNeoAccount
+    twitter: UserTwitter
+    username: String!
+}
+
+type UserBasicInfo {
+    avatarUrl: String!
+    id: String!
+    username: String!
+}
+
+type UserBoundEthAccount {
+    address: String!
+    wallet: String!
+}
+
+type UserBoundNearAccount {
+    accountId: String!
+    publicKey: String!
+    wallet: String!
+}
+
+type UserBoundNeoAccount {
+    publicKey: String!
+    wallet: String!
+}
+
+type UserGoogle {
+    email: String!
+    firstName: String!
+    lastName: String!
+    picture: String!
+}
+
+type UserLensProfile {
+    profileId: String!
+}
+
+type UserPoints {
+    "剩余可用积分"
+    points: Int!
+    uid: String!
+}
+
+type UserTwitter {
+    id: String!
+    name: String!
+    profileImageUrl: String!
+    username: String!
+}
+
+type WechatSignature {
+    nonceStr: String!
+    signature: String!
+    timestamp: Int!
+}
+
+enum ActivityContentType {
+    CHAIN_MICRO_STORY
+    OUTPUT
+}
+
+"活动规则。不同规则影响：投稿内容、投稿次数、点赞逻辑、前端页面显示效果。"
+enum ActivityRule {
+    BASE_TXT2IMG
+    KNN3
+    NEAR
+    NEO
+}
+
+enum ActivityStatus {
+    "未开始"
+    CREATED
+    "已结束"
+    FINISHED
+    "进行中"
+    STARTED
+}
+
+enum AigcSupportedLang {
+    EN
+    ZH
+}
+
+enum ArtStyle {
+    AKIRA_TORIYAMA
+    MONET
+    PENCIL_SKETCH_PAINTING
+    PICASSO
+    VAN_GOGH
+    YAYOI_KUSAMI
+}
+
+"收藏类型(三个世界)"
+enum CollectionsType {
+    CREATIVE
+    CUSTOMIZED
+    PARALLEL
+}
+
+enum CreativeEngineId {
+    Anime
+    Fantasy
+    General
+}
+
+enum CustomizedModel {
+    Object
+    Person
+    Style
+}
+
+"分享类型(三个世界)"
+enum PublicationType {
+    CREATIVE
+    CUSTOMIZED
+    PARALLEL
+}
+
+enum PurchaseChannelId {
+    ETH
+    NEAR
+    NEO
+    WECHAT
+}
+
+enum Ratio {
+    R1_1
+    R2_3
+    R3_2
+}
+
+enum SubmissionOrder {
+    ASC
+    DESC
+}
+
+enum SubmissionOrderBy {
+    CREATETIME
+    VOTES
+}
+
+"任务失败情况"
+enum TaskErrorType {
+    "服务拥挤"
+    BUSY
+    "未失败"
+    NONE
+    "产生了NSFW内容"
+    NSFW
+}
+
+"生成任务的状态"
+enum TaskStatus {
+    "刚创建, 系统即将启动该任务"
+    CREATED
+    "出现异常"
+    ERROR
+    "已完成, 处理完成"
+    FINISHED
+    "已开始, 正在进行中"
+    STARTED
+}
+
+enum TaskType {
+    CREATIVE
+    CUSTOMIZED
+    PARALLEL
+}
+
+"订单来源"
+enum WechatOrderSource {
+    APP
+    JSAPI
+    WEB
+}
+
+"系统内订单状态"
+enum WechatOrderStatus {
+    CLOSED
+    CREATED
+    OPEN
+    REFUND
+    SUCCESS
+}
+
+"A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format."
+scalar DateTime
+
+input ActivityMicroStoryContentArgs {
+    description: String!
+    order: Float!
+    outputId: String!
+}

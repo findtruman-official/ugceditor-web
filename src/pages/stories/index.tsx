@@ -4,6 +4,8 @@ import { PageContainer } from '@ant-design/pro-components';
 import React from 'react';
 import { useModel } from 'umi';
 import styles from './index.less';
+import MicroStoryActivityBg from '@/assets/activity-bg-findtruman-neo.webp';
+import {history} from "@@/core/history";
 
 const Stories: React.FC = () => {
   const { formatMessage } = useIntl();
@@ -20,6 +22,9 @@ const Stories: React.FC = () => {
       title={false}
       ghost
     >
+      <div className={styles.section}>
+        <img className={styles.activityBg} src={MicroStoryActivityBg} alt="" onClick={() =>history.push('/activity')}/>
+      </div>
       <div className={styles.section}>
         <div className={styles.title}>
           {formatMessage({ id: 'stories.title.hot-stories' })}

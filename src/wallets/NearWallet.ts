@@ -18,9 +18,11 @@ export class NearWalletProvider implements WalletProvider {
   provider: any;
   walletSelector?: WalletSelector;
   wallet?: Wallet;
+  reservedCanClaimedAtOnce: number;
 
   factoryAddress: string = '';
   findsMintAddress: string = '';
+  nearActivityAddress: string = '2303test.testnet';
 
   THIRTY_TGAS = '30000000000000';
   TotalPrepaidGasExceeded = '300000000000000';
@@ -35,6 +37,7 @@ export class NearWalletProvider implements WalletProvider {
   ) {
     this.factoryAddress = factoryAddress;
     this.findsMintAddress = findsMintAddress;
+    this.reservedCanClaimedAtOnce = 5;
     this.onConnect = onConnect || (() => {});
     this.onDisconnect = onDisconnect || (() => {});
   }
@@ -119,7 +122,7 @@ export class NearWalletProvider implements WalletProvider {
     return new Promise<T>((resolve) => {
       setTimeout(() => {
         resolve(value);
-      }, 1000000);
+    }, 1000000);
     });
   }
 
@@ -136,7 +139,6 @@ export class NearWalletProvider implements WalletProvider {
     const provider = new nearAPI.providers.JsonRpcProvider({
       url: network.nodeUrl,
     });
-
     let res: any = await provider.query({
       request_type: 'call_function', // view_code | call_function
       account_id: contractId,
@@ -148,12 +150,11 @@ export class NearWalletProvider implements WalletProvider {
   }
 
   async getNftAddress(storyId: string) {
-    const nftAddr = await this.viewMethod({
+    return await this.viewMethod({
       contractId: this.factoryAddress,
       method: 'getNftAddress',
       args: { storyId: Number(storyId) },
     });
-    return nftAddr;
   }
 
   async authorReservedNftRest(storyId: string) {
@@ -166,24 +167,18 @@ export class NearWalletProvider implements WalletProvider {
 
   async balanceOfStoryNft(account: string, nftName: string, storyId: string) {
     const nftContract = await this.getNftAddress(storyId);
-    // const nfts = await this.viewMethod({
-    //   contractId: nftContract,
-    //   method: 'nft_tokens_for_owner',
-    //   args: { account_id: account },
-    // });
-    const balance = await this.viewMethod({
+    return await this.viewMethod({
       contractId: nftContract,
       method: 'nft_supply_for_owner',
       args: { account_id: account },
     });
-    return balance;
   }
 
   async claimAuthorReservedNft(storyId: string, amount: number) {
     if (!this.wallet) throw new Error('Near Wallet Unavailable');
 
     const rest = await this.authorReservedNftRest(storyId);
-    if (rest < amount) return;
+    if (rest < amount) throw new Error('The minted quantity exceeds the remaining quantity!');
 
     await this.wallet.signAndSendTransactions({
       transactions: [
@@ -336,7 +331,7 @@ export class NearWalletProvider implements WalletProvider {
                   total,
                   authorReserve: reserved,
                 },
-                deposit: nearAPI.utils.format.parseNearAmount('2.87'),
+                deposit: nearAPI.utils.format.parseNearAmount('2.9'),
                 gas: this.TotalPrepaidGasExceeded,
               },
             },
@@ -391,7 +386,7 @@ export class NearWalletProvider implements WalletProvider {
                   msg: id.toString(),
                 },
                 deposit: '1',
-                gas: this.TotalPrepaidGasExceeded,
+                gas: '220000000000000', // '300,00000000',// '300,000,000,000,000' = this.TotalPrepaidGasExceeded,
               },
             },
           ],
@@ -410,7 +405,17 @@ export class NearWalletProvider implements WalletProvider {
   }
 
   async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
-    return [];
+    const nftContract = await this.getNftAddress(storyId);
+    const nfts = await this.viewMethod({
+      contractId: nftContract,
+      method: 'nft_tokens_for_owner',
+      args: { account_id: account },
+    });
+    let tokenIds = [];
+    for (const nft of nfts) {
+      tokenIds.push(Number(nft.token_id));
+    }
+    return tokenIds;
   }
 
   async createTask(
@@ -418,15 +423,273 @@ export class NearWalletProvider implements WalletProvider {
     cid: string,
     nftAddress: string,
     rewards: number[],
-  ) {}
+  ) {
+    if (!this.wallet) throw new Error('Near Wallet Unavailable');
 
-  async updateTask(storyId: string, taskId: string, cid: string) {}
+    const nftContract = await this.getNftAddress(storyId);
+    let nftTransferTransactions = new Array(rewards.length).fill({}).map((v, i) => {
+      return {
+        receiverId: nftContract,
+        actions: [
+          {
+            type: 'FunctionCall',
+            params: {
+              methodName: 'nft_transfer',
+              args: {
+                receiver_id: this.factoryAddress,
+                token_id: rewards[i].toString(),
+              },
+              deposit: '1',
+              gas: this.TotalPrepaidGasExceeded,
+            },
+          },
+        ],
+      };
+    });
+    const createTaskTransactions = {
+      receiverId: this.factoryAddress,
+      actions: [
+        {
+          type: 'FunctionCall',
+          params: {
+            methodName: 'createTask',
+            args: {
+              storyId: parseInt(storyId),
+              cid: cid,
+              nft: nftAddress || '',
+              rewardNfts: rewards.join(","),
+            },
+            gas: this.TotalPrepaidGasExceeded,
+          },
+        },
+      ],
+    }
+    const searchParam = getWalletCallbackSearchParam(
+        'create-task',
+        {
+          chain: this.chainType,
+          chainStoryId: storyId,
+          cid: cid,
+        },
+        ChainType.Near,
+    );
 
-  async cancelTask(storyId: string, taskId: number): Promise<void> {}
+    await this.wallet.signAndSendTransactions({
+      transactions: nftTransferTransactions.concat([createTaskTransactions]),
+      callbackUrl: `${window.location.href}?${searchParam}`,
+    });
+    await this.lateReturn();
+  }
 
-  async markTaskDone(storyId: string, taskId: number, submitId: number) {}
+  async updateTask(storyId: string, taskId: string, cid: string) {
+    if (!this.wallet) throw new Error('Near Wallet Unavailable');
 
-  async createTaskSubmit(storyId: string, taskId: number, cid: string) {}
+    const searchParam = getWalletCallbackSearchParam(
+        'update-task',
+        {
+          chain: this.chainType,
+          chainStoryId: storyId,
+          chainTaskId: taskId,
+          cid: cid,
+        },
+        ChainType.Near,
+    );
 
-  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {}
+    await this.wallet.signAndSendTransactions({
+      transactions: [
+        {
+          receiverId: this.factoryAddress,
+          actions: [
+            {
+              type: 'FunctionCall',
+              params: {
+                methodName: 'updateTask',
+                args: {
+                  storyId: parseInt(storyId),
+                  taskId: parseInt(taskId),
+                  cid: cid,
+                },
+                gas: this.TotalPrepaidGasExceeded,
+              },
+            },
+          ],
+        }
+      ],
+      callbackUrl: `${window.location.href}?${searchParam}`,
+    });
+    await this.lateReturn();
+  }
+
+  async cancelTask(storyId: string, taskId: number): Promise<void> {
+    if (!this.wallet) throw new Error('Near Wallet Unavailable');
+
+    const searchParam = getWalletCallbackSearchParam(
+        'cancel-task',
+        {
+          chain: this.chainType,
+          chainStoryId: storyId,
+          chainTaskId: taskId.toString(),
+        },
+        ChainType.Near,
+    );
+
+    await this.wallet.signAndSendTransactions({
+      transactions: [
+        {
+          receiverId: this.factoryAddress,
+          actions: [
+            {
+              type: 'FunctionCall',
+              params: {
+                methodName: 'cancelTask',
+                args: {
+                  storyId: parseInt(storyId),
+                  taskId: parseInt(taskId)
+                },
+                gas: this.TotalPrepaidGasExceeded,
+              },
+            },
+          ],
+        }
+      ],
+      callbackUrl: `${window.location.href}?${searchParam}`,
+    });
+    await this.lateReturn();
+  }
+
+  async markTaskDone(storyId: string, taskId: number, submitId: number) {
+      if (!this.wallet) throw new Error('Near Wallet Unavailable');
+
+    const searchParam = getWalletCallbackSearchParam(
+        'done-task',
+        {
+          chain: this.chainType,
+          chainStoryId: storyId,
+          chainTaskId: taskId.toString(),
+        },
+        ChainType.Near,
+    );
+
+    await this.wallet.signAndSendTransactions({
+          transactions: [
+              {
+                  receiverId: this.factoryAddress,
+                  actions: [
+                      {
+                          type: 'FunctionCall',
+                          params: {
+                              methodName: 'markTaskDone',
+                              args: {
+                                  storyId: parseInt(storyId),
+                                  taskId: taskId,
+                                  submitId: submitId,
+                              },
+                              gas: this.TotalPrepaidGasExceeded,
+                          },
+                      },
+                  ],
+              }
+          ],
+          callbackUrl: `${window.location.href}?${searchParam}`,
+      });
+    await this.lateReturn();
+  }
+
+  async createTaskSubmit(storyId: string, taskId: number, cid: string) {
+      if (!this.wallet) throw new Error('Near Wallet Unavailable');
+
+    const searchParam = getWalletCallbackSearchParam(
+        'task-create-submit',
+        {
+          chain: this.chainType,
+          chainStoryId: storyId,
+          chainTaskId: taskId.toString(),
+          cid: cid,
+        },
+        ChainType.Near,
+    );
+
+      await this.wallet.signAndSendTransactions({
+          transactions: [
+              {
+                  receiverId: this.factoryAddress,
+                  actions: [
+                      {
+                          type: 'FunctionCall',
+                          params: {
+                              methodName: 'createTaskSubmit',
+                              args: {
+                                  storyId: parseInt(storyId),
+                                  taskId: taskId,
+                                  cid: cid,
+                              },
+                              gas: this.TotalPrepaidGasExceeded,
+                          },
+                      },
+                  ],
+              }
+          ],
+          callbackUrl: `${window.location.href}?${searchParam}`,
+      });
+      await this.lateReturn();
+  }
+
+  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {
+      if (!this.wallet) throw new Error('Near Wallet Unavailable');
+
+    const searchParam = getWalletCallbackSearchParam(
+        'task-remove-submit',
+        {
+          chain: this.chainType,
+          chainStoryId: storyId,
+          chainTaskId: taskId.toString(),
+          chainSubmitId: submitId.toString(),
+        },
+        ChainType.Near,
+    );
+
+      await this.wallet.signAndSendTransactions({
+          transactions: [
+              {
+                  receiverId: this.factoryAddress,
+                  actions: [
+                      {
+                          type: 'FunctionCall',
+                          params: {
+                              methodName: 'withdrawTaskSubmit',
+                              args: {
+                                  storyId: parseInt(storyId),
+                                  taskId: taskId,
+                                  submitId: submitId,
+                              },
+                              gas: this.TotalPrepaidGasExceeded,
+                          },
+                      },
+                  ],
+              }
+          ],
+          callbackUrl: `${window.location.href}?${searchParam}`,
+      });
+      await this.lateReturn();
+  }
+
+  async getMyVotesOnMicroStory(account_id: string) {
+    if (!this.wallet) throw new Error('Near Wallet Unavailable');
+    let nftTotalSupply = await this.viewMethod({
+      contractId: this.nearActivityAddress,
+      method: 'nft_total_supply',
+    });
+
+    try {
+      let hasVoted = await this.viewMethod({
+        contractId: this.nearActivityAddress,
+        method: 'nft_tokens_for_owner',
+        args: { account_id },
+      });
+      return nftTotalSupply ? hasVoted : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
 }

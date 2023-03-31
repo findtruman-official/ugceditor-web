@@ -207,6 +207,98 @@ declare global {
     //   Pending = 'Pending',
     //   Rejected = 'Rejected',
     // }
+
+
+    type ActivitySubmission = {
+      activity: Activity;
+      content: ActivityContent;
+      createTime: number | string;
+      id: string;
+      uid: string;
+      publisher: string;
+      votes: number;
+    };
+    type ActivityContentType = 'OUTPUT';
+    type ActivityContent = {
+      contentId: string;
+      contentType: ActivityContentType;
+      details?: ActivityContentDetails;
+      pubInfo: PublicInfo;
+      used: boolean;
+    };
+
+    type PublicInfo =
+        | ActivityContentPublicInfoMicrostory
+        | ActivityContentPublicInfoOutput;
+
+    type ActivityContentPublicInfoOutput = {
+      contentType: ActivityContentType;
+      image: string;
+    };
+    type ActivityContentDetails = ActivityContentDetailsOutput;
+    type ActivityContentDetailsOutput = {
+      contentType: ActivityContentType;
+      output: any;
+    };
+
+    type ActivityContentPublicInfoMicrostory = {
+      contentType: ActivityContentType;
+      contents: ActivityMicroStoryContent[];
+      coverOutputId: string;
+      coverOutputUrl: string;
+      description: string;
+      title: string;
+      uid: string;
+      microStoryId: string;
+    };
+
+    type ActivityStatus = 'CREATED' | 'FINISHED' | 'STARTED';
+
+    type ActivityRule = 'NEO' | 'NEAR' | 'BASE_TXT2IMG' | 'KNN3';
+
+    type SubmissionOrder = 'ASC' | 'DESC';
+
+    type SubmissionOrderBy = 'CREATETIME' | 'VOTES';
+
+    type Activity = {
+      coverImgUrl: string;
+      id: string;
+      isContentAvailable?: boolean;
+      name: string;
+      planFinishAt: string;
+      planStartAt: string;
+      rule: ActivityRule;
+      specifiedInputImage?: string;
+      status: string;
+    };
+
+    type ActivityMicroStory = {
+      id: string;
+      uid: string;
+      coverOutputId: string;
+      coverOutputUrl: string;
+      title: string;
+      description: string;
+      contents?: ActivityMicroStoryContent[];
+      frozen: boolean;
+      loading?: boolean;
+    };
+
+    type ActivityMicroStoryContent = {
+      id?: string;
+      description: string;
+      order: number;
+      outputId: string;
+      outputUrl: string;
+    };
+
+    type UserBasicInfo = {
+      avatarUrl: string;
+      id: string;
+      username: string;
+    };
+  }
+
   }
 
   namespace WalletCallback {
