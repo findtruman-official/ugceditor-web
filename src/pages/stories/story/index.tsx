@@ -28,13 +28,16 @@ import {
 } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { history, useModel } from 'umi';
+import {history, useLocation, useModel} from 'umi';
 import styles from './index.less';
+import useWalletCallback from "@/hooks/useWalletCallback";
 
 const Story: React.FC = () => {
   const { confirmLogin } = useContext<WalletContextType>(WalletContext);
   const { formatMessage } = useIntl();
   const match = useMatch('/story/:chainType/:storyId');
+  const {search} = useLocation()
+  const {walletCallbackType} = useWalletCallback({search, handle:false})
 
   const { accounts, chains, getToken, getTokenAsync, connectedWallets } =
     useModel('walletModel', (model) => ({
@@ -95,6 +98,10 @@ const Story: React.FC = () => {
       setStoryId(match.params.storyId);
     }
   }, [match]);
+
+  useEffect(() => {
+      walletCallbackType && setCurrentTab('work')
+  }, [walletCallbackType])
 
   const { loading: saving, run: runSave } = useRequest(
     async () => {

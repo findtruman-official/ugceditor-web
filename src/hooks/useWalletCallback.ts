@@ -2,8 +2,11 @@ import { ChainType } from '@/wallets';
 import { useIntl } from '@@/plugin-locale';
 import { message } from 'antd';
 import { Base64 } from 'js-base64';
-import { useEffect } from 'react';
+import {useState} from 'react';
 import { useModel } from 'umi';
+import * as nearAPI from "near-api-js";
+import {useAsyncEffect} from "ahooks";
+
 
 export function getWalletCallbackSearchParam(
   type: WalletCallback.CallbackType,
@@ -29,7 +32,7 @@ function clearSearch() {
   );
 }
 
-const useWalletCallback = ({ search }: { search: string }) => {
+const useWalletCallback = ({ search, handle = true }: { search: string, handle?: boolean }) => {
   const { accounts } = useModel('walletModel', (state) => ({
     accounts: state.accounts,
   }));
@@ -46,7 +49,13 @@ const useWalletCallback = ({ search }: { search: string }) => {
   }));
   const { formatMessage } = useIntl();
 
-  useEffect(() => {
+  const [type, setType] = useState<WalletCallback.CallbackType| undefined>();
+  const [payload, setPayload] = useState<WalletCallback.CallbackPayload| undefined>();
+
+  useAsyncEffect(async () => {
+    setType(undefined);
+    setPayload(undefined);
+
     if (!search && !window.location.search) return;
     const walletSearchParams = new URLSearchParams(window.location.search);
     const searchParams = new URLSearchParams(search);
@@ -80,6 +89,11 @@ const useWalletCallback = ({ search }: { search: string }) => {
       if (!accounts[chainType]) {
         return;
       }
+
+      setType(type);
+      setPayload(payload);
+
+      if (!handle) return;
 
       switch (type) {
         case 'publish-story': {
@@ -118,7 +132,10 @@ const useWalletCallback = ({ search }: { search: string }) => {
       clearSearch();
     } catch (e) {}
   }, [search, accounts]);
-  return {};
+  return {
+    walletCallbackType: type,
+    walletCallbackPayload: payload,
+  };
 };
 
 export default useWalletCallback;
