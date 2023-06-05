@@ -161,22 +161,24 @@ export default () => {
         ],
       });
 
-    _chainWallets.push({
-      chainType: ChainType.Dfinity,
-      icon: ChainLogos[ChainType.Dfinity],
-      wallets: [
-        {
-          name: 'Plug',
-          icon: WalletLogos[WalletType.Plug],
-          walletType: WalletType.Plug,
-          provider: new PlugWalletProvider(
-            getWalletEvents(WalletType.Plug),
-            '',
-            '',
-          ),
-        },
-      ],
-    });
+    const dfinityChainInfo = chains.find((c) => c.type === ChainType.Dfinity);
+    dfinityChainInfo &&
+      _chainWallets.push({
+        chainType: ChainType.Dfinity,
+        icon: ChainLogos[ChainType.Dfinity],
+        wallets: [
+          {
+            name: 'Plug',
+            icon: WalletLogos[WalletType.Plug],
+            walletType: WalletType.Plug,
+            provider: new PlugWalletProvider(
+              getWalletEvents(WalletType.Plug),
+              dfinityChainInfo.factoryAddress,
+              dfinityChainInfo.findsAddress,
+            ),
+          },
+        ],
+      });
 
     return _chainWallets;
   }, [chains]);
@@ -294,14 +296,18 @@ export default () => {
           if (!wallet) {
             return '';
           }
-          const signature = await wallet.provider.signMessage(message);
-          return await refreshToken(
-            account,
-            chainType,
-            message,
-            pubKey,
-            signature,
-          );
+          if (chainType === ChainType.Dfinity) {
+            return await refreshToken(account, chainType, message, '', '');
+          } else {
+            const signature = await wallet.provider.signMessage(message);
+            return await refreshToken(
+              account,
+              chainType,
+              message,
+              pubKey,
+              signature,
+            );
+          }
         }
         return token;
       }
