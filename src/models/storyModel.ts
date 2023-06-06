@@ -116,8 +116,9 @@ export default () => {
   const isAuthor = useMemo(() => {
     if (currentStory) {
       return (
+        accounts[currentStory.chainInfo.type] &&
         accounts[currentStory.chainInfo.type].toLowerCase() ===
-        currentStory.author.toLowerCase()
+          currentStory.author.toLowerCase()
       );
     } else {
       return false;
