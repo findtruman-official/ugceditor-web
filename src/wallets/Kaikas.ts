@@ -159,7 +159,7 @@ export class KaikasWalletProvider implements WalletProvider {
           .div(new BigNumber(10).pow(new BigNumber(mintDecimals)))
           .toString(),
       );
-      throw new Error('Insufficient Finds Token');
+      throw new Error('Insufficient USDT Token');
     }
 
     const allowance = await this.findsContract!.methods.allowance(

@@ -126,17 +126,18 @@ export class TempleWalletProvider implements WalletProvider {
   }
 
   async getMintDecimals() {
-    if (!this.tezos) throw new Error('Provider Unavailable');
-    const findsMintContract = await this.tezos.wallet.at(this.findsMintAddress);
-    const storage = (await findsMintContract.storage()) as any;
-    const tokenMetadataValue = await storage.assets.token_metadata.get(0);
-    const valuesMap = tokenMetadataValue.token_info.valueMap;
-    const decimals = valuesMap.find((val: string, key: string) => {
-      if (key.substring(1, key.length - 1) === 'decimals') {
-        return val;
-      }
-    });
-    return Number(bytes2Char(decimals));
+    // if (!this.tezos) throw new Error('Provider Unavailable');
+    // const findsMintContract = await this.tezos.wallet.at(this.findsMintAddress);
+    // const storage = (await findsMintContract.storage()) as any;
+    // const tokenMetadataValue = await storage.assets.token_metadata.get(0);
+    // const valuesMap = tokenMetadataValue.token_info.valueMap;
+    // const decimals = valuesMap.find((val: string, key: string) => {
+    //   if (key.substring(1, key.length - 1) === 'decimals') {
+    //     return val;
+    //   }
+    // });
+    // return Number(bytes2Char(decimals));
+    return 6;
   }
 
   async publishStoryNft(
@@ -199,7 +200,7 @@ export class TempleWalletProvider implements WalletProvider {
           .div(new BigNumber(10).pow(new BigNumber(mintDecimals)))
           .toString(),
       );
-      throw new Error('Insufficient Finds Token');
+      throw new Error('Insufficient USDT Token');
     }
 
     const batchOp = await this.tezos.wallet.batch()

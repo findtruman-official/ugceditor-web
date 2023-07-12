@@ -365,7 +365,7 @@ export class PhantomWalletProvider implements WalletProvider {
           .div(new BN(10).pow(new BN(mintDecimals)))
           .toString(),
       );
-      throw new Error('Insufficient Finds Token');
+      throw new Error('Insufficient USDT Token');
     }
 
     const findsRecvAccount = await getAccount(
