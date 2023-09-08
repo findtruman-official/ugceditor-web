@@ -5,11 +5,11 @@ import {
   WalletProvider,
   WalletType,
 } from '@/wallets/index';
-import BigNumber from 'bignumber.js';
 import { TezosToolkit } from '@taquito/taquito';
 import { bytes2Char } from '@taquito/utils';
 import { TempleWallet } from '@temple-wallet/dapp';
 import { message } from 'antd';
+import BigNumber from 'bignumber.js';
 
 const TESTNET_RPC_URL = 'https://ghostnet.tezos.marigold.dev/';
 
@@ -36,15 +36,10 @@ export class TempleWalletProvider implements WalletProvider {
     if (this.provider) {
       this.tezos = new TezosToolkit(TESTNET_RPC_URL);
       this.tezos.setWalletProvider(this.provider);
-      this.onConnect = onConnect || (() => {
-      });
-      this.onDisconnect = onDisconnect || (() => {
-      });
-
-
+      this.onConnect = onConnect || (() => {});
+      this.onDisconnect = onDisconnect || (() => {});
     }
   }
-
 
   async isAvailable() {
     return await TempleWallet.isAvailable();
@@ -155,7 +150,9 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
     const decimals = await this.getMintDecimals();
-    const _price = new BigNumber(price).times(new BigNumber(10).pow(new BigNumber(decimals)));
+    const _price = new BigNumber(price).times(
+      new BigNumber(10).pow(new BigNumber(decimals)),
+    );
     const contract = await this.tezos.wallet.at(this.factoryAddress);
     const _name = escape(metadata.name);
     const _desc = escape(metadata.desc);
@@ -187,9 +184,15 @@ export class TempleWalletProvider implements WalletProvider {
     const findsContract = await this.tezos.wallet.at(this.findsMintAddress);
     const storyContract = await this.tezos.wallet.at(this.factoryAddress);
 
-    const requestsParams = [{ owner: this.provider.permission.pkh, token_id: 0 }];
-    const userFindsBalance = (await findsContract.views.balance_of(requestsParams).read())[0].balance.toString();
-    const enoughToken = new BigNumber(userFindsBalance).gte(new BigNumber(price));
+    const requestsParams = [
+      { owner: this.provider.permission.pkh, token_id: 0 },
+    ];
+    const userFindsBalance = (
+      await findsContract.views.balance_of(requestsParams).read()
+    )[0].balance.toString();
+    const enoughToken = new BigNumber(userFindsBalance).gte(
+      new BigNumber(price),
+    );
     if (!enoughToken) {
       const mintDecimals = await this.getMintDecimals();
       onInsufficientFinds?.(
@@ -202,14 +205,19 @@ export class TempleWalletProvider implements WalletProvider {
       throw new Error('Insufficient Finds Token');
     }
 
-    const batchOp = await this.tezos.wallet.batch()
-      .withContractCall(findsContract.methods.update_operators([{
-        add_operator: {
-          owner: this.provider.permission.pkh,
-          operator: nftSaleAddr,
-          token_id: 0,
-        },
-      }]))
+    const batchOp = await this.tezos.wallet
+      .batch()
+      .withContractCall(
+        findsContract.methods.update_operators([
+          {
+            add_operator: {
+              owner: this.provider.permission.pkh,
+              operator: nftSaleAddr,
+              token_id: 0,
+            },
+          },
+        ]),
+      )
       .withContractCall(storyContract.methods.mintStoryNft(Number(id)))
       .send();
     await batchOp.confirmation();
@@ -219,11 +227,15 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.factoryAddress) throw new Error('Contract Unavailable');
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage() as any;
+    const contractStorage = (await contract.storage()) as any;
     const nftAddr = await contractStorage.nftMap.get(Number(storyId));
     const nftContract = await this.tezos.wallet.at(nftAddr);
-    const storyNftSoldNum = (await contractStorage.storyNftMap.get(Number(storyId))).sold.toString();
-    const storyNftAuthorClaimedNum = (await contractStorage.storyNftMap.get(Number(storyId))).authorClaimed.toString();
+    const storyNftSoldNum = (
+      await contractStorage.storyNftMap.get(Number(storyId))
+    ).sold.toString();
+    const storyNftAuthorClaimedNum = (
+      await contractStorage.storyNftMap.get(Number(storyId))
+    ).authorClaimed.toString();
     const mapList = Number(storyNftSoldNum) + Number(storyNftAuthorClaimedNum);
 
     const nftMapArray = new Array(mapList).fill(1).map((v, i) => {
@@ -242,15 +254,18 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage() as any;
+    const contractStorage = (await contract.storage()) as any;
     const storyNftInfo = await contractStorage.storyNftMap.get(Number(storyId));
-    return storyNftInfo.total.toString() - storyNftInfo.sold.toString() - storyNftInfo.authorReserve.toString();
+    return (
+      storyNftInfo.total.toString() -
+      storyNftInfo.sold.toString() -
+      storyNftInfo.authorReserve.toString()
+    );
   }
-
 
   async getNftAddress(storyId: string) {
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage() as any;
+    const contractStorage = (await contract.storage()) as any;
     const nftAddr = await contractStorage.nftMap.get(Number(storyId));
     return nftAddr;
   }
@@ -266,7 +281,7 @@ export class TempleWalletProvider implements WalletProvider {
     const nftSaleContract = await this.tezos.wallet.at(nftAddress);
     const contract = await this.tezos.wallet.at(this.factoryAddress);
 
-    const addOperators = rewards.map(item => {
+    const addOperators = rewards.map((item) => {
       return {
         add_operator: {
           owner: this.provider.permission.pkh,
@@ -277,21 +292,34 @@ export class TempleWalletProvider implements WalletProvider {
     });
 
     if (addOperators.length) {
-      const batchOp = await this.tezos.wallet.batch()
-        .withContractCall(nftSaleContract.methods.update_operators(addOperators))
-        .withContractCall(contract.methods.createTask(Number(storyId), cid, nftAddress, rewards))
+      const batchOp = await this.tezos.wallet
+        .batch()
+        .withContractCall(
+          nftSaleContract.methods.update_operators(addOperators),
+        )
+        .withContractCall(
+          contract.methods.createTask(
+            Number(storyId),
+            cid,
+            nftAddress,
+            rewards,
+          ),
+        )
         .send();
       await batchOp.confirmation();
     } else {
-      await contract.methods.createTask(Number(storyId), cid, nftAddress, rewards).send();
+      await contract.methods
+        .createTask(Number(storyId), cid, nftAddress, rewards)
+        .send();
     }
-
   }
 
   async updateTask(storyId: string, taskId: string, cid: string) {
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    await contract.methods.updateTask(Number(storyId), Number(taskId), cid).send();
+    await contract.methods
+      .updateTask(Number(storyId), Number(taskId), cid)
+      .send();
   }
 
   async cancelTask(storyId: string, taskId: number) {
@@ -303,56 +331,69 @@ export class TempleWalletProvider implements WalletProvider {
   async markTaskDone(storyId: string, taskId: number, submitId: number) {
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    await contract.methods.markTaskDone(Number(storyId), taskId, submitId).send();
+    await contract.methods
+      .markTaskDone(Number(storyId), taskId, submitId)
+      .send();
   }
 
   async createTaskSubmit(storyId: string, taskId: number, cid: string) {
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    await contract.methods.createTaskSubmit(Number(storyId), taskId, cid).send();
+    await contract.methods
+      .createTaskSubmit(Number(storyId), taskId, cid)
+      .send();
   }
 
   async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {
     if (!this.tezos) throw new Error('Provider Unavailable');
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    await contract.methods.withdrawTaskSubmit(Number(storyId), taskId, submitId).send();
+    await contract.methods
+      .withdrawTaskSubmit(Number(storyId), taskId, submitId)
+      .send();
   }
 
-
-  sleep (milliseconds: number) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  sleep(milliseconds: number) {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
-
 
   async authorReservedNftRest(storyId: string) {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage() as any;
+    const contractStorage = (await contract.storage()) as any;
     let storyNftInfo = await contractStorage.storyNftMap.get(Number(storyId));
     while (!storyNftInfo) {
       storyNftInfo = await contractStorage.storyNftMap.get(Number(storyId));
       await this.sleep(2500);
     }
-    return Number(storyNftInfo?.authorReserve) - Number(storyNftInfo?.authorClaimed);
+    return (
+      Number(storyNftInfo?.authorReserve) - Number(storyNftInfo?.authorClaimed)
+    );
   }
 
   async claimAuthorReservedNft(storyId: string, amount: number) {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage() as any;
-    const authorClaimed_old = (await contractStorage.storyNftMap.get(Number(storyId))).authorClaimed;
+    const contractStorage = (await contract.storage()) as any;
+    const authorClaimed_old = (
+      await contractStorage.storyNftMap.get(Number(storyId))
+    ).authorClaimed;
     const rest = await this.authorReservedNftRest(storyId);
     if (rest < amount) return;
 
-    await contract.methods.claimAuthorReservedNft(Number(storyId), amount).send();
+    await contract.methods
+      .claimAuthorReservedNft(Number(storyId), amount)
+      .send();
 
-
-    let authorClaimed_new = (await contractStorage.storyNftMap.get(Number(storyId))).authorClaimed;
+    let authorClaimed_new = (
+      await contractStorage.storyNftMap.get(Number(storyId))
+    ).authorClaimed;
     while (Number(authorClaimed_old) == Number(authorClaimed_new)) {
       await this.sleep(2500);
-      authorClaimed_new = (await contractStorage.storyNftMap.get(Number(storyId))).authorClaimed;
+      authorClaimed_new = (
+        await contractStorage.storyNftMap.get(Number(storyId))
+      ).authorClaimed;
     }
   }
 
@@ -360,16 +401,22 @@ export class TempleWalletProvider implements WalletProvider {
     if (!this.tezos) throw new Error('Provider Unavailable');
 
     const contract = await this.tezos.wallet.at(this.factoryAddress);
-    const contractStorage = await contract.storage() as any;
+    const contractStorage = (await contract.storage()) as any;
     const nftSaleAddr = await contractStorage.nftMap.get(Number(storyId));
     const nftSaleContract = await this.tezos.wallet.at(nftSaleAddr);
-    const storyNftSoldNum = (await contractStorage.storyNftMap.get(Number(storyId))).sold.toString();
-    const storyNftAuthorClaimedNum = (await contractStorage.storyNftMap.get(Number(storyId))).authorClaimed.toString();
+    const storyNftSoldNum = (
+      await contractStorage.storyNftMap.get(Number(storyId))
+    ).sold.toString();
+    const storyNftAuthorClaimedNum = (
+      await contractStorage.storyNftMap.get(Number(storyId))
+    ).authorClaimed.toString();
     const mapList = Number(storyNftSoldNum) + Number(storyNftAuthorClaimedNum);
     const nftMapArray = new Array(mapList).fill(1).map((v, i) => {
       return { owner: this.provider.permission.pkh, token_id: ++i };
     });
-    const callbackList = await nftSaleContract.views.balance_of(nftMapArray).read();
+    const callbackList = await nftSaleContract.views
+      .balance_of(nftMapArray)
+      .read();
     const gotNfts = callbackList.filter((item: any) => {
       return item.balance.toString() > 0;
     });

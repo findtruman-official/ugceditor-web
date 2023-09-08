@@ -1,38 +1,43 @@
 import { ChainType } from '@/wallets';
 import { useIntl } from '@@/plugin-locale';
-import {message, Modal} from 'antd';
+import { useAsyncEffect } from 'ahooks';
+import { message, Modal } from 'antd';
 import { Base64 } from 'js-base64';
-import {useState} from 'react';
+import * as nearAPI from 'near-api-js';
+import { useState } from 'react';
 import { useModel } from 'umi';
-import * as nearAPI from "near-api-js";
-import {useAsyncEffect} from "ahooks";
-
 
 export function getWalletCallbackSearchParam(
-    type: WalletCallback.CallbackType,
-    payload: WalletCallback.CallbackPayload,
-    chainType: ChainType,
+  type: WalletCallback.CallbackType,
+  payload: WalletCallback.CallbackPayload,
+  chainType: ChainType,
 ) {
   return `walletCallback=${Base64.encode(
-      JSON.stringify({
-        type,
-        payload,
-        chainType,
-      }),
+    JSON.stringify({
+      type,
+      payload,
+      chainType,
+    }),
   )}`;
 }
 
 function clearSearch() {
   history.replaceState(
-      null,
-      '',
-      `${window.location.origin}${window.location.pathname}${
-          window.location.hash.split('?')[0]
-      }`,
+    null,
+    '',
+    `${window.location.origin}${window.location.pathname}${
+      window.location.hash.split('?')[0]
+    }`,
   );
 }
 
-const useWalletCallback = ({ search, handle = true }: { search: string, handle?: boolean }) => {
+const useWalletCallback = ({
+  search,
+  handle = true,
+}: {
+  search: string;
+  handle?: boolean;
+}) => {
   const { accounts } = useModel('walletModel', (state) => ({
     accounts: state.accounts,
   }));
@@ -64,10 +69,13 @@ const useWalletCallback = ({ search, handle = true }: { search: string, handle?:
   }));
   const { formatMessage } = useIntl();
 
-  const [type, setType] = useState<WalletCallback.CallbackType| undefined>();
-  const [payload, setPayload] = useState<WalletCallback.CallbackPayload| undefined>();
+  const [type, setType] = useState<WalletCallback.CallbackType | undefined>();
+  const [payload, setPayload] = useState<
+    WalletCallback.CallbackPayload | undefined
+  >();
 
   useAsyncEffect(async () => {
+    return;
     setType(undefined);
     setPayload(undefined);
 
@@ -78,7 +86,8 @@ const useWalletCallback = ({ search, handle = true }: { search: string, handle?:
     const errorCode = walletSearchParams.get('errorCode');
     const errorMessage = walletSearchParams.get('errorMessage');
     const transactionHashes = walletSearchParams.get('transactionHashes');
-    transactionHashes && localStorage.setItem('transactionHash', transactionHashes)
+    transactionHashes &&
+      localStorage.setItem('transactionHash', transactionHashes);
 
     console.log({ errorCode, errorMessage });
     if (handle && (errorCode || errorMessage)) {
@@ -86,30 +95,32 @@ const useWalletCallback = ({ search, handle = true }: { search: string, handle?:
       message.error(formatMessage({ id: 'transaction-failed' }));
       return;
     }
-    const transactionHash = localStorage.getItem('transactionHash')
+    const transactionHash = localStorage.getItem('transactionHash');
     if (!(errorCode || errorMessage) && transactionHash && handle) {
-       const modal = Modal.info({
+      const modal = Modal.info({
         title: '',
-        content: formatMessage({id: 'modal.check-status'}),
+        content: formatMessage({ id: 'modal.check-status' }),
       });
       const connectionConfig = {
-        networkId: "testnet",
+        networkId: 'testnet',
         keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(), // first create a key store
-        nodeUrl: "https://rpc.testnet.near.org",
-        walletUrl: "https://wallet.testnet.near.org",
-        helperUrl: "https://helper.testnet.near.org",
-        explorerUrl: "https://explorer.testnet.near.org",
+        nodeUrl: 'https://rpc.testnet.near.org',
+        walletUrl: 'https://wallet.testnet.near.org',
+        helperUrl: 'https://helper.testnet.near.org',
+        explorerUrl: 'https://explorer.testnet.near.org',
       };
-      try{
+      try {
         const near = await nearAPI.connect(connectionConfig);
         const response = await near.connection.provider.txStatus(
-            transactionHash,
-            accounts[ChainType.Near]
+          transactionHash,
+          accounts[ChainType.Near],
         );
         const successValue = response?.status?.SuccessValue;
-        const decodedData = successValue.length ? JSON.parse(Base64.decode(successValue)) : null;
+        const decodedData = successValue.length
+          ? JSON.parse(Base64.decode(successValue))
+          : null;
         modal.destroy();
-        if(typeof decodedData == 'string'){
+        if (typeof decodedData == 'string') {
           clearSearch();
           message.error(decodedData);
           localStorage.setItem('transactionHash', null);
@@ -117,7 +128,7 @@ const useWalletCallback = ({ search, handle = true }: { search: string, handle?:
         } else {
           localStorage.setItem('transactionHash', null);
         }
-      } catch(e) {
+      } catch (e) {
         modal.destroy();
       }
     }
@@ -129,7 +140,7 @@ const useWalletCallback = ({ search, handle = true }: { search: string, handle?:
 
     try {
       const callbackObj: WalletCallback.CallbackObject = JSON.parse(
-          Base64.decode(callbackBase64),
+        Base64.decode(callbackBase64),
       );
       if (!callbackObj.type || !callbackObj.payload || !callbackObj.chainType) {
         clearSearch();
@@ -156,21 +167,21 @@ const useWalletCallback = ({ search, handle = true }: { search: string, handle?:
             loading: true,
           });
           message.success(
-              formatMessage({
-                id: 'story.story-published',
-              }),
+            formatMessage({
+              id: 'story.story-published',
+            }),
           );
           break;
         }
         case 'update-story': {
           addUpdateStoryPolling(payload);
           message.success(
-              formatMessage({
-                id: 'story.story-updated',
-              }),
+            formatMessage({
+              id: 'story.story-updated',
+            }),
           );
           if (
-              (payload as WalletCallback.UpdateStoryPayload).clearChapterCache
+            (payload as WalletCallback.UpdateStoryPayload).clearChapterCache
           ) {
             clearChapterCaches(payload.id);
           }
@@ -213,8 +224,7 @@ const useWalletCallback = ({ search, handle = true }: { search: string, handle?:
         }
       }
       clearSearch();
-    } catch (e) {
-    }
+    } catch (e) {}
   }, [search, accounts]);
   return {
     walletCallbackType: type,
