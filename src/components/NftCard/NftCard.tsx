@@ -3,7 +3,7 @@ import { WalletContext, WalletContextType } from '@/layouts';
 import { PREFIX } from '@/utils/const';
 import { useIntl } from '@@/plugin-locale';
 import { InfoCircleOutlined, LoadingOutlined } from '@ant-design/icons';
-import { useRequest } from 'ahooks';
+import { useCreation, useRequest } from 'ahooks';
 import {
   Button,
   Col,
@@ -74,9 +74,20 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
   const chain = currentStory?.chainInfo.type;
   const wallet = connectedWallets[chain];
 
+  const claimReservedMax = useCreation(
+    () =>
+      wallet?.provider
+        ? Math.min(
+            wallet.provider.reservedCanClaimedAtOnce ?? Infinity,
+            reservedNftRest,
+          )
+        : 0,
+    [wallet, reservedNftRest],
+  );
+
   const { data: mintDecimals } = useRequest(
     async () => {
-      if (wallet) {
+      if (wallet?.provider) {
         return await wallet.provider.getMintDecimals();
       }
     },
@@ -87,7 +98,7 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
 
   const { loading: minting, run: runMint } = useRequest(
     async () => {
-      if (!wallet) return;
+      if (!wallet?.provider) return;
 
       try {
         await wallet.provider.mintStoryNft(
@@ -280,7 +291,7 @@ const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
                                   onChange={(e) => setClaimReservedAmount(e)}
                                   step={1}
                                   min={1}
-                                  max={wallet.provider.reservedCanClaimedAtOnce < reservedNftRest ? wallet.provider.reservedCanClaimedAtOnce : reservedNftRest}
+                                  max={claimReservedMax}
                                 />
                               </Col>
                               <Col>
