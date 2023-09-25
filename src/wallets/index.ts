@@ -4,6 +4,7 @@ export enum ChainType {
   Tezos = 'tezos-jakartanet',
   Dfinity = 'ic',
   Near = 'near',
+  IRIS = 'iris',
 }
 
 export enum WalletType {
@@ -12,6 +13,7 @@ export enum WalletType {
   Temple,
   Plug,
   NearWallet,
+  Metamask,
 }
 
 export enum WalletAutoConnectType {

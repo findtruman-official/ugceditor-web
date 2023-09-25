@@ -7,7 +7,10 @@ import {
 } from '@/utils/token';
 import { ChainType, WalletProvider, WalletType } from '@/wallets';
 import { KaikasWalletProvider } from '@/wallets/Kaikas';
+import { MetamaskWalletProvider } from '@/wallets/Metamask';
 import { NearWalletProvider } from '@/wallets/NearWallet';
+import { PhantomWalletProvider } from '@/wallets/Phantom';
+import { PlugWalletProvider } from '@/wallets/Plug';
 import { TempleWalletProvider } from '@/wallets/Temple';
 import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -42,6 +45,7 @@ export default () => {
     [ChainType.Tezos]: undefined,
     [ChainType.Dfinity]: undefined,
     [ChainType.Near]: undefined,
+    [ChainType.IRIS]: undefined,
   });
 
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
@@ -50,6 +54,7 @@ export default () => {
     [ChainType.Tezos]: '',
     [ChainType.Dfinity]: '',
     [ChainType.Near]: '',
+    [ChainType.IRIS]: '',
   });
 
   const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
@@ -58,6 +63,7 @@ export default () => {
     [ChainType.Tezos]: '',
     [ChainType.Dfinity]: '',
     [ChainType.Near]: '',
+    [ChainType.IRIS]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
@@ -202,6 +208,26 @@ export default () => {
             ),
             noShortenAccount: true,
             noSignature: true,
+          },
+        ],
+      });
+
+    const irisChainInfo = chains.find((c) => c.type === ChainType.IRIS);
+    irisChainInfo &&
+      _chainWallets.push({
+        chainType: ChainType.IRIS,
+        icon: ChainLogos[ChainType.IRIS],
+        wallets: [
+          {
+            name: 'Metamask',
+            icon: WalletLogos[WalletType.Metamask],
+            walletType: WalletType.Metamask,
+            provider: new MetamaskWalletProvider(
+              getWalletEvents(WalletType.Metamask),
+              irisChainInfo.factoryAddress,
+              irisChainInfo.findsAddress,
+            ),
+            noShortenAccount: true,
           },
         ],
       });

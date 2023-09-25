@@ -12,6 +12,7 @@ declare global {
   }
 
   interface Window {
+    ethereum: any;
     phantom: any;
     solana: any;
     klaytn: any;
@@ -210,7 +211,16 @@ declare global {
   }
 
   namespace WalletCallback {
-    type CallbackType = 'publish-story' | 'update-story' | 'nft-sale' | 'create-task' | 'cancel-task' | 'done-task' | 'update-task' | 'task-create-submit' | 'task-remove-submit';
+    type CallbackType =
+      | 'publish-story'
+      | 'update-story'
+      | 'nft-sale'
+      | 'create-task'
+      | 'cancel-task'
+      | 'done-task'
+      | 'update-task'
+      | 'task-create-submit'
+      | 'task-remove-submit';
 
     type PublishStoryPayload = {
       id: string;
@@ -258,7 +268,6 @@ declare global {
       chainTaskId: string;
       chainSubmitId: string;
     };
-
 
     type CallbackPayload =
       | PublishStoryPayload

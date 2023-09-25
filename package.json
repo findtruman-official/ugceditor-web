@@ -42,7 +42,8 @@
     "react-contenteditable": "^3.3.6",
     "react-helmet": "^6.1.0",
     "rehype-sanitize": "^5.0.1",
-    "tweetnacl-util": "^0.15.1"
+    "tweetnacl-util": "^0.15.1",
+    "web3": "1.8.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
