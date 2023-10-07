@@ -8,7 +8,7 @@ import {
 
 import ABI from '@/assets/eth_abi.json';
 import FINDS_ABI from '@/assets/eth_finds_abi.json';
-import NFT_ABI from '@/assets/klaytn_nft_abi.json';
+import NFT_ABI from '@/assets/eth_nft_abi.json';
 import { message } from 'antd';
 import BigNumber from 'bignumber.js';
 import * as _ from 'lodash';
@@ -219,7 +219,8 @@ export class MetamaskWalletProvider implements WalletProvider {
   }
 
   async getMintDecimals() {
-    return await this.findsContract!.methods.decimals().call();
+    // return await this.findsContract!.methods.decimals().call();
+    return 18;
   }
 
   async mintStoryNft(
@@ -232,49 +233,50 @@ export class MetamaskWalletProvider implements WalletProvider {
     if (!this.contract) throw new Error('Contract Unavailable');
     if (!(await this.checkChain())) throw new Error('Error network');
 
-    const priceBN = new BigNumber(price);
+    // const priceBN = new BigNumber(price);
 
-    const tokenAmount = await this.findsContract!.methods.balanceOf(
-      this.account,
-    ).call();
-    const enoughToken = new BigNumber(tokenAmount).gte(priceBN);
-    if (!enoughToken) {
-      const mintDecimals = await this.getMintDecimals();
-      onInsufficientFinds?.(
-        this.account,
-        new BigNumber(price)
-          .minus(new BigNumber(tokenAmount))
-          .div(new BigNumber(10).pow(new BigNumber(mintDecimals)))
-          .toString(),
-      );
-      throw new Error('Insufficient Finds Token');
-    }
-
-    const allowance = await this.findsContract!.methods.allowance(
-      this.account,
-      nftSaleAddr,
-    ).call();
-    const enoughAllowance = new BigNumber(allowance).gte(priceBN);
-    if (!enoughAllowance) {
-      let toApprove = '500000000000000000000';
-      if (priceBN.gte(new BigNumber(toApprove))) {
-        toApprove = price;
-      }
-      const approveMethod = this.findsContract!.methods.approve(
-        nftSaleAddr,
-        toApprove,
-      );
-      await approveMethod.send({
-        from: this.account,
-        // gas: await approveMethod.estimateGas({ from: author }),
-        gas: '100000',
-      });
-    }
+    // const tokenAmount = await this.findsContract!.methods.balanceOf(
+    //   this.account,
+    // ).call();
+    // const enoughToken = new BigNumber(tokenAmount).gte(priceBN);
+    // if (!enoughToken) {
+    //   const mintDecimals = await this.getMintDecimals();
+    //   onInsufficientFinds?.(
+    //     this.account,
+    //     new BigNumber(price)
+    //       .minus(new BigNumber(tokenAmount))
+    //       .div(new BigNumber(10).pow(new BigNumber(mintDecimals)))
+    //       .toString(),
+    //   );
+    //   throw new Error('Insufficient Finds Token');
+    // }
+    //
+    // const allowance = await this.findsContract!.methods.allowance(
+    //   this.account,
+    //   nftSaleAddr,
+    // ).call();
+    // const enoughAllowance = new BigNumber(allowance).gte(priceBN);
+    // if (!enoughAllowance) {
+    //   let toApprove = '500000000000000000000';
+    //   if (priceBN.gte(new BigNumber(toApprove))) {
+    //     toApprove = price;
+    //   }
+    //   const approveMethod = this.findsContract!.methods.approve(
+    //     nftSaleAddr,
+    //     toApprove,
+    //   );
+    //   await approveMethod.send({
+    //     from: this.account,
+    //     // gas: await approveMethod.estimateGas({ from: author }),
+    //     gas: '100000',
+    //   });
+    // }
 
     const method = this.contract!.methods.mintStoryNft(id);
     await method.send({
       from: this.account,
       gas: await method.estimateGas({ from: this.account }),
+      value: price,
     });
   }
 
