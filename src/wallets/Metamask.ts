@@ -329,9 +329,9 @@ export class MetamaskWalletProvider implements WalletProvider {
     if (!(await this.checkChain())) throw new Error('Error network');
 
     const decimals = await this.getMintDecimals();
-    const _price = new BigNumber(price).times(
-      new BigNumber(10).pow(new BigNumber(decimals)),
-    );
+    const _price = new BigNumber(price)
+      .times(new BigNumber(10).pow(new BigNumber(decimals)))
+      .toString();
     const { name } = metadata;
     const method = this.contract.methods.publishStoryNft(
       id,
