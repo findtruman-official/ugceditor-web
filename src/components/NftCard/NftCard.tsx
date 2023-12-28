@@ -1,5 +1,5 @@
 import ColorfulBorder from '@/components/Colorful/ColorfulBorder';
-import { WalletContext, WalletContextType } from '@/layouts';
+import { GlobalContext, GlobalContextType } from '@/layouts';
 import { PREFIX } from '@/utils/const';
 import { useIntl } from '@@/plugin-locale';
 import { InfoCircleOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -29,7 +29,7 @@ interface NftCardProps {
 
 const NftCard = ({ loading, onPublish, syncing }: NftCardProps) => {
   const { formatMessage } = useIntl();
-  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
+  const { openWalletModal } = useContext<GlobalContextType>(GlobalContext);
   const { connectedWallets } = useModel('walletModel', (model) => ({
     connectedWallets: model.connectedWallets,
   }));

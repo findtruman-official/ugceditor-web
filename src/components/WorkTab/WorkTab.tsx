@@ -2,8 +2,9 @@ import CreateTaskModal from '@/components/CreateTaskModal/CreateTaskModal';
 import ReviewModal from '@/components/ReviewModal/ReviewModal';
 import TaskList from '@/components/TaskList/TaskList';
 import TaskModal from '@/components/TaskModal/TaskModal';
-import { WalletContext, WalletContextType } from '@/layouts';
-import {useLocation, useModel} from '@@/exports';
+import useWalletCallback from '@/hooks/useWalletCallback';
+import { GlobalContext, GlobalContextType } from '@/layouts';
+import { useLocation, useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import {
   CheckCircleOutlined,
@@ -16,13 +17,12 @@ import { MacScrollbar } from 'mac-scrollbar';
 import 'mac-scrollbar/dist/mac-scrollbar.css';
 import { useContext, useEffect, useState } from 'react';
 import styles from './WorkTab.less';
-import useWalletCallback from "@/hooks/useWalletCallback";
 
 interface WorkTabProps {}
 
 export default function WorkTab({}: WorkTabProps) {
   const { confirmLogin, openWalletModal } =
-    useContext<WalletContextType>(WalletContext);
+    useContext<GlobalContextType>(GlobalContext);
   const { formatMessage } = useIntl();
 
   const { chainType, isAuthor } = useModel('storyModel', (model) => ({
@@ -61,14 +61,21 @@ export default function WorkTab({}: WorkTabProps) {
 
   const location = useLocation();
   const { search } = location;
-  const {walletCallbackType, walletCallbackPayload} = useWalletCallback({search, handle:false})
+  const { walletCallbackType, walletCallbackPayload } = useWalletCallback({
+    search,
+    handle: false,
+  });
 
   useEffect(() => {
-    if(walletCallbackType && walletCallbackPayload.chainTaskId && walletCallbackType !== 'cancel-task'){
+    if (
+      walletCallbackType &&
+      walletCallbackPayload.chainTaskId &&
+      walletCallbackType !== 'cancel-task'
+    ) {
       setTaskModalVisible(true);
       setTaskId(walletCallbackPayload.chainTaskId);
     }
-  }, [walletCallbackType])
+  }, [walletCallbackType]);
 
   useEffect(() => {
     setCreateModalVisible(false);

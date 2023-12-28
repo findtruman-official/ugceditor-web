@@ -1,5 +1,5 @@
 import ImageUploader from '@/components/ImageUploader/ImageUploader';
-import { WalletContext, WalletContextType } from '@/layouts';
+import { GlobalContext, GlobalContextType } from '@/layouts';
 import { ChainWallet } from '@/models/walletModel';
 import { getJson, uploadJson } from '@/services/api';
 import { ChainType } from '@/wallets';
@@ -49,7 +49,7 @@ export default function CreateStoryModal({
   onClose,
 }: CreateStoryModalProps) {
   const { openWalletModal, confirmLogin } =
-    useContext<WalletContextType>(WalletContext);
+    useContext<GlobalContextType>(GlobalContext);
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
 

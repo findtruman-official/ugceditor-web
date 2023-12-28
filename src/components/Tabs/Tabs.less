@@ -1,0 +1,50 @@
+.tabs {
+  display: flex;
+  align-items: center;
+  column-gap: 24px;
+  position: relative;
+  //margin-bottom: 48px;
+}
+.tab {
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: rgb(255 255 255 / 85%);
+  opacity: 0.45;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  .icon {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+    margin-right: 6px;
+  }
+}
+.tab:hover {
+  //color: rgb(255 255 255 / 85%);
+  opacity: 1;
+}
+.tabActive {
+  //color: rgb(255 255 255 / 85%);
+  opacity: 1;
+}
+.tabDisabled {
+  cursor: default;
+  //color: rgb(255 255 255 / 45%);
+  opacity: 0.45;
+}
+.tabDisabled:hover {
+  //color: rgb(255 255 255 / 45%);
+  opacity: 0.45;
+}
+.inkBar {
+  position: absolute;
+  transition: all 0.3s ease;
+  height: 6px;
+  width: 40px;
+  border-radius: 3px;
+  bottom: -8px;
+  left: 2px;
+  background: rgb(255 255 255 / 85%);
+}

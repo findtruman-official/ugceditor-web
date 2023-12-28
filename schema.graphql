@@ -5,6 +5,12 @@ schema {
     mutation: Mutation
 }
 
+type AiImage {
+    id: String!
+    imageUrl: String!
+    status: String!
+}
+
 type Chain {
     "story factory address"
     factoryAddress: String!
@@ -30,12 +36,14 @@ type Jwt {
 
 type Mutation {
     cancelStoryTask(id: Float!): StoryTask!
+    createAiImage(prompt: String!, ratio: String!, style: String!): AiImage!
     createStoryTask(chain: String!, chainStoryId: String!, description: String!, title: String!): StoryTask!
     createTaskSubmit(content: String!, taskId: Int!): StoryTaskSubmit!
     doneStoryTask(id: Float!, submitIds: [Int!]!): StoryTask!
     login(account: String!, chain: String!, message: String!, pubkey: String, signature: String!): Jwt!
     metadataUriPrefix(amount: Int!, chain: String!, description: String!, image: String!, name: String!): IpfsResult!
     removeTaskSubmit(id: Int!): Boolean!
+    runAichat(messages: [String!]!): String!
     "returns null if no story on chain."
     syncStoryContentHash(chain: String!, chainStoryId: String!): Story
     "returns null if no story nft sale on chain."
@@ -61,6 +69,7 @@ type NftSale {
 }
 
 type Query {
+    aiImage(id: String!): AiImage!
     chain(chain: String!): Chain
     chainTask(chain: String!, chainStoryId: String!, chainTaskId: String!): StoryChainTask
     chainTasks(chain: String!, chainStoryId: String!): [StoryChainTask!]!

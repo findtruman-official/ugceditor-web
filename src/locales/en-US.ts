@@ -3,6 +3,7 @@ export default {
   'menu.writer': "I'm Writer",
   'menu.story-gameplay': 'Story-gameplay',
   'menu.achievements': 'Achievements',
+  'header.creation-with-ai': 'Creation with AI',
   'header.connect-wallet': 'Connect Wallet',
   'stories.title.hot-stories': 'Hot Stories',
   'stories.title.latest-stories': 'Latest Stories',
@@ -150,4 +151,65 @@ export default {
   'task-review.select-submission-tip':
     'One of these submissions should be approved!',
   'modal.check-status': 'Checking transaction status',
+
+  'ai-creation.title.image': 'AI Image Creation',
+  'ai-creation.title.text': 'AI Text Creation',
+  'ai-creation.model.general': 'General Model',
+  'ai-creation.model.fantasy': 'Fantasy Model',
+  'ai-creation.model.anime': 'Anime Model',
+  'ai-creation.config.model': 'Model',
+  'ai-creation.config.prompt': 'Prompt',
+  'ai-creation.config.prompt.placeholder':
+    'Input your magic words to create images',
+  'ai-creation.config.size': 'Size',
+  'ai-creation.config.example': 'Example: ',
+  'ai-creation.config.another-prompt': 'Another prompt',
+  'ai-creation.generate': 'Generate',
+  'ai-creation.ai-story-creation': 'AI story creation',
+  'ai-creation.text.input-placeholder': 'Please input...',
+  'ai-creation.generate-failed': 'Generation failed, please try again later.',
+  'ai-creation.click-to-download': 'Click to download',
+
+  'ai-creation.model-desc.general': 'Diverse styles, wide range of use.',
+  'ai-creation.model-desc.fantasy': 'Masterpieces, strong sense of art.',
+  'ai-creation.model-desc.anime': 'Animation style, fast speed.',
+  'ai-creation.model-placeholder.general':
+    'Describe the features of your ideal image in detail, separated by commas. You can also input any artistic style modifiers to generate the artworks you want.',
+  'ai-creation.model-placeholder.fantasy':
+    'Describe the features of your ideal image in detail, separated by commas. You can also Input any artistic style modifiers, artist names to strengthen the artistic effect of the image.',
+  'ai-creation.model-placeholder.anime':
+    'Input the most critical information, without any style modifiers, to create works with animation style. Short sentences and phrases are better.',
+
+  'ai-creation.general-model-prompt-1':
+    'an astronaut riding a horse on mars, hd, dramatic lighting, detailed',
+  'ai-creation.general-model-prompt-2':
+    'Symmetry, portrait of strom trooper, star wars, science fiction, glowing lights, intricate, elegant, highly detailed, digital painting, smooth, illustration, art by artgerm and greg rutkowski and alphonse mucha',
+  'ai-creation.general-model-prompt-3':
+    'orangutan at a pub with a pint of beer in his hand, highly detailed, realistic, beautiful composition',
+  'ai-creation.general-model-prompt-4':
+    "The personification of the Halloween holiday in the form of a cute girl with short hair and a villain's smile, cute girl, cute hats, cute cheeks, unreal engine, highly detailed, artgerm digital illustration, woo tooth, studio ghibli, deviantart, sharp focus, artstation, by Alexei Vinogradov bakery, sweets, emerald eyes",
+  'ai-creation.general-model-prompt-5':
+    'painted portrait of rugged zeus, god of thunder, greek god, white hair, masculine, mature, handsome, upper body, muscular, hairy torso, fantasy, intricate, elegant, highly detailed, digital painting, concept art, smooth, illustration, art by gaston bussiere and alphonse mucha',
+
+  'ai-creation.fantasy-model-prompt-1':
+    'portrait of a gorgeous blond female in the style of stefan kostic, realistic, half body shot, sharp focus, 8k high definition, insanely detailed, intricate, elegant, art by stanley lau and artgerm, extreme blur flames background',
+  'ai-creation.fantasy-model-prompt-2':
+    'photo of a ultra realistic sailing ship, dramatic light, pale sunrise, cinematic lighting, battered,low angle, trending on artstation, 4k, hyper realistic, focused, extreme details, unreal engine, cinematic, masterpiece, art by studio ghibli,intricate artwork by john william turner',
+  'ai-creation.fantasy-model-prompt-3':
+    'galaxies, spirals, space, nebulae, stars, smoke, iridescent, intricate detail, in the shape of a rabbit, octane render, 8k',
+  'ai-creation.fantasy-model-prompt-4':
+    'impressive ominous fine butterfly shattered crystal shard glitch volumetric dynamic fluid simulation lighting impressive masterpiece hyper ultra detailed intricate sharp focus 8k realistic illustration canon eos r 3 fujifilm x - t 3 0 sony alpha, by james gurney tooth wu artgerm colorful! ! ! ,trending on artstation behance cgsociety',
+  'ai-creation.fantasy-model-prompt-5':
+    'game art, a single tabby cat animal, ultra-detailed, white background, HD design by makoto shinkai, Akihiko Yoshida for Atelier Lulua, KyoAni, Granblue Fantasy',
+
+  'ai-creation.anime-model-prompt-1':
+    '1girl, brown hair, green eyes, colorful, autumn, clouds, lighting, blue sky, falling leaves, garden',
+  'ai-creation.anime-model-prompt-2':
+    '1girl with pink hair and curly hair, sitting in the garden, playing piano',
+  'ai-creation.anime-model-prompt-3':
+    'a lovely boy with red hat is watching TV, hug the Corgi on the sofa',
+  'ai-creation.anime-model-prompt-4':
+    'scenery, shibuya tokyo, night sky, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset , 8k',
+  'ai-creation.anime-model-prompt-5':
+    'a stern schoolboy is running in the rain at night in a parking lot, cyberpunk, breathtaking lights, artstation',
 };
