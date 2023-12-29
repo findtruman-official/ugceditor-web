@@ -1,17 +1,29 @@
-import { WalletContext, WalletContextType } from '@/layouts';
+import { GlobalContext, GlobalContextType } from '@/layouts';
 import { SelectLang, useIntl } from '@@/plugin-locale';
-import { Avatar } from 'antd';
+import { BulbFilled } from '@ant-design/icons';
+import { Avatar, Button } from 'antd';
 import { useContext } from 'react';
 import { useModel } from 'umi';
 import styles from './RightContent.less';
 
 export default function RightContent() {
-  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
+  const { openAIModal, openWalletModal } =
+    useContext<GlobalContextType>(GlobalContext);
   const { connectedWallets } = useModel('walletModel');
   const { formatMessage } = useIntl();
 
   return (
     <div className={styles.container}>
+      <Button
+        onClick={() => {
+          openAIModal();
+        }}
+        icon={<BulbFilled />}
+        type={'primary'}
+        shape={'round'}
+      >
+        {formatMessage({ id: 'header.creation-with-ai' })}
+      </Button>
       <div
         onClick={() => {
           openWalletModal();

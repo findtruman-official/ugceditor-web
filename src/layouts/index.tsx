@@ -1,3 +1,4 @@
+import AIModal from '@/components/AIModal/AIModal';
 import Header from '@/components/Header/Header';
 import LoginConfirmModal from '@/components/LoginConfirmModal/LoginConfirmModal';
 import WalletModal from '@/components/WalletModal/WalletModal';
@@ -10,7 +11,8 @@ import 'mac-scrollbar/dist/mac-scrollbar.css';
 import { createContext, useEffect, useState } from 'react';
 import { Outlet, useModel } from 'umi';
 
-export interface WalletContextType {
+export interface GlobalContextType {
+  openAIModal: () => void;
   openWalletModal: () => void;
   confirmLogin: (
     chainType: ChainType,
@@ -21,7 +23,8 @@ export interface WalletContextType {
   ) => Promise<string | undefined>;
 }
 
-export const WalletContext = createContext<WalletContextType>({
+export const GlobalContext = createContext<GlobalContextType>({
+  openAIModal: () => {},
   openWalletModal: () => {},
   confirmLogin: async (chainType) => {
     return undefined;
@@ -33,6 +36,7 @@ export default function Layout() {
   const { pathname, search } = location;
   useWalletCallback({ search });
 
+  const [aiModalVisible, setAIModalVisible] = useState(false);
   const [walletModalVisible, setWalletModalVisible] = useState(false);
   const [loginState, setLoginState] = useState<
     | {
@@ -68,8 +72,9 @@ export default function Layout() {
   }, [pathname]);
 
   return (
-    <WalletContext.Provider
+    <GlobalContext.Provider
       value={{
+        openAIModal: () => setAIModalVisible(true),
         openWalletModal: () => setWalletModalVisible(true),
         confirmLogin: (chainType, callbacks) => {
           return new Promise<string | undefined>((resolve) => {
@@ -99,6 +104,10 @@ export default function Layout() {
       }}
     >
       <Header />
+      <AIModal
+        visible={aiModalVisible}
+        onClose={() => setAIModalVisible(false)}
+      />
       <WalletModal
         visible={walletModalVisible}
         onClose={() => setWalletModalVisible(false)}
@@ -107,6 +116,6 @@ export default function Layout() {
       <div style={{ height: 32 }} />
       <Outlet />
       <GlobalScrollbar />
-    </WalletContext.Provider>
+    </GlobalContext.Provider>
   );
 }

@@ -1,0 +1,329 @@
+.container {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+.rowBetween {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rowCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.configPanelMask {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: rgb(0 0 0 / 50%);
+  z-index: 99;
+}
+
+.configItem {
+  margin-bottom: 24px;
+  .title {
+    margin-bottom: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    color: rgb(255 255 255 / 85%);
+    display: flex;
+    align-items: center;
+    column-gap: 6px;
+    //justify-content: space-between;
+  }
+  .value {
+    font-weight: normal;
+    border-radius: 4px;
+    padding: 4px 8px;
+    background: rgb(255 255 255 / 5%);
+    font-size: 14px;
+  }
+  .subTitle {
+    margin-top: -12px;
+    margin-bottom: 18px;
+    font-size: 16px;
+    color: rgb(255 255 255 / 50%);
+  }
+
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  ::-webkit-scrollbar {
+    //width: 2px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(0 0 0 / 40%);
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(0 0 0 / 60%);
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 6px;
+  }
+}
+
+.advancedDivider {
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 24px 0;
+}
+
+.sizeCard {
+  border-radius: 2px;
+  background: #3b1012;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  //padding: 16px;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  font-size: 14px;
+  row-gap: 6px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  font-weight: bold;
+}
+.sizeCard:hover {
+  border-color: #d71212;
+}
+.sizeCardSelected {
+  border-color: #d71212;
+}
+.sizeCardRectWrapper {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sizeCardRect {
+  border-radius: 2px;
+  background: #d71212;
+}
+
+.randomButton {
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.engineCard {
+  cursor: pointer;
+  padding-left: 12px;
+  border-radius: 2px;
+  border: 2px solid transparent;
+  background: #3b1012;
+  transition: all 0.3s ease;
+  height: 100px;
+  width: 240px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 6px;
+}
+.engineCard:hover {
+  border-color: #d71212;
+}
+.engineCardActive {
+  border-color: #d71212;
+}
+
+.modelImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+.modelName {
+  font-size: 14px;
+  font-weight: bold;
+}
+.modelDesc {
+  color: rgb(255 255 255 / 55%);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.example {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgb(255 255 255 / 85%);
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  column-gap: 6px;
+}
+.exampleContent {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.exampleContent:hover {
+  color: #d71212;
+}
+
+.ph::placeholder {
+  color: #fff;
+}
+
+.outputPanel {
+  //display: flex;
+  //flex-direction: column;
+  //row-gap: 12px;
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    //height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(0 0 0 / 40%);
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(0 0 0 / 60%);
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 6px;
+  }
+}
+
+.outputImageContainer {
+  background: #3b1012;
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+  }
+}
+
+.outputImageList {
+  margin-top: 12px;
+  height: 178px;
+  //flex: 1;
+  display: flex;
+  overflow-y: auto;
+}
+
+.messageContainer {
+  height: 300px;
+  max-height: 300px;
+  min-height: 300px;
+  padding: 12px;
+  overflow-y: auto;
+  border: 2px solid #d71212;
+  background: #000;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    //height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #141414;
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #262626;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 6px;
+  }
+}
+
+.messageItem {
+  padding: 6px 12px;
+  border-radius: 2px;
+  transition: background 0.2s ease-in-out;
+
+  .name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #d71212;
+  }
+
+  .content {
+    white-space: pre-wrap;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    min-height: 1rem;
+  }
+
+  &:hover {
+    background: #1f1f1f;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 12px;
+  }
+}
+
+.customInputArea {
+  padding-right: 12px;
+  background: #000000;
+  margin-top: 24px;
+  border-radius: 2px;
+  border: 2px solid #d71212;
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.customInput {
+  &::-webkit-scrollbar {
+    width: 6px;
+    //height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #141414;
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #262626;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 6px;
+  }
+}
+
+.cursor {
+  display: none;
+}

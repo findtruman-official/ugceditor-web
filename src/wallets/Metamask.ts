@@ -365,17 +365,101 @@ export class MetamaskWalletProvider implements WalletProvider {
     cid: string,
     nftAddress: string,
     rewards: number[],
-  ) {}
+  ) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    if (!(await this.checkChain())) throw new Error('Error network');
 
-  async updateTask(storyId: string, taskId: string, cid: string) {}
+    const nftSaleContract = (await this.getNftSaleContract(storyId)) as any;
+    if (parseInt(nftSaleContract._address) !== 0) {
+      const isApprovedForAll = await nftSaleContract.methods
+        .isApprovedForAll(this.account, this.factoryAddress)
+        .call();
+      if (!isApprovedForAll) {
+        const approveMethod = nftSaleContract.methods.setApprovalForAll(
+          this.factoryAddress,
+          true,
+        );
+        await approveMethod.send({
+          from: this.account,
+          gas: await approveMethod.estimateGas({ from: this.account }),
+        });
+      }
+    }
 
-  async cancelTask(storyId: string, taskId: number) {}
+    const method = this.contract.methods.createTask(
+      storyId,
+      cid,
+      nftAddress,
+      rewards,
+    );
+    await method.send({
+      from: this.account,
+      gas: await method.estimateGas({ from: this.account }),
+    });
+  }
 
-  async markTaskDone(storyId: string, taskId: number, submitId: number) {}
+  async updateTask(storyId: string, taskId: string, cid: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    if (!(await this.checkChain())) throw new Error('Error network');
 
-  async createTaskSubmit(storyId: string, taskId: number, cid: string) {}
+    const method = this.contract.methods.updateTask(storyId, taskId, cid);
+    await method.send({
+      from: this.account,
+      gas: await method.estimateGas({ from: this.account }),
+    });
+  }
 
-  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {}
+  async cancelTask(storyId: string, taskId: number) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    if (!(await this.checkChain())) throw new Error('Error network');
+
+    const method = this.contract.methods.cancelTask(storyId, taskId);
+    await method.send({
+      from: this.account,
+      gas: await method.estimateGas({ from: this.account }),
+    });
+  }
+
+  async markTaskDone(storyId: string, taskId: number, submitId: number) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    if (!(await this.checkChain())) throw new Error('Error network');
+
+    const method = this.contract.methods.markTaskDone(
+      storyId,
+      taskId,
+      submitId,
+    );
+    await method.send({
+      from: this.account,
+      gas: await method.estimateGas({ from: this.account }),
+    });
+  }
+
+  async createTaskSubmit(storyId: string, taskId: number, cid: string) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    if (!(await this.checkChain())) throw new Error('Error network');
+
+    const method = this.contract.methods.createTaskSubmit(storyId, taskId, cid);
+    await method.send({
+      from: this.account,
+      gas: await method.estimateGas({ from: this.account }),
+    });
+  }
+
+  async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {
+    if (!this.contract) throw new Error('Contract Unavailable');
+    if (!(await this.checkChain())) throw new Error('Error network');
+
+    const method = this.contract.methods.withdrawTaskSubmit(
+      storyId,
+      taskId,
+      submitId,
+    );
+    await method.send({
+      from: this.account,
+      gas: await method.estimateGas({ from: this.account }),
+    });
+  }
 
   async authorReservedNftRest(storyId: string) {
     if (!this.contract) throw new Error('Contract Unavailable');

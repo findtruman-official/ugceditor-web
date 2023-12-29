@@ -208,6 +208,12 @@ declare global {
     //   Pending = 'Pending',
     //   Rejected = 'Rejected',
     // }
+
+    type AiImage = {
+      id: string;
+      imageUrl: string;
+      status: 'pending' | 'processing' | 'error' | 'success';
+    };
   }
 
   namespace WalletCallback {

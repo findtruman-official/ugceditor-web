@@ -1,6 +1,6 @@
 import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import StoryCardList from '@/components/StoryCard/StoryCardList';
-import { WalletContext, WalletContextType } from '@/layouts';
+import { GlobalContext, GlobalContextType } from '@/layouts';
 import { useIntl } from '@@/plugin-locale';
 import { useModel } from '@@/plugin-model';
 import { PageContainer } from '@ant-design/pro-components';
@@ -11,7 +11,7 @@ import styles from './index.less';
 const Writer: React.FC = () => {
   const { formatMessage } = useIntl();
 
-  const { openWalletModal } = useContext<WalletContextType>(WalletContext);
+  const { openWalletModal } = useContext<GlobalContextType>(GlobalContext);
   const { myStories, gettingMyStories, createStoryPollingList } = useModel(
     'storyModel',
     (model) => ({
