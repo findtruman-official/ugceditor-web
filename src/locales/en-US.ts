@@ -166,6 +166,7 @@ export default {
   'ai-creation.config.another-prompt': 'Another prompt',
   'ai-creation.generate': 'Generate',
   'ai-creation.ai-story-creation': 'AI story creation',
+  'ai-creation.text.create': 'Create',
   'ai-creation.text.input-placeholder':
     'Please enter your specific needs and let AI polish the text for you, e.g. enter your current story text and ask AI to modify the story logic, continue to write, etc.',
   'ai-creation.generate-failed': 'Generation failed, please try again later.',

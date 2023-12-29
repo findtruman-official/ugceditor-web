@@ -157,6 +157,7 @@ export default {
   'ai-creation.config.another-prompt': '换一个',
   'ai-creation.generate': '生成',
   'ai-creation.ai-story-creation': 'AI故事续写',
+  'ai-creation.text.create': '续写',
   'ai-creation.text.input-placeholder':
     '请输入您的具体需求，让AI为您打磨文本，例如，输入您当前的故事文本，让AI修改故事的逻辑、续写等。',
   'ai-creation.generate-failed': '生成失败，请稍后重试',

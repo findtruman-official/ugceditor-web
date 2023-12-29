@@ -132,7 +132,7 @@ export function AIText({
           onClick={sendMessage}
           loading={loading || writing}
         >
-          Create
+          {formatMessage({ id: 'ai-creation.text.create' })}
         </Button>
       </div>
     </div>
