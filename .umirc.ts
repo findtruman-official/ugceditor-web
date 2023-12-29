@@ -12,6 +12,14 @@ export default defineConfig({
     title: 'UGCEditor',
     locale: true,
   },
+  scripts: [
+    {
+      async: true,
+      // iris
+      'data-website-id': '7a943d25-f102-4f19-bce4-f91e122a4b10',
+      src: 'https://a.aiverse.me/script.js',
+    },
+  ],
   routes: [
     {
       path: '/',
