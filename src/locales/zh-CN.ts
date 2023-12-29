@@ -3,6 +3,7 @@ export default {
   'menu.writer': '我是作者',
   'menu.story-gameplay': '游戏',
   'menu.achievements': '成就',
+  'header.creation-with-ai': 'AI创作',
   'header.connect-wallet': '连接钱包',
   'stories.title.hot-stories': '热门故事',
   'stories.title.latest-stories': '最新故事',
@@ -142,4 +143,65 @@ export default {
   'task-review.review-confirm': '您即将采纳提交，并将该任务设为完成状态！',
   'task-review.select-submission-tip': '请选择一个提交以批准！',
   'modal.check-status': '正在检查交易状态',
+
+  'ai-creation.title.image': 'AI生图',
+  'ai-creation.title.text': 'AI续写',
+  'ai-creation.model.general': '通用模型',
+  'ai-creation.model.fantasy': '梦幻模型',
+  'ai-creation.model.anime': '动漫模型',
+  'ai-creation.config.model': '模型',
+  'ai-creation.config.prompt': '画面描述',
+  'ai-creation.config.prompt.placeholder': '请输入画面描述',
+  'ai-creation.config.size': '尺寸',
+  'ai-creation.config.example': '示例: ',
+  'ai-creation.config.another-prompt': '换一个',
+  'ai-creation.generate': '生成',
+  'ai-creation.ai-story-creation': 'AI故事续写',
+  'ai-creation.text.input-placeholder':
+    '请输入您的具体需求，让AI为您打磨文本，例如，输入您当前的故事文本，让AI修改故事的逻辑、续写等。',
+  'ai-creation.generate-failed': '生成失败，请稍后重试',
+  'ai-creation.click-to-download': '点击下载',
+
+  'ai-creation.model-desc.general': '风格多样，适用面广',
+  'ai-creation.model-desc.fantasy': '艺术冲击感强',
+  'ai-creation.model-desc.anime': '快速生成动漫风格作品',
+  'ai-creation.model-placeholder.general':
+    '详细描绘您想要的画面特征，以逗号进行分隔。同时，可输入任何艺术风格修饰词生成您想要的作品。',
+  'ai-creation.model-placeholder.fantasy':
+    '详细描绘您想要的画面特征，并以逗号进行分隔，同时，可输入相关风格词，修辞词或艺术家名来强化图像的艺术效果。',
+  'ai-creation.model-placeholder.anime':
+    '画面描述以短句，短语为佳， 您只需输入最关键的主体描述，无需输入相关风格描述词，即可创作漫画作品。',
+
+  'ai-creation.general-model-prompt-1':
+    'an astronaut riding a horse on mars, hd, dramatic lighting, detailed',
+  'ai-creation.general-model-prompt-2':
+    'Symmetry, portrait of strom trooper, star wars, science fiction, glowing lights, intricate, elegant, highly detailed, digital painting, smooth, illustration, art by artgerm and greg rutkowski and alphonse mucha',
+  'ai-creation.general-model-prompt-3':
+    'orangutan at a pub with a pint of beer in his hand, highly detailed, realistic, beautiful composition',
+  'ai-creation.general-model-prompt-4':
+    "The personification of the Halloween holiday in the form of a cute girl with short hair and a villain's smile, cute girl, cute hats, cute cheeks, unreal engine, highly detailed, artgerm digital illustration, woo tooth, studio ghibli, deviantart, sharp focus, artstation, by Alexei Vinogradov bakery, sweets, emerald eyes",
+  'ai-creation.general-model-prompt-5':
+    'painted portrait of rugged zeus, god of thunder, greek god, white hair, masculine, mature, handsome, upper body, muscular, hairy torso, fantasy, intricate, elegant, highly detailed, digital painting, concept art, smooth, illustration, art by gaston bussiere and alphonse mucha',
+
+  'ai-creation.fantasy-model-prompt-1':
+    'portrait of a gorgeous blond female in the style of stefan kostic, realistic, half body shot, sharp focus, 8k high definition, insanely detailed, intricate, elegant, art by stanley lau and artgerm, extreme blur flames background',
+  'ai-creation.fantasy-model-prompt-2':
+    'photo of a ultra realistic sailing ship, dramatic light, pale sunrise, cinematic lighting, battered,low angle, trending on artstation, 4k, hyper realistic, focused, extreme details, unreal engine, cinematic, masterpiece, art by studio ghibli,intricate artwork by john william turner',
+  'ai-creation.fantasy-model-prompt-3':
+    'galaxies, spirals, space, nebulae, stars, smoke, iridescent, intricate detail, in the shape of a rabbit, octane render, 8k',
+  'ai-creation.fantasy-model-prompt-4':
+    'impressive ominous fine butterfly shattered crystal shard glitch volumetric dynamic fluid simulation lighting impressive masterpiece hyper ultra detailed intricate sharp focus 8k realistic illustration canon eos r 3 fujifilm x - t 3 0 sony alpha, by james gurney tooth wu artgerm colorful! ! ! ,trending on artstation behance cgsociety',
+  'ai-creation.fantasy-model-prompt-5':
+    'game art, a single tabby cat animal, ultra-detailed, white background, HD design by makoto shinkai, Akihiko Yoshida for Atelier Lulua, KyoAni, Granblue Fantasy',
+
+  'ai-creation.anime-model-prompt-1':
+    '1girl, brown hair, green eyes, colorful, autumn, clouds, lighting, blue sky, falling leaves, garden',
+  'ai-creation.anime-model-prompt-2':
+    '1girl with pink hair and curly hair, sitting in the garden, playing piano',
+  'ai-creation.anime-model-prompt-3':
+    'a lovely boy with red hat is watching TV, hug the Corgi on the sofa',
+  'ai-creation.anime-model-prompt-4':
+    'scenery, shibuya tokyo, night sky, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset , 8k',
+  'ai-creation.anime-model-prompt-5':
+    'a stern schoolboy is running in the rain at night in a parking lot, cyberpunk, breathtaking lights, artstation',
 };
