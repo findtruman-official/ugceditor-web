@@ -152,8 +152,8 @@ export default {
     'One of these submissions should be approved!',
   'modal.check-status': 'Checking transaction status',
 
-  'ai-creation.title.image': 'AI Image Creation',
-  'ai-creation.title.text': 'AI Text Creation',
+  'ai-creation.title.image': 'AI Story Image Creation',
+  'ai-creation.title.text': 'AI Story Content Creation',
   'ai-creation.model.general': 'General Model',
   'ai-creation.model.fantasy': 'Fantasy Model',
   'ai-creation.model.anime': 'Anime Model',
