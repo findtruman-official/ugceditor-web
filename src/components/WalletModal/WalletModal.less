@@ -78,3 +78,22 @@
 .disconnectIcon:hover {
   color: #f5222d;
 }
+
+.profileCard {
+  border-radius: 4px;
+  background: #262626;
+  border: 1px solid rgb(48, 48, 48);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+  width: 100%;
+  .nickname {
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 12px;
+  }
+}
+.profileCard:not(:last-child) {
+  margin-bottom: 12px;
+}

@@ -32,7 +32,7 @@ export default {
   'story.sold-out': '售罄',
   'story.amount': '数量',
   'story.total': '总量',
-  'story.price': '售价($ERIS)',
+  'story.price': '售价($DARIC)',
   'story.rest': '剩余',
   'story.own': '已持有',
   'story.author': '作者',
@@ -58,8 +58,8 @@ export default {
   'story.modified': '有修改',
   'story.new': '新章节',
   'story.claimed': '铸造完成！',
-  'story.insufficient-finds-title': 'Finds Token 不足',
-  'story.insufficient-finds-desc': '还需 {amount} Finds Token。',
+  'story.insufficient-finds-title': 'DARIC 不足',
+  'story.insufficient-finds-desc': '还需 {amount} DARIC。',
   'story.waiting-for-sync': '等待同步...',
   'story.story-not-found': '故事不存在',
   'chapter.title.placeholder': '起一个标题',
@@ -142,4 +142,8 @@ export default {
   'task-review.review-confirm': '您即将采纳提交，并将该任务设为完成状态！',
   'task-review.select-submission-tip': '请选择一个提交以批准！',
   'modal.check-status': '正在检查交易状态',
+
+  'profile.create-profile': '创建身份',
+  'profile.create-title': '未找到 Desmos 身份',
+  'profile.create-desc': '请先创建您的 Desmos 身份以发布故事。',
 };

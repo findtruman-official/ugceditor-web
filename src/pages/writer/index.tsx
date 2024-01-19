@@ -4,7 +4,7 @@ import { WalletContext, WalletContextType } from '@/layouts';
 import { useIntl } from '@@/plugin-locale';
 import { useModel } from '@@/plugin-model';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import React, { useContext, useState } from 'react';
 import styles from './index.less';
 
@@ -23,6 +23,7 @@ const Writer: React.FC = () => {
   const { connectedWallets } = useModel('walletModel', (model) => ({
     connectedWallets: model.connectedWallets,
   }));
+  const { profiles } = useModel('profileModel');
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
 
@@ -37,7 +38,31 @@ const Writer: React.FC = () => {
             stories={createStoryPollingList.concat(myStories)}
             loading={gettingMyStories}
             createStory={true}
-            onCreateStory={() => setCreateModalVisible(true)}
+            onCreateStory={() => {
+              if (profiles.length === 0) {
+                Modal.confirm({
+                  centered: true,
+                  title: formatMessage({
+                    id: 'profile.create-title',
+                  }),
+                  content: formatMessage({
+                    id: 'profile.create-desc',
+                  }),
+                  okText: formatMessage({
+                    id: 'profile.create-profile',
+                  }),
+                  onOk: () => {
+                    window.open(
+                      'https://dpm.desmos.network/',
+                      '_blank',
+                      'noreferrer noopener',
+                    );
+                  },
+                });
+              } else {
+                setCreateModalVisible(true);
+              }
+            }}
           />
         ) : (
           <div style={{ textAlign: 'center' }}>

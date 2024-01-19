@@ -7,11 +7,12 @@ import {
 } from '@/utils/token';
 import { ChainType, WalletProvider, WalletType } from '@/wallets';
 import { KaikasWalletProvider } from '@/wallets/Kaikas';
+import { KeplrWalletProvider } from '@/wallets/Keplr';
 import { MetamaskWalletProvider } from '@/wallets/Metamask';
 import { NearWalletProvider } from '@/wallets/NearWallet';
-import { PhantomWalletProvider } from '@/wallets/Phantom';
 import { PlugWalletProvider } from '@/wallets/Plug';
 import { TempleWalletProvider } from '@/wallets/Temple';
+import { WalletConnectDPMProvider } from '@/wallets/WalletConnectDPM';
 import { useRequest } from 'ahooks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -46,6 +47,7 @@ export default () => {
     [ChainType.Dfinity]: undefined,
     [ChainType.Near]: undefined,
     [ChainType.IRIS]: undefined,
+    [ChainType.Desmos]: undefined,
   });
 
   const [accounts, setAccounts] = useState<Record<ChainType, string>>({
@@ -55,6 +57,7 @@ export default () => {
     [ChainType.Dfinity]: '',
     [ChainType.Near]: '',
     [ChainType.IRIS]: '',
+    [ChainType.Desmos]: '',
   });
 
   const [pubKeys, setPubKeys] = useState<Record<ChainType, string>>({
@@ -64,6 +67,7 @@ export default () => {
     [ChainType.Dfinity]: '',
     [ChainType.Near]: '',
     [ChainType.IRIS]: '',
+    [ChainType.Desmos]: '',
   });
 
   const getWalletEvents = (walletType: WalletType) => {
@@ -228,6 +232,37 @@ export default () => {
               irisChainInfo.findsAddress,
             ),
             noShortenAccount: true,
+          },
+        ],
+      });
+
+    const desmosChainInfo = chains.find((c) => c.type === ChainType.Desmos);
+    desmosChainInfo &&
+      _chainWallets.push({
+        chainType: ChainType.Desmos,
+        icon: ChainLogos[ChainType.Desmos],
+        wallets: [
+          {
+            name: 'Desmos App',
+            icon: WalletLogos[WalletType.WalletConnectDPM],
+            walletType: WalletType.WalletConnectDPM,
+            provider: new WalletConnectDPMProvider(
+              getWalletEvents(WalletType.WalletConnectDPM),
+              desmosChainInfo.factoryAddress,
+              desmosChainInfo.findsAddress,
+            ),
+            noShortenAccount: false,
+          },
+          {
+            name: 'Keplr',
+            icon: WalletLogos[WalletType.Keplr],
+            walletType: WalletType.Keplr,
+            provider: new KeplrWalletProvider(
+              getWalletEvents(WalletType.Keplr),
+              desmosChainInfo.factoryAddress,
+              desmosChainInfo.findsAddress,
+            ),
+            noShortenAccount: false,
           },
         ],
       });

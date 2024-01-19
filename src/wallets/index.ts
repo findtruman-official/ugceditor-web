@@ -5,6 +5,7 @@ export enum ChainType {
   Dfinity = 'ic',
   Near = 'near',
   IRIS = 'iris',
+  Desmos = 'desmos',
 }
 
 export enum WalletType {
@@ -14,6 +15,8 @@ export enum WalletType {
   Plug,
   NearWallet,
   Metamask,
+  WalletConnectDPM,
+  Keplr,
 }
 
 export enum WalletAutoConnectType {
@@ -143,4 +146,6 @@ export interface WalletProvider {
     nftName: string,
     storyId: string,
   ): Promise<number[]>;
+
+  createPost(content: string): Promise<void>;
 }

@@ -144,7 +144,7 @@ export const getStory = async (chain: string, chainStoryId: string) => {
     `,
     {
       chain,
-      chainStoryId,
+      chainStoryId: `${chainStoryId}`,
     },
   );
 };
@@ -169,7 +169,7 @@ export const getNftInfo = async (chain: string, chainStoryId: string) => {
     `,
     {
       chain,
-      chainStoryId,
+      chainStoryId: `${chainStoryId}`,
     },
   );
 };
@@ -374,7 +374,7 @@ export async function getChainTask(
     `,
     {
       chain,
-      chainStoryId,
+      chainStoryId: `${chainStoryId}`,
       chainTaskId,
     },
   );

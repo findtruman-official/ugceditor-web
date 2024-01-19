@@ -1,6 +1,9 @@
+import DesmosLogo from '@/assets/desmos-logo.svg';
 import DfinityLogo from '@/assets/dfinity-logo.svg';
+import WalletConnectLogo from '@/assets/dpm-logo.svg';
 import IRISLogo from '@/assets/iris-logo-full.png';
 import KaikasLogo from '@/assets/kaikas-logo.png';
+import KeplrLogo from '@/assets/keplr-logo.png';
 import KlaytnLogo from '@/assets/klaytn-logo.png';
 import MetamaskLogo from '@/assets/metamask-logo.png';
 import NearLogo from '@/assets/near-logo.svg';
@@ -19,6 +22,7 @@ export const ChainLogos: Record<ChainType, string> = {
   [ChainType.Dfinity]: DfinityLogo,
   [ChainType.Near]: NearLogo,
   [ChainType.IRIS]: IRISLogo,
+  [ChainType.Desmos]: DesmosLogo,
 };
 
 export const WalletLogos: Record<WalletType, string> = {
@@ -28,4 +32,6 @@ export const WalletLogos: Record<WalletType, string> = {
   [WalletType.Plug]: PlugLogo,
   [WalletType.NearWallet]: NearWalletLogo,
   [WalletType.Metamask]: MetamaskLogo,
+  [WalletType.WalletConnectDPM]: WalletConnectLogo,
+  [WalletType.Keplr]: KeplrLogo,
 };

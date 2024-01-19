@@ -1,3 +1,4 @@
+import { Window as KeplrWindow } from '@keplr-wallet/types';
 import '@umijs/max/typings';
 
 declare global {
@@ -11,7 +12,7 @@ declare global {
     };
   }
 
-  interface Window {
+  interface Window extends KeplrWindow {
     ethereum: any;
     phantom: any;
     solana: any;
@@ -283,6 +284,23 @@ declare global {
       type: CallbackType;
       chainType: string;
       payload: CallbackPayload;
+    };
+  }
+
+  namespace Desmos {
+    type Profile = {
+      address: string;
+      nickname: string;
+      profile_pic: string;
+      dtag: string;
+    };
+
+    type Subspace = {
+      id: number;
+      description: string;
+      name: string;
+      owner_address: string;
+      creator_address: string;
     };
   }
 }

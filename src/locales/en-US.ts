@@ -33,7 +33,7 @@ export default {
   'story.sold-out': 'Sold Out',
   'story.amount': 'Amount',
   'story.total': 'Total',
-  'story.price': 'Price($ERIS)',
+  'story.price': 'Price($DARIC)',
   'story.rest': 'Rest',
   'story.own': 'You own',
   'story.author': 'Author',
@@ -59,8 +59,8 @@ export default {
   'story.modified': 'Modified',
   'story.new': 'New',
   'story.claimed': 'Claimed!',
-  'story.insufficient-finds-title': 'Insufficient Finds Token',
-  'story.insufficient-finds-desc': 'Another {amount} Finds Token is required.',
+  'story.insufficient-finds-title': 'Insufficient DARIC',
+  'story.insufficient-finds-desc': 'Another {amount} DARIC is required.',
   'story.waiting-for-sync': 'Waiting for Sync...',
   'story.story-not-found': 'STORY NOT FOUND!',
   'chapter.title.placeholder': 'Give it a title',
@@ -150,4 +150,8 @@ export default {
   'task-review.select-submission-tip':
     'One of these submissions should be approved!',
   'modal.check-status': 'Checking transaction status',
+
+  'profile.create-profile': 'Create Profile',
+  'profile.create-title': 'Desmos profile not found',
+  'profile.create-desc': 'A desmos profile is required to publish a story.',
 };

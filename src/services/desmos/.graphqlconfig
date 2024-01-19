@@ -1,0 +1,14 @@
+{
+  "name": "Untitled GraphQL Schema",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Default GraphQL Endpoint": {
+        "url": "https://gql.morpheus.desmos.network/v1/graphql",
+        "headers": {
+        },
+        "introspect": false
+      }
+    }
+  }
+}

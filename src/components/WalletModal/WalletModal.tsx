@@ -5,10 +5,22 @@ import {
   DisconnectOutlined,
   DownloadOutlined,
   LinkOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
-import { Col, Divider, Modal, Row, Spin, Tooltip } from 'antd';
-import { useModel } from 'umi';
+import {
+  Avatar,
+  Button,
+  Col,
+  Divider,
+  Modal,
+  Row,
+  Spin,
+  Tag,
+  Tooltip,
+} from 'antd';
+import { useEffect } from 'react';
+import { useIntl, useModel } from 'umi';
 import styles from './WalletModal.less';
 
 interface WalletModalProps {
@@ -25,6 +37,10 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
     connecting,
     disconnect,
   } = useModel('walletModel');
+
+  const { formatMessage } = useIntl();
+
+  const { profiles, profileLoading, refreshProfile } = useModel('profileModel');
 
   const { data: walletAvailable } = useRequest(
     async () => {
@@ -43,6 +59,10 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
       refreshDeps: [chainWallets],
     },
   );
+
+  useEffect(() => {
+    refreshProfile();
+  }, [visible]);
 
   return (
     <Modal
@@ -87,31 +107,57 @@ export default function WalletModal({ visible, onClose }: WalletModalProps) {
           })}
         </Row>
 
-        {chainWallets.map(({ icon, wallets, chainType }, chainIdx) => (
-          <div className={styles.chain} key={chainType}>
-            <Divider>
-              <img className={styles.chainIcon} src={icon} />
-            </Divider>
-            {wallets.map((wallet, walletIdx) => (
-              <div
-                key={wallet.name}
-                className={styles.walletCard}
-                onClick={() => {
-                  connect(wallet.walletType);
-                }}
-              >
-                <img className={styles.walletIcon} src={wallet.icon} />
-                <div className={styles.walletName}>{wallet.name}</div>
-                {!walletAvailable?.[chainIdx]?.[walletIdx] ? (
-                  <DownloadOutlined className={styles.rightIcon} />
-                ) : connectedWallets[chainType]?.walletType ===
-                  wallet.walletType ? (
-                  <LinkOutlined className={styles.rightIcon} />
-                ) : null}
+        {!!profiles && (
+          <Spin spinning={profileLoading}>
+            <Divider style={{ marginTop: 0 }}>Desmos Profiles</Divider>
+            {!profileLoading && profiles.length === 0 && (
+              <div style={{ textAlign: 'center' }}>
+                <Button
+                  icon={<UserAddOutlined />}
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  href={'https://dpm.desmos.network/'}
+                >
+                  {formatMessage({ id: 'profile.create-profile' })}
+                </Button>
+              </div>
+            )}
+            {profiles.map((p, index) => (
+              <div key={`profile-${index}`} className={styles.profileCard}>
+                <Avatar src={p.profile_pic} />
+                <div className={styles.nickname}>{p.nickname}</div>
+                <Tag>{p.dtag}</Tag>
               </div>
             ))}
-          </div>
-        ))}
+          </Spin>
+        )}
+
+        {!connectedWallets[ChainType.Desmos] &&
+          chainWallets.map(({ icon, wallets, chainType }, chainIdx) => (
+            <div className={styles.chain} key={chainType}>
+              <Divider>
+                <img className={styles.chainIcon} src={icon} />
+              </Divider>
+              {wallets.map((wallet, walletIdx) => (
+                <div
+                  key={wallet.name}
+                  className={styles.walletCard}
+                  onClick={() => {
+                    connect(wallet.walletType);
+                  }}
+                >
+                  <img className={styles.walletIcon} src={wallet.icon} />
+                  <div className={styles.walletName}>{wallet.name}</div>
+                  {!walletAvailable?.[chainIdx]?.[walletIdx] ? (
+                    <DownloadOutlined className={styles.rightIcon} />
+                  ) : connectedWallets[chainType]?.walletType ===
+                    wallet.walletType ? (
+                    <LinkOutlined className={styles.rightIcon} />
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ))}
       </Spin>
     </Modal>
   );
