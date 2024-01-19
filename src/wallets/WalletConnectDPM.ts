@@ -139,38 +139,36 @@ export class WalletConnectDPMProvider implements WalletProvider {
   }
 
   async silentConnect() {
-    if (!this.signClient || !this.signer) {
-      await new Promise((resolve) => {
-        const onInitialized = () => {
-          resolve(true);
-          document.removeEventListener(
-            'WalletConnectDPMInitialized',
-            onInitialized,
-          );
-        };
-        document.addEventListener('WalletConnectDPMInitialized', onInitialized);
-      });
-      if (!this.signClient || !this.signer) return;
-    }
-    const sessions = this.signClient.session.values;
-    if (sessions[0]) {
-      console.log('signer connected', this.signer.isConnected);
-      await this.signer.connectToSession(sessions[0]);
-      console.log('session connected');
-    }
-    const [firstAccount] = await this.signer.getAccounts();
-    console.log(firstAccount);
-    this.address = firstAccount.address;
-    this.onConnect?.({ address: firstAccount.address });
-    this.setAutoConnect(WalletAutoConnectType.True);
-    return firstAccount.address;
+    // if (!this.signClient || !this.signer) {
+    //   await new Promise((resolve) => {
+    //     const onInitialized = () => {
+    //       resolve(true);
+    //       document.removeEventListener(
+    //         'WalletConnectDPMInitialized',
+    //         onInitialized,
+    //       );
+    //     };
+    //     document.addEventListener('WalletConnectDPMInitialized', onInitialized);
+    //   });
+    //   if (!this.signClient || !this.signer) return;
+    // }
+    // const sessions = this.signClient.session.values;
+    // if (sessions[0]) {
+    //   console.log('signer connected', this.signer.isConnected);
+    //   await this.signer.connectToSession(sessions[0]);
+    //   console.log('session connected');
+    // }
+    // const [firstAccount] = await this.signer.getAccounts();
+    // console.log(firstAccount);
+    // this.address = firstAccount.address;
+    // this.onConnect?.({ address: firstAccount.address });
+    // this.setAutoConnect(WalletAutoConnectType.True);
+    // return firstAccount.address;
+    return '';
   }
 
   async signMessage(message: string) {
     if (!this.signer) throw new Error('Provider Unavailable');
-
-    message =
-      'sign this message to login FindTruman Co-creation Story Platform.\ncurrent time: 1705632949';
 
     const { signed, signature } = await this.signer.signAmino(
       this.address,
@@ -183,7 +181,6 @@ export class WalletConnectDPMProvider implements WalletProvider {
         0,
       ),
     );
-    console.log({ signed, signature });
     return signature.signature;
   }
 

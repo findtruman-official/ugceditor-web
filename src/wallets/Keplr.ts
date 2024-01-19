@@ -166,9 +166,6 @@ export class KeplrWalletProvider implements WalletProvider {
   async signMessage(message: string) {
     if (!this.signer) throw new Error('Provider Unavailable');
 
-    message =
-      'sign this message to login FindTruman Co-creation Story Platform.\ncurrent time: 1705632949';
-
     const { signed, signature } = await this.signer.signAmino(
       this.address,
       makeSignDoc(
@@ -180,7 +177,6 @@ export class KeplrWalletProvider implements WalletProvider {
         0,
       ),
     );
-    console.log({ signed, signature });
     return signature.signature;
   }
 
