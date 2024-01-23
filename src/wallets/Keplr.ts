@@ -136,7 +136,7 @@ export class KeplrWalletProvider implements WalletProvider {
 
     this.signer = new KeplrSigner(this.provider as any, {
       signingMode: SigningMode.DIRECT,
-      chainInfo: DesmosChains.testnet,
+      chainInfo: ChainInfo.chainInfo,
     });
     await this.signer.connect();
     this.client = await DesmosClient.connectWithSigner(
