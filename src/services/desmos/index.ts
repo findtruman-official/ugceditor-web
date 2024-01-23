@@ -1,6 +1,9 @@
 import { gql, GraphQLClient } from 'graphql-request';
 
-const API = 'https://gql.morpheus.desmos.network/v1/graphql';
+const API =
+  process.env.NODE_ENV === 'production'
+    ? 'https://gql.mainnet.desmos.network/v1/graphql'
+    : 'https://gql.morpheus.desmos.network/v1/graphql';
 
 const client = new GraphQLClient(API, {
   headers: {},
