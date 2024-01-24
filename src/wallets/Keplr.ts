@@ -1,5 +1,3 @@
-import { getSubspace } from '@/services/desmos';
-import { sleep } from '@/utils/utils';
 import {
   ChainType,
   WalletAutoConnectType,
@@ -19,15 +17,10 @@ import {
 import { KeplrSigner } from '@desmoslabs/desmjs-keplr';
 import { ReplySetting } from '@desmoslabs/desmjs-types/desmos/posts/v3/models';
 import { MsgCreatePost } from '@desmoslabs/desmjs-types/desmos/posts/v3/msgs';
-import { MsgCreateSubspace } from '@desmoslabs/desmjs-types/desmos/subspaces/v3/msgs';
 import {
   MsgCreatePostEncodeObject,
   MsgCreatePostTypeUrl,
 } from '@desmoslabs/desmjs/build/modules/posts/v3';
-import {
-  MsgCreateSubspaceEncodeObject,
-  MsgCreateSubspaceTypeUrl,
-} from '@desmoslabs/desmjs/build/modules/subspaces/v3';
 import { Keplr } from '@keplr-wallet/types';
 import BigNumber from 'bignumber.js';
 import Long from 'long';
@@ -39,12 +32,14 @@ const ChainInfo =
         chainId: 'desmos-mainnet',
         rpcEndpoint: 'https://rpc.mainnet.desmos.network',
         chainInfo: DesmosChains.mainnet,
+        subspaceId: 23,
       }
     : {
         denom: 'udaric',
         chainId: 'morpheus-apollo-3',
         rpcEndpoint: 'https://rpc.morpheus.desmos.network:443',
         chainInfo: DesmosChains.testnet,
+        subspaceId: 24,
       };
 
 export class KeplrWalletProvider implements WalletProvider {
@@ -370,39 +365,13 @@ export class KeplrWalletProvider implements WalletProvider {
     // TODO MileStone 2
   }
 
-  async createSubspace() {
-    if (!this.client) throw new Error('Provider Unavailable');
-  }
-
   async createPost(content: string) {
     if (!this.client) throw new Error('Provider Unavailable');
-
-    let subspace = await getSubspace(this.subspaceName, this.address);
-    if (!subspace) {
-      const createSubspace: MsgCreateSubspaceEncodeObject = {
-        typeUrl: MsgCreateSubspaceTypeUrl,
-        value: MsgCreateSubspace.fromPartial({
-          creator: this.address,
-          name: this.subspaceName,
-          owner: this.address,
-          description: this.subspaceName,
-        }),
-      };
-      await this.client.signAndBroadcast(
-        createSubspace.value.creator,
-        [createSubspace],
-        'auto',
-      );
-      while (!subspace) {
-        sleep(200);
-        subspace = await getSubspace(this.subspaceName, this.address);
-      }
-    }
 
     const msg: MsgCreatePostEncodeObject = {
       typeUrl: MsgCreatePostTypeUrl,
       value: MsgCreatePost.fromPartial({
-        subspaceId: Long.fromNumber(subspace.id),
+        subspaceId: Long.fromNumber(ChainInfo.subspaceId),
         text: content,
         author: this.address,
         replySettings: ReplySetting.REPLY_SETTING_EVERYONE,
