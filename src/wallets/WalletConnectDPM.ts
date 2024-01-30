@@ -185,7 +185,7 @@ export class WalletConnectDPMProvider implements WalletProvider {
   ) {
     if (!this.client) throw new Error('Provider Unavailable');
     await this.createPost(
-      `${payload.name}\n${payload.description}$\n${payload.cover}`,
+      `${payload.name}\n${payload.description}$\n${payload.cover}\nIPFS Cid: ${cid}`,
     );
     const { story_id } = await this.client.queryContractSmart(
       this.factoryAddress,
@@ -206,8 +206,18 @@ export class WalletConnectDPMProvider implements WalletProvider {
     return story_id;
   }
 
-  async updateStory(id: string, cid: string, clearChapterCaches?: boolean) {
+  async updateStory(
+    id: string,
+    cid: string,
+    clearChapterCaches?: boolean,
+    payload?: Omit<WalletCallback.PublishStoryPayload, 'id'>,
+  ) {
     if (!this.client) throw new Error('Provider Unavailable');
+    if (payload) {
+      await this.createPost(
+        `${payload.name}\n${payload.description}$\n${payload.cover}\nIPFS Cid: ${cid}`,
+      );
+    }
     await this.client.execute(
       this.address,
       this.factoryAddress,

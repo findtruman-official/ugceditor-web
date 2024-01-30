@@ -123,25 +123,27 @@ export default function CreateStoryModal({
           token,
         );
 
+        const chainName = chains.find((c: API.Chain) => c.type === chain).name;
+        const storyPayload = {
+          cover: values.cover,
+          name: values.title,
+          description: values.description,
+          chain: chainName,
+          chainType: chain,
+        };
+
         if (update) {
-          await wallet.provider.updateStory(id!!, cid);
+          await wallet.provider.updateStory(id!!, cid, undefined, storyPayload);
           addUpdateStoryPolling({
             id: id!!,
             contentHash: cid,
             chainType: chain,
           });
         } else {
-          const chainName = chains.find(
-            (c: API.Chain) => c.type === chain,
-          ).name;
-
-          const newStoryId = await wallet.provider.publishStory(cid, {
-            cover: values.cover,
-            name: values.title,
-            description: values.description,
-            chain: chainName,
-            chainType: chain,
-          });
+          const newStoryId = await wallet.provider.publishStory(
+            cid,
+            storyPayload,
+          );
           addCreateStoryPolling({
             id: newStoryId,
             cover: values.cover,

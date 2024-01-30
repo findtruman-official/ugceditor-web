@@ -75,6 +75,7 @@ export interface WalletProvider {
     id: string,
     cid: string,
     clearChapterCaches?: boolean,
+    payload?: Omit<WalletCallback.PublishStoryPayload, 'id'>,
   ): Promise<void>;
 
   getMintDecimals(): Promise<number>;
