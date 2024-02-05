@@ -4,7 +4,7 @@
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {
-        "url": "https://gql.morpheus.desmos.network/v1/graphql",
+        "url": "https://gql.mainnet.desmos.network/v1/graphql",
         "headers": {
         },
         "introspect": false
