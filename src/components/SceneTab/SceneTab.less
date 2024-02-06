@@ -1,0 +1,38 @@
+@import '../../global';
+
+.container {
+  padding: 12px 0;
+}
+
+.sceneCard {
+  border-radius: 4px;
+  background: #141414;
+  overflow: hidden;
+
+  img {
+    object-fit: contain;
+    width: 100%;
+    height: auto;
+    background-color: #1f1f1f;
+  }
+
+  .meta {
+    padding: 12px 12px;
+
+    .name {
+      font-weight: bold;
+      font-size: 16px;
+      word-break: break-all;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .actionButtons {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      margin-top: 6px;
+    }
+  }
+}

@@ -44,6 +44,7 @@ export default {
   'story.publish-on': 'Published On',
   'story.tab.story': 'Story',
   'story.tab.works': 'Works',
+  'story.tab.scene': 'Scene',
   'story.delete-confirm-title': 'Are you sure to delete chapter {name}?',
   'story.delete-confirm-desc': 'You are able to Undo Delete before saving.',
   'story.delete-confirm.confirm': 'Delete',
@@ -214,4 +215,8 @@ export default {
     'scenery, shibuya tokyo, night sky, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset , 8k',
   'ai-creation.anime-model-prompt-5':
     'a stern schoolboy is running in the rain at night in a parking lot, cyberpunk, breathtaking lights, artstation',
+
+  'story.scene.edit': 'Edit Scene',
+  'story.scene.publish': 'Publish Scene',
+  'story.scene.undo-publish': 'Undo Publish',
 };

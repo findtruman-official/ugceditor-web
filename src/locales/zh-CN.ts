@@ -43,6 +43,7 @@ export default {
   'story.publish-on': '发行在',
   'story.tab.story': '故事',
   'story.tab.works': '共创',
+  'story.tab.scene': '场景',
   'story.delete-confirm-title': '确认删除章节 {name}？',
   'story.delete-confirm-desc': '在保存之前您可以撤销删除。',
   'story.delete-confirm.confirm': '删除',
@@ -205,4 +206,8 @@ export default {
     'scenery, shibuya tokyo, night sky, post-apocalypse, ruins, rust, sky, skyscraper, abandoned, blue sky, broken window, building, cloud, crane machine, outdoors, overgrown, pillar, sunset , 8k',
   'ai-creation.anime-model-prompt-5':
     'a stern schoolboy is running in the rain at night in a parking lot, cyberpunk, breathtaking lights, artstation',
+
+  'story.scene.edit': '编辑场景',
+  'story.scene.publish': '发布场景',
+  'story.scene.revert-publish': '撤销发布',
 };

@@ -1,6 +1,7 @@
 import CreateStoryModal from '@/components/CreateStoryModal/CreateStoryModal';
 import NftCard from '@/components/NftCard/NftCard';
 import PublishNftModal from '@/components/PublishNftModal/PublishNftModal';
+import SceneTab from '@/components/SceneTab/SceneTab';
 import StoryTab from '@/components/StoryTab/StoryTab';
 import WorkTab from '@/components/WorkTab/WorkTab';
 import useWalletCallback from '@/hooks/useWalletCallback';
@@ -378,6 +379,12 @@ const Story: React.FC = () => {
               key={'work'}
             >
               <WorkTab />
+            </Tabs.TabPane>
+            <Tabs.TabPane
+              tab={formatMessage({ id: 'story.tab.scene' })}
+              key={'scene'}
+            >
+              <SceneTab />
             </Tabs.TabPane>
           </Tabs>
         </div>
