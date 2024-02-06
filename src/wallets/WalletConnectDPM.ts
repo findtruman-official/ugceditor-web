@@ -14,7 +14,10 @@ import {
   SigningMode,
 } from '@desmoslabs/desmjs';
 import { ReplySetting } from '@desmoslabs/desmjs-types/desmos/posts/v3/models';
-import { MsgCreatePost } from '@desmoslabs/desmjs-types/desmos/posts/v3/msgs';
+import {
+  MsgCreatePost,
+  MsgEditPost,
+} from '@desmoslabs/desmjs-types/desmos/posts/v3/msgs';
 import {
   QRCodeModal,
   SignClient,
@@ -23,6 +26,8 @@ import {
 import {
   MsgCreatePostEncodeObject,
   MsgCreatePostTypeUrl,
+  MsgEditPostEncodeObject,
+  MsgEditPostTypeUrl,
 } from '@desmoslabs/desmjs/build/modules/posts/v3';
 import BigNumber from 'bignumber.js';
 import Long from 'long';
@@ -184,9 +189,10 @@ export class WalletConnectDPMProvider implements WalletProvider {
     payload: Omit<WalletCallback.PublishStoryPayload, 'id'>,
   ) {
     if (!this.client) throw new Error('Provider Unavailable');
-    await this.createPost(
+    const postId = await this.createPost(
       `${payload.name}\n${payload.description}$\n${payload.cover}\nIPFS Cid: ${cid}`,
     );
+    if (!postId) throw new Error('Failed to create post');
     const { story_id } = await this.client.queryContractSmart(
       this.factoryAddress,
       {
@@ -198,7 +204,7 @@ export class WalletConnectDPMProvider implements WalletProvider {
       this.factoryAddress,
       {
         PublishStory: {
-          cid,
+          post_id: postId,
         },
       },
       'auto',
@@ -213,21 +219,18 @@ export class WalletConnectDPMProvider implements WalletProvider {
     payload?: Omit<WalletCallback.PublishStoryPayload, 'id'>,
   ) {
     if (!this.client) throw new Error('Provider Unavailable');
-    if (payload) {
-      await this.createPost(
-        `${payload.name}\n${payload.description}$\n${payload.cover}\nIPFS Cid: ${cid}`,
-      );
-    }
-    await this.client.execute(
-      this.address,
+    if (!payload) throw new Error('Empty Payload');
+    const { post_id } = await this.client.queryContractSmart(
       this.factoryAddress,
       {
-        UpdateStory: {
+        GetStoryInfo: {
           story_id: Number(id),
-          cid,
         },
       },
-      'auto',
+    );
+    await this.updatePost(
+      post_id,
+      `${payload.name}\n${payload.description}$\n${payload.cover}\nIPFS Cid: ${cid}`,
     );
   }
 
@@ -389,6 +392,32 @@ export class WalletConnectDPMProvider implements WalletProvider {
         text: content,
         author: this.address,
         replySettings: ReplySetting.REPLY_SETTING_EVERYONE,
+      }),
+    };
+
+    const result = await this.client.signAndBroadcast(
+      this.address,
+      [msg],
+      'auto',
+    );
+    assertIsDeliverTxSuccess(result);
+    return (
+      result.events
+        ?.find((e) => e.type === 'create_post')
+        ?.attributes.find((e) => e.key === 'post_id')?.value || ''
+    );
+  }
+
+  async updatePost(postId: string, content: string) {
+    if (!this.client) throw new Error('Provider Unavailable');
+
+    const msg: MsgEditPostEncodeObject = {
+      typeUrl: MsgEditPostTypeUrl,
+      value: MsgEditPost.fromPartial({
+        subspaceId: Long.fromNumber(ChainInfo.subspaceId),
+        text: content,
+        postId,
+        editor: this.address,
       }),
     };
 

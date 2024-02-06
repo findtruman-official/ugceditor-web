@@ -148,5 +148,5 @@ export interface WalletProvider {
     storyId: string,
   ): Promise<number[]>;
 
-  createPost(content: string): Promise<void>;
+  createPost(content: string): Promise<string>;
 }
