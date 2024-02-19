@@ -135,3 +135,10 @@ img {
 .ant-tabs-content {
   height: 100% !important;
 }
+
+.ant-input {
+  border-radius: 4px;
+  //background: #fff !important;
+  background-color: #434343 !important;
+  border: 2px solid #8c8c8c !important;
+}

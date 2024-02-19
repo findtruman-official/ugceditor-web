@@ -6,6 +6,7 @@ import { useModel } from '@@/plugin-model';
 import { PageContainer } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import React, { useContext, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import styles from './index.less';
 
 const Writer: React.FC = () => {
@@ -28,6 +29,7 @@ const Writer: React.FC = () => {
 
   return (
     <PageContainer style={{ margin: '0 88px' }} title={false} ghost>
+      <Helmet title={'Mine - UGC Editor'} />
       <div className={styles.section}>
         <div className={styles.title}>
           {formatMessage({ id: 'writer.title.my-stories' })}

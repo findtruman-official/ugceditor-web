@@ -9,6 +9,15 @@
   background: #141414;
   overflow: hidden;
 
+  .emptyCard {
+    width: 100%;
+    height: 203px;
+    background-color: rgba(255, 255, 255, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   img {
     object-fit: contain;
     width: 100%;
@@ -26,6 +35,12 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .desc {
+      font-weight: 400;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .actionButtons {

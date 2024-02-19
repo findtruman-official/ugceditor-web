@@ -27,3 +27,12 @@ export const downloadImage = async (src: string, name: string) => {
     console.log(e);
   }
 };
+
+export function random(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+export function getChapterId() {
+  const arr = window.location.href.split('/');
+  return arr[arr.length - 1].toString();
+}

@@ -62,14 +62,12 @@ export default defineConfig({
   mfsu: false,
   proxy: {
     '/fcc-story/graphql': {
-      // target: 'http://10.243.248.69:3000/graphql/',
       // target: 'http://10.2.0.3:3000/graphql/',
       target: 'https://iris.findtruman.io/fcc-story/graphql',
       changeOrigin: true,
       pathRewrite: { '^/fcc-story/graphql': '' },
     },
     '/fcc-story/ipfs': {
-      // target: 'http://10.243.248.69:3000/ipfs',
       // target: 'http://10.2.0.3:3000/ipfs',
       target: 'https://iris.findtruman.io/fcc-story/ipfs',
       changeOrigin: true,

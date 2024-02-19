@@ -38,7 +38,7 @@ const ChapterItem = ({
       }
       onClick={() => {
         if (!isAuthor || (!deleted && type !== 'new')) {
-          history.push(`/story/${chainType}/${storyId}/chapter/${chapter.id}`);
+          history.push(`/story/${storyId}/chapter/${chapter.id}`);
         }
       }}
     >
@@ -72,9 +72,7 @@ const ChapterItem = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                history.push(
-                  `/story/${chainType}/${storyId}/chapter/${chapter.id}/edit`,
-                );
+                history.push(`/story/${storyId}/chapter/${chapter.id}/edit`);
               }}
             >
               {formatMessage({ id: 'story.edit' })}

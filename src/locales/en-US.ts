@@ -1,6 +1,6 @@
 export default {
   'menu.stories': 'Stories',
-  'menu.writer': "I'm Writer",
+  'menu.writer': 'Mine',
   'menu.story-gameplay': 'Story-gameplay',
   'menu.achievements': 'Achievements',
   'header.creation-with-ai': 'Creation with AI',
@@ -34,7 +34,7 @@ export default {
   'story.sold-out': 'Sold Out',
   'story.amount': 'Amount',
   'story.total': 'Total',
-  'story.price': 'Price($ERIS)',
+  'story.price': 'Price(USDC)',
   'story.rest': 'Rest',
   'story.own': 'You own',
   'story.author': 'Author',

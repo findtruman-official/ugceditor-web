@@ -15,34 +15,20 @@ import * as _ from 'lodash';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 
-const ChainInfo =
-  process.env.NODE_ENV === 'production'
-    ? {
-        chainId: '0x1a20',
-        rpcUrls: [
-          'https://iris-evm.publicnode.com',
-          'https://evmrpc.irishub-1.irisnet.org',
-        ],
-        chainName: 'IRIShub',
-        nativeCurrency: {
-          name: 'ERIS',
-          symbol: 'ERIS',
-          decimals: 18,
-        },
-        blockExplorerUrls: ['https://irishub.iobscan.io'],
-      }
-    : {
-        chainId: '0x4130',
-        rpcUrls: ['https://evmrpc.nyancat.irisnet.org'],
-        chainName: 'IRIShub Testnet',
-        nativeCurrency: {
-          name: 'ERIS',
-          symbol: 'ERIS',
-          decimals: 18,
-        },
-        blockExplorerUrls: ['https://nyancat.iobscan.io'],
-      };
-
+const ChainInfo = {
+  chainId: '0x1a20',
+  rpcUrls: [
+    'https://iris-evm.publicnode.com',
+    'https://evmrpc.irishub-1.irisnet.org',
+  ],
+  chainName: 'IRIShub',
+  nativeCurrency: {
+    name: 'ERIS',
+    symbol: 'ERIS',
+    decimals: 18,
+  },
+  blockExplorerUrls: ['https://irishub.iobscan.io'],
+};
 export class MetamaskWalletProvider implements WalletProvider {
   providerType: WalletType = WalletType.Metamask;
   chainType: ChainType = ChainType.IRIS;

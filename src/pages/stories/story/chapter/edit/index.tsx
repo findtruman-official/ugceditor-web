@@ -2,6 +2,7 @@ import ContentEditable, {
   useRefCallback,
 } from '@/components/ContentEditable/ContentEditable';
 import { IconFont } from '@/components/IconFont/IconFont';
+import { ChainType } from '@/wallets';
 import { useMatch, useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import { ExclamationCircleOutlined, LeftOutlined } from '@ant-design/icons';
@@ -37,7 +38,7 @@ const CmdButton = ({
 
 const Edit: React.FC = () => {
   const { formatMessage } = useIntl();
-  const match = useMatch('/story/:chainType/:storyId/chapter/:chapterId/edit');
+  const match = useMatch('/story/:storyId/chapter/:chapterId/edit');
   const {
     isAuthor,
     chainType,
@@ -76,7 +77,7 @@ const Edit: React.FC = () => {
   const handleBlur = useRefCallback(() => {}, [content]);
 
   const backToStory = () => {
-    history.push(`/story/${chainType}/${storyId}`);
+    history.push(`/story/${storyId}`);
   };
 
   useEffect(() => {
@@ -87,8 +88,10 @@ const Edit: React.FC = () => {
 
   useEffect(() => {
     const params = match?.params;
-    if (params?.chapterId && params?.storyId && params?.chainType) {
-      setChainType(params.chainType);
+    if (params?.chapterId && params?.storyId) {
+      //  && params?.chainType
+      // setChainType(params.chainType);
+      setChainType(ChainType.IRIS);
       setStoryId(params.storyId);
       setChapterId(parseInt(params.chapterId));
       if (parseInt(chapterId) === 0) {
@@ -230,7 +233,7 @@ const Edit: React.FC = () => {
             size={'large'}
             icon={<LeftOutlined />}
             onClick={() => {
-              history.push(`/story/${chainType}/${storyId}`);
+              history.push(`/story/${storyId}`);
             }}
           />
         </div>

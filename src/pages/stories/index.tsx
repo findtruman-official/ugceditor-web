@@ -2,6 +2,7 @@ import StoryCardList from '@/components/StoryCard/StoryCardList';
 import { useIntl } from '@@/plugin-locale';
 import { PageContainer } from '@ant-design/pro-components';
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { useModel } from 'umi';
 import styles from './index.less';
 
@@ -20,6 +21,7 @@ const Stories: React.FC = () => {
       title={false}
       ghost
     >
+      <Helmet title={'Stories - UGC Editor'} />
       <div className={styles.section}>
         <div className={styles.title}>
           {formatMessage({ id: 'stories.title.hot-stories' })}

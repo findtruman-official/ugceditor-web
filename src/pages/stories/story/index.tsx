@@ -9,7 +9,6 @@ import { GlobalContext, GlobalContextType } from '@/layouts';
 import { uploadJson } from '@/services/api';
 import { PREFIX } from '@/utils/const';
 import { shortenAccount } from '@/utils/format';
-import { ChainLogos } from '@/utils/logos';
 import { ChainType } from '@/wallets';
 import { useMatch } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
@@ -36,7 +35,7 @@ import styles from './index.less';
 const Story: React.FC = () => {
   const { confirmLogin } = useContext<GlobalContextType>(GlobalContext);
   const { formatMessage } = useIntl();
-  const match = useMatch('/story/:chainType/:storyId');
+  const match = useMatch('/story/:storyId');
   const { search } = useLocation();
   const { walletCallbackType } = useWalletCallback({ search, handle: false });
 
@@ -94,8 +93,9 @@ const Story: React.FC = () => {
   }, [account]);
 
   useEffect(() => {
-    if (match?.params.storyId && match?.params.chainType) {
-      setChainType(match.params.chainType);
+    if (match?.params.storyId) {
+      // setChainType(match.params.chainType);
+      setChainType(ChainType.IRIS);
       setStoryId(match.params.storyId);
     }
   }, [match]);
@@ -280,21 +280,21 @@ const Story: React.FC = () => {
                           ).toLocaleDateString()}
                         </div>
                       </div>
-                      <div className={styles.infoGroup}>
-                        <div className={styles.infoTitle}>
-                          {formatMessage({ id: 'story.publish-on' })}
-                        </div>
-                        {currentStory?.chainInfo && (
-                          <img
-                            className={styles.infoDescriptionImg}
-                            src={
-                              ChainLogos[
-                                currentStory.chainInfo.type as ChainType
-                              ]
-                            }
-                          />
-                        )}
-                      </div>
+                      {/*<div className={styles.infoGroup}>*/}
+                      {/*  <div className={styles.infoTitle}>*/}
+                      {/*    {formatMessage({ id: 'story.publish-on' })}*/}
+                      {/*  </div>*/}
+                      {/*  {currentStory?.chainInfo && (*/}
+                      {/*    <img*/}
+                      {/*      className={styles.infoDescriptionImg}*/}
+                      {/*      src={*/}
+                      {/*        ChainLogos[*/}
+                      {/*          currentStory.chainInfo.type as ChainType*/}
+                      {/*        ]*/}
+                      {/*      }*/}
+                      {/*    />*/}
+                      {/*  )}*/}
+                      {/*</div>*/}
                     </Skeleton>
                   </Spin>
                 </Col>
@@ -333,9 +333,7 @@ const Story: React.FC = () => {
                   <Badge dot={chapters.length === 0}>
                     <Button
                       onClick={() =>
-                        history.push(
-                          `/story/${chainType}/${storyId}/chapter/0/edit`,
-                        )
+                        history.push(`/story/${storyId}/chapter/0/edit`)
                       }
                       disabled={saving || updateStoryPolling}
                     >

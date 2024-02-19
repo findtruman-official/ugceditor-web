@@ -50,10 +50,10 @@ export default function Header() {
           <div
             className={[
               styles.menuItem,
-              pathname === '/writer' ? styles.menuItemActive : '',
+              pathname === '/mine' ? styles.menuItemActive : '',
             ].join(' ')}
             onClick={() => {
-              pathname !== '/writer' && history.push('/writer');
+              pathname !== '/mine' && history.push('/mine');
             }}
           >
             {formatMessage({ id: 'menu.writer' })}
@@ -67,7 +67,7 @@ export default function Header() {
               ].join(' ')}
               onClick={() => {
                 if (chapterPage) {
-                  history.push(`/story/${chainType}/${storyId}`);
+                  history.push(`/story/${storyId}`);
                 }
               }}
             >

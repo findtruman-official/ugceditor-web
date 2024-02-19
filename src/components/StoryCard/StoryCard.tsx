@@ -1,4 +1,3 @@
-import { ChainLogos } from '@/utils/logos';
 import { ChainType } from '@/wallets';
 import { useIntl } from '@@/plugin-locale';
 import { Skeleton, Spin, Tooltip, Typography } from 'antd';
@@ -35,7 +34,7 @@ export default function StoryCard({
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
-        chainType && history.push(`/story/${chainType}/${id}`);
+        chainType && history.push(`/story/${id}`);
       }}
       style={{ position: 'relative' }}
       className={styles.storyCard}
@@ -69,17 +68,17 @@ export default function StoryCard({
             ) : (
               <div />
             )}
-            <Tooltip
-              title={formatMessage(
-                { id: 'stories.published-on' },
-                { chain: chainName },
-              )}
-            >
-              <img
-                className={styles.metaChainImg}
-                src={ChainLogos[chainType as ChainType]}
-              />
-            </Tooltip>
+            {/*<Tooltip*/}
+            {/*  title={formatMessage(*/}
+            {/*    { id: 'stories.published-on' },*/}
+            {/*    { chain: chainName },*/}
+            {/*  )}*/}
+            {/*>*/}
+            {/*  <img*/}
+            {/*    className={styles.metaChainImg}*/}
+            {/*    src={ChainLogos[chainType as ChainType]}*/}
+            {/*  />*/}
+            {/*</Tooltip>*/}
           </div>
         </div>
         {!loaded && (

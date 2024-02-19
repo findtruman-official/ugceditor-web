@@ -1,3 +1,4 @@
+import { ChainType } from '@/wallets';
 import { history, useMatch, useModel } from '@@/exports';
 import { useIntl } from '@@/plugin-locale';
 import {
@@ -13,7 +14,7 @@ import styles from './index.less';
 
 const Chapter: React.FC = () => {
   const { formatMessage } = useIntl();
-  const match = useMatch('/story/:chainType/:storyId/chapter/:chapterId');
+  const match = useMatch('/story/:storyId/chapter/:chapterId');
   const {
     gettingCurrentStory,
     currentChapter,
@@ -37,12 +38,9 @@ const Chapter: React.FC = () => {
   }));
 
   useEffect(() => {
-    if (
-      match?.params.storyId &&
-      match?.params.chapterId &&
-      match?.params.chainType
-    ) {
-      setChainType(match.params.chainType);
+    if (match?.params.storyId && match?.params.chapterId) {
+      // setChainType(match.params.chainType);
+      setChainType(ChainType.IRIS);
       setStoryId(match.params.storyId);
       setChapterId(parseInt(match?.params.chapterId) || 0);
     } else {
@@ -64,7 +62,7 @@ const Chapter: React.FC = () => {
             size={'large'}
             icon={<LeftOutlined />}
             onClick={() => {
-              history.push(`/story/${chainType}/${storyId}`);
+              history.push(`/story/${storyId}`);
             }}
           />
         </div>
@@ -89,7 +87,7 @@ const Chapter: React.FC = () => {
                 size={'large'}
                 icon={<LeftOutlined />}
                 onClick={() => {
-                  history.push(`/story/${chainType}/${storyId}`);
+                  history.push(`/story/${storyId}`);
                 }}
               />
             </div>
@@ -111,15 +109,13 @@ const Chapter: React.FC = () => {
               );
               if (idx === 0) {
                 history.push(
-                  `/story/${chainType}/${storyId}/chapter/${
+                  `/story/${storyId}/chapter/${
                     chapters[chapters.length - 1].id
                   }`,
                 );
               } else {
                 history.push(
-                  `/story/${chainType}/${storyId}/chapter/${
-                    chapters[idx - 1].id
-                  }`,
+                  `/story/${storyId}/chapter/${chapters[idx - 1].id}`,
                 );
               }
             }}
@@ -134,9 +130,7 @@ const Chapter: React.FC = () => {
                     key: c.id,
                     label: c.name,
                     onClick: () => {
-                      history.push(
-                        `/story/${chainType}/${storyId}/chapter/${c.id}`,
-                      );
+                      history.push(`/story/${storyId}/chapter/${c.id}`);
                     },
                   }))}
               />
@@ -163,14 +157,10 @@ const Chapter: React.FC = () => {
                 (c: API.StoryChapter) => c.id === chapterId,
               );
               if (idx === chapters.length - 1) {
-                history.push(
-                  `/story/${chainType}/${storyId}/chapter/${chapters[0].id}`,
-                );
+                history.push(`/story/${storyId}/chapter/${chapters[0].id}`);
               } else {
                 history.push(
-                  `/story/${chainType}/${storyId}/chapter/${
-                    chapters[idx + 1].id
-                  }`,
+                  `/story/${storyId}/chapter/${chapters[idx + 1].id}`,
                 );
               }
             }}

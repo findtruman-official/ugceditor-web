@@ -1,7 +1,7 @@
-import Scene1 from '@/assets/scene/1508117989_10094850.jpg';
-import Scene2 from '@/assets/scene/1687787811_10094826.jpg';
+import Scene0 from '@/assets/scene/1508117989_10094850.jpg';
+import Scene1 from '@/assets/scene/1931667604_10092534.jpg';
 import Scene4 from '@/assets/scene/400993147_10092756.jpg';
-import Scene0 from '@/assets/scene/587393369_10094725.jpg';
+import Scene2 from '@/assets/scene/587393369_10094725.jpg';
 import Scene3 from '@/assets/scene/588629520_10093302.jpg';
 import { SceneCard } from '@/components/SceneTab/SceneCard';
 import { useModel } from '@@/exports';

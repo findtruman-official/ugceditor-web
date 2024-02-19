@@ -33,7 +33,7 @@ export default {
   'story.sold-out': '售罄',
   'story.amount': '数量',
   'story.total': '总量',
-  'story.price': '售价($ERIS)',
+  'story.price': '售价(USDC)',
   'story.rest': '剩余',
   'story.own': '已持有',
   'story.author': '作者',
