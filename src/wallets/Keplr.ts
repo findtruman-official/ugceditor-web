@@ -53,6 +53,7 @@ export class KeplrWalletProvider implements WalletProvider {
   provider: Keplr | undefined;
   factoryAddress: string = '';
   findsMintAddress: string = '';
+  reservedCanClaimedAtOnce: number = 1;
 
   subspaceName = 'FindTruman - UGCEditor';
   signer: KeplrSigner | undefined;
@@ -335,7 +336,20 @@ export class KeplrWalletProvider implements WalletProvider {
 
   async claimAuthorReservedNft(storyId: string, amount: number) {
     if (!this.client) throw new Error('Provider Unavailable');
-    // TODO MileStone 2
+
+    const rest = await this.authorReservedNftRest(storyId);
+    if (rest < amount) return;
+
+    await this.client.execute(
+      this.address,
+      this.factoryAddress,
+      {
+        ClaimAuthorReservedNft: {
+          story_id: Number(storyId),
+        },
+      },
+      'auto',
+    );
   }
 
   async tokenIdOfStoryNft(account: string, nftName: string, storyId: string) {
@@ -355,27 +369,133 @@ export class KeplrWalletProvider implements WalletProvider {
     nftAddress: string,
     rewards: number[],
   ) {
-    // TODO MileStone 2
+    if (!this.client) throw new Error('Provider Unavailable');
+
+    // Transfer tokens to factory
+    for (const token of rewards) {
+      await this.client.execute(
+        this.address,
+        nftAddress,
+        {
+          transfer_nft: {
+            recipient: this.factoryAddress,
+            token_id: `${token}`,
+          },
+        },
+        'auto',
+      );
+    }
+
+    // Create task
+    await this.client.execute(
+      this.address,
+      this.factoryAddress,
+      {
+        CreateTask: {
+          create_task_para: {
+            story_id: Number(storyId),
+            cid,
+            nft_address: nftAddress,
+            reward_nfts: rewards.join(','),
+          },
+        },
+      },
+      'auto',
+    );
   }
 
   async updateTask(storyId: string, taskId: string, cid: string) {
-    // TODO MileStone 2
+    if (!this.client) throw new Error('Provider Unavailable');
+
+    await this.client.execute(
+      this.address,
+      this.factoryAddress,
+      {
+        UpdateTask: {
+          update_task_para: {
+            story_id: Number(storyId),
+            task_id: Number(taskId),
+            cid,
+          },
+        },
+      },
+      'auto',
+    );
   }
 
   async cancelTask(storyId: string, taskId: number) {
-    // TODO MileStone 2
+    if (!this.client) throw new Error('Provider Unavailable');
+
+    await this.client.execute(
+      this.address,
+      this.factoryAddress,
+      {
+        CancelTask: {
+          cancel_task_para: {
+            story_id: Number(storyId),
+            task_id: Number(taskId),
+          },
+        },
+      },
+      'auto',
+    );
   }
 
   async createTaskSubmit(storyId: string, taskId: number, cid: string) {
-    // TODO MileStone 2
+    if (!this.client) throw new Error('Provider Unavailable');
+
+    await this.client.execute(
+      this.address,
+      this.factoryAddress,
+      {
+        CreateTaskSubmit: {
+          create_submit_para: {
+            story_id: Number(storyId),
+            task_id: Number(taskId),
+            cid,
+          },
+        },
+      },
+      'auto',
+    );
   }
 
   async withdrawTaskSubmit(storyId: string, taskId: number, submitId: number) {
-    // TODO MileStone 2
+    if (!this.client) throw new Error('Provider Unavailable');
+
+    await this.client.execute(
+      this.address,
+      this.factoryAddress,
+      {
+        WithdrawTaskSubmit: {
+          withdraw_submit_para: {
+            story_id: Number(storyId),
+            task_id: Number(taskId),
+            submit_id: Number(submitId),
+          },
+        },
+      },
+      'auto',
+    );
   }
 
   async markTaskDone(storyId: string, taskId: number, submitId: number) {
-    // TODO MileStone 2
+    if (!this.client) throw new Error('Provider Unavailable');
+
+    await this.client.execute(
+      this.address,
+      this.factoryAddress,
+      {
+        MarkTaskDone: {
+          mark_task_done_para: {
+            story_id: Number(storyId),
+            task_id: Number(taskId),
+            submit_id: Number(submitId),
+          },
+        },
+      },
+      'auto',
+    );
   }
 
   async createPost(content: string) {
@@ -399,7 +519,7 @@ export class KeplrWalletProvider implements WalletProvider {
     assertIsDeliverTxSuccess(result);
     return (
       result.events
-        ?.find((e) => e.type === 'create_post')
+        ?.find((e) => e.type === 'create_post' || e.type === 'created_post')
         ?.attributes.find((e) => e.key === 'post_id')?.value || ''
     );
   }

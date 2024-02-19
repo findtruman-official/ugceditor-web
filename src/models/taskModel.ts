@@ -22,10 +22,14 @@ export default () => {
     chains: model.chains,
     connectedWallets: model.connectedWallets,
   }));
-  const { chainType, storyId } = useModel('storyModel', (model) => ({
-    chainType: model.chainType,
-    storyId: model.storyId,
-  }));
+  const { chainType, storyId, refreshNfts } = useModel(
+    'storyModel',
+    (model) => ({
+      chainType: model.chainType,
+      storyId: model.storyId,
+      refreshNfts: model.refreshNfts,
+    }),
+  );
 
   const [taskId, setTaskId] = useState<number | string>(0);
 
@@ -153,6 +157,7 @@ export default () => {
             chainStoryId: storyId,
             cid,
           });
+          refreshNfts();
         }
         refreshStoryTasks();
       },
@@ -203,6 +208,7 @@ export default () => {
             chainStoryId: storyId,
             chainTaskId: taskId as string,
           });
+          refreshNfts();
         }
 
         refreshStoryTasks();
