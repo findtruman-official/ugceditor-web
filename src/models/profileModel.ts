@@ -22,5 +22,5 @@ export default () => {
     },
   );
 
-  return { profiles, profileLoading, refreshProfile };
+  return { profiles: profiles ?? [], profileLoading, refreshProfile };
 };
