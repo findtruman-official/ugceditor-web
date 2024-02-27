@@ -53,7 +53,6 @@ export class KeplrWalletProvider implements WalletProvider {
   provider: Keplr | undefined;
   factoryAddress: string = '';
   findsMintAddress: string = '';
-  reservedCanClaimedAtOnce: number = 1;
 
   subspaceName = 'FindTruman - UGCEditor';
   signer: KeplrSigner | undefined;
@@ -346,6 +345,7 @@ export class KeplrWalletProvider implements WalletProvider {
       {
         ClaimAuthorReservedNft: {
           story_id: Number(storyId),
+          mint_num: amount,
         },
       },
       'auto',

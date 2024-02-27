@@ -55,7 +55,6 @@ export class WalletConnectDPMProvider implements WalletProvider {
   provider: any;
   factoryAddress: string = '';
   findsMintAddress: string = '';
-  reservedCanClaimedAtOnce: number = 1;
 
   subspaceName = 'FindTruman - UGCEditor';
   signClient: SignClient | undefined;
@@ -350,6 +349,7 @@ export class WalletConnectDPMProvider implements WalletProvider {
       {
         ClaimAuthorReservedNft: {
           story_id: Number(storyId),
+          mint_num: amount,
         },
       },
       'auto',
