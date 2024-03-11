@@ -32,22 +32,13 @@ import {
 import BigNumber from 'bignumber.js';
 import Long from 'long';
 
-const ChainInfo =
-  process.env.NODE_ENV === 'production'
-    ? {
-        denom: 'udsm',
-        chainId: 'desmos-mainnet',
-        rpcEndpoint: 'https://rpc.mainnet.desmos.network',
-        chainInfo: DesmosChains.mainnet,
-        subspaceId: 23,
-      }
-    : {
-        denom: 'udaric',
-        chainId: 'morpheus-apollo-3',
-        rpcEndpoint: 'https://rpc.morpheus.desmos.network:443',
-        chainInfo: DesmosChains.testnet,
-        subspaceId: 24,
-      };
+const ChainInfo = {
+  denom: 'udaric',
+  chainId: 'morpheus-apollo-3',
+  rpcEndpoint: 'https://rpc.morpheus.desmos.network:443',
+  chainInfo: DesmosChains.testnet,
+  subspaceId: 24,
+};
 
 export class WalletConnectDPMProvider implements WalletProvider {
   providerType: WalletType = WalletType.WalletConnectDPM;
